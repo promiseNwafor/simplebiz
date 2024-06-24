@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 
@@ -11,25 +11,47 @@ import UserDetailsContainer from './UserDetailsContainer'
 import BusinessDetailsContainer from './BusinessDetailsContainer'
 import AuthWrapper from './AuthWrapper'
 import Link from 'next/link'
+import { AuthError } from './AuthError'
+import { AuthSuccess } from './AuthSuccess'
+import { register } from '@/actions/register'
 
 const RegisterContainer = () => {
   const [screen, setScreen] = useState(1)
+  const [error, setError] = useState<string | undefined>('')
+  const [success, setSuccess] = useState<string | undefined>('')
+  const [isPending, startTransition] = useTransition()
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(RegisterFormSchema),
   })
 
-  const { handleSubmit, control, trigger, getValues } = form
+  const { handleSubmit, control, trigger, reset } = form
 
   const onSubmit = (values: RegisterFormValues) => {
-    console.log(values)
+    setError('')
+    setSuccess('')
+
+    startTransition(() => {
+      register(values).then((res) => {
+        setError(res.error)
+        setSuccess(res.success)
+      })
+    })
+    reset()
   }
 
   const handleUserDetailsSubmit = async () => {
-    const isValid = await trigger()
+    const isValid = await trigger([
+      'name',
+      'email',
+      'phoneNumber',
+      'address',
+      'password',
+      'confirmPassword',
+    ])
     if (!isValid) return
+
     setScreen(2)
-    console.log(await getValues(), '=============')
   }
 
   return (
@@ -62,6 +84,8 @@ const RegisterContainer = () => {
             2
           </span>
         </div>
+        {error && <AuthError message={error} />}
+        {success && <AuthSuccess message={success} />}
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
             {screen === 1 ? (
@@ -70,7 +94,10 @@ const RegisterContainer = () => {
                 onSubmit={handleUserDetailsSubmit}
               />
             ) : (
-              <BusinessDetailsContainer control={control} />
+              <BusinessDetailsContainer
+                control={control}
+                isPending={isPending}
+              />
             )}
           </form>
         </Form>

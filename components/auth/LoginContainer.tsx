@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Checkbox } from '@radix-ui/react-checkbox'
@@ -22,9 +22,13 @@ import { Input } from '@/components/ui/input'
 import SocialsContainer from './SocialsContainer'
 import { AuthError } from './AuthError'
 import { AuthSuccess } from './AuthSuccess'
+import { login } from '@/actions/login'
 
 const LoginContainer = () => {
   const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState<string | undefined>('')
+  const [success, setSuccess] = useState<string | undefined>('')
+  const [isPending, startTransition] = useTransition()
 
   const togglePasswordVisibility = () =>
     setShowPassword((prevState) => !prevState)
@@ -36,7 +40,15 @@ const LoginContainer = () => {
   const { handleSubmit, control, trigger, getValues } = form
 
   const onSubmit = (values: LoginFormValues) => {
-    console.log(values)
+    setError('')
+    setSuccess('')
+
+    startTransition(() => {
+      login(values).then((res) => {
+        setError(res.error)
+        setSuccess(res.success)
+      })
+    })
   }
 
   return (
@@ -54,7 +66,12 @@ const LoginContainer = () => {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder='Email' type='email' {...field} />
+                  <Input
+                    placeholder='Email'
+                    type='email'
+                    disabled={isPending}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -70,6 +87,7 @@ const LoginContainer = () => {
                   <Input
                     placeholder='Password'
                     type={showPassword ? 'text' : 'password'}
+                    disabled={isPending}
                     {...field}
                   />
                 </FormControl>
@@ -111,9 +129,9 @@ const LoginContainer = () => {
               </Link>
             </div>
           </div>
-          {/* <AuthError message={'Error'} />
-          <AuthSuccess message={'Success'} /> */}
-          <Button type='submit' size='full'>
+          {error && <AuthError message={error} />}
+          {success && <AuthSuccess message={success} />}
+          <Button type='submit' size='full' disabled={isPending}>
             Continue
           </Button>
         </form>

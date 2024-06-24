@@ -35,7 +35,7 @@ const UserDetailsContainer: React.FC<IUserDetailsContainer> = ({
     <>
       <FormField
         control={control}
-        name='fullName'
+        name='name'
         render={({ field }) => (
           <FormItem>
             <FormLabel>Full name</FormLabel>

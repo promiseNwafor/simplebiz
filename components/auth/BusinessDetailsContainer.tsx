@@ -23,6 +23,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 
 interface IBusinessDetailsContainer {
   control: Control<RegisterFormValues>
+  isPending: boolean
 }
 
 const industryOptions = [
@@ -33,6 +34,7 @@ const industryOptions = [
 
 const BusinessDetailsContainer: React.FC<IBusinessDetailsContainer> = ({
   control,
+  isPending,
 }) => {
   return (
     <>
@@ -141,7 +143,7 @@ const BusinessDetailsContainer: React.FC<IBusinessDetailsContainer> = ({
           </FormItem>
         )}
       />
-      <Button type='submit' size='full'>
+      <Button type='submit' size='full' disabled={isPending}>
         Submit
       </Button>
     </>
