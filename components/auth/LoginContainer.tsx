@@ -7,7 +7,7 @@ import { Checkbox } from '@radix-ui/react-checkbox'
 import Link from 'next/link'
 import { AiOutlineEyeInvisible, AiOutlineEye } from 'react-icons/ai'
 
-import { LoginFormValues, LoginFormSchema } from '@/lib/schemas'
+import { LoginFormValues, LoginFormSchema } from '@/schemas'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -23,12 +23,20 @@ import SocialsContainer from './SocialsContainer'
 import { AuthError } from './AuthError'
 import { AuthSuccess } from './AuthSuccess'
 import { login } from '@/actions/login'
+import { useSearchParams } from 'next/navigation'
 
 const LoginContainer = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | undefined>('')
   const [success, setSuccess] = useState<string | undefined>('')
   const [isPending, startTransition] = useTransition()
+
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get('callbackUrl')
+  const urlError =
+    searchParams.get('error') === 'OAuthAccountNotLinked'
+      ? 'Email already in use with different provider!'
+      : ''
 
   const togglePasswordVisibility = () =>
     setShowPassword((prevState) => !prevState)
@@ -45,11 +53,13 @@ const LoginContainer = () => {
 
     startTransition(() => {
       login(values).then((res) => {
-        setError(res.error)
-        setSuccess(res.success)
+        setError(res?.error)
+        setSuccess(res?.success)
       })
     })
   }
+
+  const errorMessage = error || urlError
 
   return (
     <div className='w-full max-w-lg space-y-10'>
@@ -124,12 +134,12 @@ const LoginContainer = () => {
               )}
             />
             <div>
-              <Link href='/auth/reset' className='text-md'>
+              <Link href='/auth/reset' className='text-sm'>
                 Forgot password?
               </Link>
             </div>
           </div>
-          {error && <AuthError message={error} />}
+          {errorMessage && <AuthError message={errorMessage} />}
           {success && <AuthSuccess message={success} />}
           <Button type='submit' size='full' disabled={isPending}>
             Continue
@@ -139,7 +149,7 @@ const LoginContainer = () => {
       <SocialsContainer />
       <div className='text-center'>
         Don’t have an account?
-        <Link href='/register' className='text-md ml-1'>
+        <Link href='/auth/register' className='text-md ml-1'>
           Sign up
         </Link>
       </div>

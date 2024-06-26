@@ -1,6 +1,6 @@
 import { Control } from 'react-hook-form'
 
-import { RegisterFormValues } from '@/lib/schemas'
+import { RegisterFormValues } from '@/schemas'
 import { Button } from '@/components/ui/button'
 import {
   FormControl,

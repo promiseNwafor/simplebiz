@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { AiOutlineEyeInvisible, AiOutlineEye } from 'react-icons/ai'
 import { Control } from 'react-hook-form'
 
-import { RegisterFormValues } from '@/lib/schemas'
+import { RegisterFormValues } from '@/schemas'
 import { Button } from '@/components/ui/button'
 import {
   FormControl,

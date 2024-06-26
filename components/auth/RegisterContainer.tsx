@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 
-import { RegisterFormValues, RegisterFormSchema } from '@/lib/schemas'
+import { RegisterFormValues, RegisterFormSchema } from '@/schemas'
 import { Form } from '@/components/ui/form'
 import { Slider } from '@/components/ui/slider'
 import UserDetailsContainer from './UserDetailsContainer'
@@ -33,8 +33,8 @@ const RegisterContainer = () => {
 
     startTransition(() => {
       register(values).then((res) => {
-        setError(res.error)
-        setSuccess(res.success)
+        setError(res?.error)
+        setSuccess(res?.success)
       })
     })
     reset()
@@ -103,7 +103,7 @@ const RegisterContainer = () => {
         </Form>
         <div className='text-center'>
           Have an account?
-          <Link href='/login' className='text-md ml-1'>
+          <Link href='/auth/login' className='text-md ml-1'>
             Sign in
           </Link>
         </div>

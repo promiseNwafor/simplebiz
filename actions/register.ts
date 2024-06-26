@@ -1,9 +1,11 @@
 'use server'
 
 import bcrypt from 'bcryptjs'
-import { RegisterFormSchema, RegisterFormValues } from '@/lib/schemas'
+import { RegisterFormSchema, RegisterFormValues } from '@/schemas'
 import { db } from '@/lib/db'
 import { getUserByEmail } from '@/data/user'
+import { generateVerificationToken } from '@/lib/tokens'
+import { sendVerificationEmail } from '@/lib/mail'
 
 export const register = async (values: RegisterFormValues) => {
   const validatedFields = RegisterFormSchema.safeParse(values)
@@ -56,7 +58,8 @@ export const register = async (values: RegisterFormValues) => {
     })
   }
 
-  // TODO: send verification token email
+  const verificationToken = await generateVerificationToken(email)
+  await sendVerificationEmail(verificationToken.email, verificationToken.token)
 
-  return { success: 'Registration successful!' }
+  return { success: 'Confirmation email sent!' }
 }

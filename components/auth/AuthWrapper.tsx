@@ -15,6 +15,7 @@ const AuthWrapper: React.FC<IAuthWrapper> = ({ children, imageSrc }) => {
             alt='logo'
             width={200}
             height={200}
+            className='absolute top-10'
           />
           <Image src={imageSrc} alt='logo' width={600} height={450} />
           <p className='lg:w-[330px]'>
