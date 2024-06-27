@@ -1,21 +1,10 @@
-import { auth, signOut } from '@/auth'
+import SettingsContainer from '@/components/SettingsContainer'
+import { currentUser } from '@/lib/auth'
 
 const SettingsPage = async () => {
-  const session = await auth()
+  const user = await currentUser()
 
-  return (
-    <div>
-      {JSON.stringify(session)}
-      <form
-        action={async () => {
-          'use server'
-          await signOut()
-        }}
-      >
-        <button>Sign out</button>
-      </form>
-    </div>
-  )
+  return user ? <SettingsContainer user={user} /> : <p>No user returned</p>
 }
 
 export default SettingsPage

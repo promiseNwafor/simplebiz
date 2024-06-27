@@ -3,13 +3,14 @@ import { PrismaAdapter } from '@auth/prisma-adapter'
 import authConfig from './auth.config'
 import { db } from './lib/db'
 import { getUserById } from './data/user'
-import { UserRole } from '@prisma/client'
+import { getAccountByUserId } from './data/account'
 
 export const {
   auth,
   handlers: { GET, POST },
   signIn,
   signOut,
+  unstable_update: update,
 } = NextAuth({
   pages: {
     signIn: '/auth/login',
@@ -40,10 +41,17 @@ export const {
         session.user.id = token.sub
       }
 
-      if (token.role && session.user) {
-        session.user.role = token.role
+      if (session.user) {
+        if (token.role) {
+          session.user.role = token.role
+        }
+
+        session.user.name = token.name
+        session.user.email = token.email
+        session.user.isOAuth = token.isOAuth
         session.user.phone = token.phone
         session.user.address = token.address
+        session.user.isTwoFactorEnabled = token.isTwoFactorEnabled
       }
 
       return session
@@ -55,9 +63,15 @@ export const {
 
       if (!existingUser) return token
 
+      const existingAccount = await getAccountByUserId(existingUser.id)
+
+      token.isOAuth = !!existingAccount
+      token.name = existingUser.name
+      token.email = existingUser.email
       token.role = existingUser.role
       token.phone = existingUser.phone
       token.address = existingUser.address
+      token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled
 
       return token
     },

@@ -1,5 +1,8 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { SessionProvider } from 'next-auth/react'
+import { Toaster } from 'sonner'
+import { auth } from '@/auth'
 import { cn } from '@/lib/utils'
 import './globals.css'
 
@@ -11,21 +14,26 @@ export const metadata: Metadata = {
     'enabling small businesses to manage their payments efficiently.',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const session = await auth()
+
   return (
-    <html lang='en'>
-      <body
-        className={cn(
-          'min-h-screen bg-background font-sans antialiased',
-          inter.variable
-        )}
-      >
-        {children}
-      </body>
-    </html>
+    <SessionProvider session={session}>
+      <html lang='en'>
+        <body
+          className={cn(
+            'min-h-screen bg-background font-sans antialiased',
+            inter.variable
+          )}
+        >
+          <Toaster />
+          {children}
+        </body>
+      </html>
+    </SessionProvider>
   )
 }

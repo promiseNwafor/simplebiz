@@ -30,6 +30,7 @@ const LoginContainer = () => {
   const [error, setError] = useState<string | undefined>('')
   const [success, setSuccess] = useState<string | undefined>('')
   const [isPending, startTransition] = useTransition()
+  const [showTwoFactor, setShowTwoFactor] = useState(false)
 
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl')
@@ -45,17 +46,30 @@ const LoginContainer = () => {
     resolver: zodResolver(LoginFormSchema),
   })
 
-  const { handleSubmit, control, trigger, getValues } = form
+  const { handleSubmit, control, reset } = form
 
   const onSubmit = (values: LoginFormValues) => {
     setError('')
     setSuccess('')
 
     startTransition(() => {
-      login(values).then((res) => {
-        setError(res?.error)
-        setSuccess(res?.success)
-      })
+      login(values, callbackUrl)
+        .then((data) => {
+          if (data?.error) {
+            //  reset()
+            setError(data.error)
+          }
+
+          if (data?.success) {
+            reset()
+            setSuccess(data.success)
+          }
+
+          if (data?.twoFactor) {
+            setShowTwoFactor(true)
+          }
+        })
+        .catch(() => setError('Something went wrong'))
     })
   }
 
@@ -69,75 +83,103 @@ const LoginContainer = () => {
       </div>
       <Form {...form}>
         <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
-          <FormField
-            control={control}
-            name='email'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder='Email'
-                    type='email'
-                    disabled={isPending}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+          <div className='space-y-4'>
+            {showTwoFactor && (
+              <FormField
+                control={form.control}
+                name='code'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Two Factor Code</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={isPending}
+                        placeholder='123456'
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             )}
-          />
-          <FormField
-            control={control}
-            name='password'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder='Password'
-                    type={showPassword ? 'text' : 'password'}
-                    disabled={isPending}
-                    {...field}
-                  />
-                </FormControl>
-                <div className='relative'>
-                  {showPassword ? (
-                    <AiOutlineEye
-                      className='absolute right-4 -top-9'
-                      onClick={togglePasswordVisibility}
-                    />
-                  ) : (
-                    <AiOutlineEyeInvisible
-                      className='absolute right-4 -top-9'
-                      onClick={togglePasswordVisibility}
-                    />
+            {!showTwoFactor && (
+              <>
+                <FormField
+                  control={control}
+                  name='email'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder='Email'
+                          type='email'
+                          disabled={isPending}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className='flex items-center justify-between '>
-            <FormField
-              control={control}
-              name='rememberLogin'
-              render={({ field: { value, onChange } }) => (
-                <FormItem className='flex flex-row items-start space-x-3 space-y-0'>
-                  <FormControl>
-                    <Checkbox checked={value} onCheckedChange={onChange} />
-                  </FormControl>
-                  <div className='space-y-1 leading-none'>
-                    <FormLabel>Remember me</FormLabel>
+                />
+                <FormField
+                  control={control}
+                  name='password'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder='Password'
+                          type={showPassword ? 'text' : 'password'}
+                          disabled={isPending}
+                          {...field}
+                        />
+                      </FormControl>
+                      <div className='relative'>
+                        {showPassword ? (
+                          <AiOutlineEye
+                            className='absolute right-4 -top-9'
+                            onClick={togglePasswordVisibility}
+                          />
+                        ) : (
+                          <AiOutlineEyeInvisible
+                            className='absolute right-4 -top-9'
+                            onClick={togglePasswordVisibility}
+                          />
+                        )}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className='flex items-center justify-between '>
+                  <FormField
+                    control={control}
+                    name='rememberLogin'
+                    render={({ field: { value, onChange } }) => (
+                      <FormItem className='flex flex-row items-start space-x-3 space-y-0'>
+                        <FormControl>
+                          <Checkbox
+                            checked={value}
+                            onCheckedChange={onChange}
+                          />
+                        </FormControl>
+                        <div className='space-y-1 leading-none'>
+                          <FormLabel>Remember me</FormLabel>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                  <div>
+                    <Link href='/auth/reset' className='text-sm'>
+                      Forgot password?
+                    </Link>
                   </div>
-                </FormItem>
-              )}
-            />
-            <div>
-              <Link href='/auth/reset' className='text-sm'>
-                Forgot password?
-              </Link>
-            </div>
+                </div>
+              </>
+            )}
           </div>
           {errorMessage && <AuthError message={errorMessage} />}
           {success && <AuthSuccess message={success} />}

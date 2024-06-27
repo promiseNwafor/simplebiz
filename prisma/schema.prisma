@@ -43,6 +43,7 @@ model Business {
   userId String @map("user_id")
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@unique([userId])
   @@map("businesses")
 }
 

@@ -14,7 +14,7 @@ const SocialsContainer = () => {
 
   const onClick = (provider: 'google' | 'github') => {
     signIn(provider, {
-      callbackUrl: DEFAULT_LOGIN_REDIRECT,
+      callbackUrl: callbackUrl || DEFAULT_LOGIN_REDIRECT,
     })
   }
 
