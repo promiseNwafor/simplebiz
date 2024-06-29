@@ -5,6 +5,8 @@ import { Toaster } from 'sonner'
 import { auth } from '@/auth'
 import { cn } from '@/lib/utils'
 import './globals.css'
+import NavbarContainer from '@/components/navigation/NavbarContainer'
+import SidebarContainer from '@/components/navigation/SidebarContainer'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
@@ -26,12 +28,18 @@ export default async function RootLayout({
       <html lang='en'>
         <body
           className={cn(
-            'min-h-screen bg-background font-sans antialiased',
+            'min-h-screen bg-secondary font-sans antialiased',
             inter.variable
           )}
         >
           <Toaster />
-          {children}
+          <div className='flex w-full relative'>
+            <SidebarContainer />
+            <div className='flex-1 absolute left-60 right-0'>
+              <NavbarContainer />
+              <main className='p-4'>{children}</main>
+            </div>
+          </div>
         </body>
       </html>
     </SessionProvider>

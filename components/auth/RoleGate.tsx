@@ -2,7 +2,7 @@
 
 import { UserRole } from '@prisma/client'
 
-import { useCurrentRole } from '@/hooks/use-current-role'
+import { useCurrentRole } from '@/hooks/useCurrentRole'
 import { AuthError } from './AuthError'
 
 interface RoleGateProps {
