@@ -26,7 +26,7 @@ export const login = async (
   const existingUser = await getUserByEmail(email)
 
   if (!existingUser || !existingUser.email || !existingUser.password) {
-    return { error: 'Email does not exist!' }
+    return { error: 'Sign error!' }
   }
 
   if (!existingUser.emailVerified) {

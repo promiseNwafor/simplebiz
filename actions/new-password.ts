@@ -38,7 +38,7 @@ export const newPassword = async (
   const existingUser = await getUserByEmail(existingToken.email)
 
   if (!existingUser) {
-    return { error: 'Email does not exist!' }
+    return { error: 'Sign error!' }
   }
 
   const hashedPassword = await bcrypt.hash(password, 10)

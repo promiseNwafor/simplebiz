@@ -6,8 +6,10 @@ import { useForm } from 'react-hook-form'
 import { Checkbox } from '@radix-ui/react-checkbox'
 import Link from 'next/link'
 import { AiOutlineEyeInvisible, AiOutlineEye } from 'react-icons/ai'
+import { useSearchParams } from 'next/navigation'
 
 import { LoginFormValues, LoginFormSchema } from '@/schemas'
+import { login } from '@/actions/login'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -22,8 +24,6 @@ import { Input } from '@/components/ui/input'
 import SocialsContainer from './SocialsContainer'
 import { AuthError } from './AuthError'
 import { AuthSuccess } from './AuthSuccess'
-import { login } from '@/actions/login'
-import { useSearchParams } from 'next/navigation'
 import OTPInputContainer from './OTPInputContainer'
 
 const LoginContainer = () => {
