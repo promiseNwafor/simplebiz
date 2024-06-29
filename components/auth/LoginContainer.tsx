@@ -24,6 +24,7 @@ import { AuthError } from './AuthError'
 import { AuthSuccess } from './AuthSuccess'
 import { login } from '@/actions/login'
 import { useSearchParams } from 'next/navigation'
+import OTPInputContainer from './OTPInputContainer'
 
 const LoginContainer = () => {
   const [showPassword, setShowPassword] = useState(false)
@@ -85,23 +86,7 @@ const LoginContainer = () => {
         <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
           <div className='space-y-4'>
             {showTwoFactor && (
-              <FormField
-                control={form.control}
-                name='code'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Two Factor Code</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        disabled={isPending}
-                        placeholder='123456'
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <OTPInputContainer control={control} isPending={isPending} />
             )}
             {!showTwoFactor && (
               <>
