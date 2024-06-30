@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 import { IoNotificationsOutline } from 'react-icons/io5'
 import { FaUser } from 'react-icons/fa'
 import { RxExit } from 'react-icons/rx'
-import { capitalize } from 'lodash'
+import capitalize from 'lodash/capitalize'
 
 import { useCurrentUser } from '@/hooks/useCurrentUser'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -37,7 +37,7 @@ const NavbarContainer = () => {
                 </AvatarFallback>
               </Avatar>
               <div className='hidden md:flex flex-col items-start'>
-                <p>Wade Warren</p>
+                <p>{user?.name}</p>
                 <p className='text-xs'>{user?.email}</p>
               </div>
             </>

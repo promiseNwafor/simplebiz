@@ -13,6 +13,12 @@ enum UserRole {
   USER
 }
 
+enum InvoiceStatus {
+  PAID
+  UNPAID
+  OVERDUE
+}
+
 model User {
   id            String     @id @default(cuid())
   name          String?
@@ -25,6 +31,8 @@ model User {
   role          UserRole   @default(USER)
   accounts      Account[]
   businesses    Business[]
+  clients       Client[]
+  invoices      Invoice[]
 
   isTwoFactorEnabled    Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
@@ -101,4 +109,46 @@ model TwoFactorConfirmation {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId])
+}
+
+model Client {
+  id             String  @id @default(cuid())
+  name           String
+  email          String  @unique
+  billingAddress String  @map("billing_address")
+  phone          String
+  businessName   String? @map("business_name")
+  image          String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  invoices Invoice[]
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("clients")
+}
+
+model Invoice {
+  id        String        @id @default(cuid())
+  issueDate DateTime      @default(now()) @map("issue_date")
+  dueDate   DateTime      @map("due_date")
+  issuedTo  String        @map("issued_to")
+  amount    Float
+  invoiceNo Int           @default(autoincrement()) @map("invoice_no")
+  status    InvoiceStatus @default(UNPAID)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  clientId String @map("client_id")
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, clientId])
+  @@map("invoices")
 }

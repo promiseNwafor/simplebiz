@@ -1,3 +1,5 @@
+import { currentUser } from '@/lib/auth'
+import AddButton from '../AddButton'
 import GoToButton from '../GoToButton'
 import ChartContainer from './ChartContainer'
 import OverviewCard from './OverviewCard'
@@ -9,11 +11,21 @@ const featuredItems = [
   { label: ' Expired Invoices', title: '8' },
 ]
 
-const DashboardContainer = () => {
+const DashboardContainer = async () => {
+  const user = await currentUser()
+
   return (
-    <>
+    <div className='space-y-8'>
+      <div className='flex items-center justify-between'>
+        <h2 className='flex items-center gap-2'>
+          Hi {user?.name.split(' ')[0]}{' '}
+          <span className='hidden md:block'>👋</span>
+        </h2>
+        <AddButton>Generate Invoice</AddButton>
+      </div>
+
       {/* Overview */}
-      <div className='grid md:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-8'>
+      <div className='grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8'>
         {featuredItems.map((item) => {
           const { label, title } = item
           return <OverviewCard key={label} label={label} title={title} />
@@ -44,7 +56,7 @@ const DashboardContainer = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 
