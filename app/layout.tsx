@@ -13,7 +13,7 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
 export const metadata: Metadata = {
   title: 'Simple Biz',
   description:
-    'enabling small businesses to manage their payments efficiently.',
+    'Enabling small businesses to manage their payments efficiently.',
 }
 
 export default async function RootLayout({
@@ -35,7 +35,7 @@ export default async function RootLayout({
           <Toaster />
           <div className='flex w-full relative'>
             <SidebarContainer />
-            <div className='flex-1 absolute left-60 right-0'>
+            <div className='flex-1 lg:absolute left-60 right-0'>
               <NavbarContainer />
               <main className='p-4'>{children}</main>
             </div>

@@ -46,6 +46,9 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
 
+    --light-grey: 0 0% 60%;
+    --primary-light: 158 63% 92%;
+
     --radius: 0.5rem;
   }
 
@@ -94,8 +97,12 @@ a {
   @apply text-primary;
 }
 
+h1 {
+  @apply text-4xl font-bold;
+}
+
 h2 {
-  @apply text-2xl md:text-[32px] font-bold md:leading-10;
+  @apply text-2xl md:text-[32px] font-semibold md:leading-10;
 }
 
 .centered {

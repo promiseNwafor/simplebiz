@@ -23,7 +23,7 @@ const SidebarContainer = () => {
   const user = useCurrentUser()
 
   return (
-    <div className='bg-white fixed top-0 bottom-0'>
+    <div className='bg-white lg:fixed top-0 bottom-0'>
       <div className='absolute left-0 h-20 p-4 flex items-center lg:hidden'>
         <HiOutlineMenuAlt1 size={20} />
       </div>
@@ -47,8 +47,8 @@ const SidebarContainer = () => {
                 key={item.displayName}
                 href={item.path}
                 className={cn(
-                  'flex items-center gap-2 p-4 py-3 text-sm text-black font-medium rounded-lg hover:bg-primary/20 hover:text-primary',
-                  isActive && 'bg-primary/20 text-primary'
+                  'flex items-center gap-2 p-4 py-3 text-sm text-black font-medium rounded-lg hover:bg-primary-light hover:text-primary',
+                  isActive && 'bg-primary-light text-primary'
                 )}
               >
                 <item.Icon size={20} />
