@@ -7,7 +7,7 @@ interface IAuthWrapper {
 
 const AuthWrapper: React.FC<IAuthWrapper> = ({ children, imageSrc }) => {
   return (
-    <div className='grid lg:grid-cols-2 items-center min-h-screen gap-5 m-auto'>
+    <div className='grid lg:grid-cols-2 items-center min-h-screen gap-2 m-auto'>
       <div className=' bg-secondary w-full h-full p-6 centered'>
         <div className='flex flex-col justify-between items-start lg:h-5/6 max-w-screen-md'>
           <Image
@@ -23,7 +23,9 @@ const AuthWrapper: React.FC<IAuthWrapper> = ({ children, imageSrc }) => {
           </p>
         </div>
       </div>
-      <div className='p-6 centered'>{children}</div>
+      <div className='lg:min-h-screen w-full centered bg-white'>
+        <div className='p-6 centered w-full'>{children}</div>
+      </div>
     </div>
   )
 }
