@@ -3,6 +3,9 @@ import { Ellipsis } from 'lucide-react'
 import capitalize from 'lodash/capitalize'
 import { useRouter } from 'next/navigation'
 import { Pages } from '@/routes'
+
+import { addClient } from '@/actions/clients'
+import { ClientProps } from '@/types'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,8 +14,6 @@ import {
 } from '@/components/ui/dropdown-menu'
 import Modal from '../Modal'
 import AddClientForm from './AddClientForm'
-import { Client } from '@prisma/client'
-import { addClient } from '@/store/clients'
 
 enum MenuActions {
   VIEW = 'view',
@@ -21,7 +22,7 @@ enum MenuActions {
 }
 
 type ClientRowProps = {
-  client: Client
+  client: ClientProps
   index: number
 }
 
@@ -37,7 +38,7 @@ const ClientRow: React.FC<ClientRowProps> = ({ client, index }) => {
   const [modalAction, setModalAction] = useState<MenuActions | null>(null)
   const router = useRouter()
 
-  const { id, name, email, phone, billingAddress } = client
+  const { id, name, email, phone, billingAddress, invoices } = client
 
   const actionMenus: ActionMenuProps = {
     [MenuActions.VIEW]: {
@@ -73,7 +74,7 @@ const ClientRow: React.FC<ClientRowProps> = ({ client, index }) => {
       <div className='col-span-2 truncate max-w-44'>{name}</div>
       <div className='col-span-2 truncate max-w-max-w-44'>{email}</div>
       <div className='col-span-2 truncate max-w-max-w-44'>{phone}</div>
-      <div>{0}</div>
+      <div>{invoices.length}</div>
       <div className='col-span-3 truncate max-w-64'>{billingAddress}</div>
       <div className='flex justify-end'>
         <DropdownMenu>

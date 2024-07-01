@@ -1,38 +1,25 @@
 'use client'
 
-import { useEffect, useState, useTransition } from 'react'
-import { BeatLoader } from 'react-spinners'
+import { useState } from 'react'
 import AddButton from '../AddButton'
 import Modal from '../Modal'
 import ClientRow from './ClientRow'
 import AddClientForm from './AddClientForm'
-import { Client } from '@prisma/client'
-import { addClient, getClients } from '@/store/clients'
+import { addClient } from '@/actions/clients'
+import { ClientProps } from '@/types'
 
-interface IClientsContainer {}
+interface IClientsContainer {
+  clients: ClientProps[]
+}
 
-const ClientsContainer: React.FC<IClientsContainer> = () => {
+const ClientsContainer: React.FC<IClientsContainer> = ({ clients }) => {
   const [modalOpen, setModalOpen] = useState(false)
-  const [clients, setClients] = useState<Client[] | null>(null)
-  const [isPending, startTransition] = useTransition()
 
   const toggleModal = () => {
     setModalOpen((prevState) => !prevState)
   }
 
-  useEffect(() => {
-    startTransition(() => {
-      getClients().then((res) => {
-        setClients(res.clients)
-      })
-    })
-  }, [])
-
-  return isPending || !clients ? (
-    <div className='h-20 w-full centered'>
-      <BeatLoader />
-    </div>
-  ) : (
+  return (
     <div className='space-y-8'>
       <Modal
         open={modalOpen}

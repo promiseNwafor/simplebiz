@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { AddClientSchema, AddClientSchemaValues } from '@/schemas'
-import { addClient } from '@/store/clients'
+import { ClientProps } from '@/types'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -20,11 +20,10 @@ import { Input } from '@/components/ui/input'
 import { Form } from '@/components/ui/form'
 import { AuthError } from '../auth/AuthError'
 import { AuthSuccess } from '../auth/AuthSuccess'
-import { Client } from '@prisma/client'
 
 type AddClientFormProps = {
   toggleModal?: () => void
-  client?: Client
+  client?: ClientProps
   submitHandler: (
     values: AddClientSchemaValues
   ) => Promise<{ error?: string; success?: string }>
