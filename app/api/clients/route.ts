@@ -1,5 +1,4 @@
 import { revalidatePath } from 'next/cache'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { currentUser } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { AddClientSchema } from '@/schemas'
@@ -41,7 +40,8 @@ export async function POST(req: Request) {
     const validatedFields = AddClientSchema.safeParse(body)
 
     if (!validatedFields.success) {
-      return { error: 'Invalid fields!' }
+      // return { error: 'Invalid fields!' }
+      return
     }
 
     const user = await currentUser()
@@ -75,25 +75,25 @@ export async function POST(req: Request) {
     )
   } catch (error) {
     console.error(error)
-    if (error instanceof PrismaClientKnownRequestError) {
-      switch (error.code) {
-        case 'P2002':
-          return new Response(
-            JSON.stringify({ error: 'Client already exists!' }),
-            {
-              status: 500,
-            }
-          )
-        case 'P2003':
-          return new Response(JSON.stringify({ error: 'User not found!' }), {
-            status: 500,
-          })
-        default:
-          return new Response(JSON.stringify(error), {
-            status: 500,
-          })
-      }
-    }
+    // if (error instanceof PrismaClientKnownRequestError) {
+    //   switch (error.code) {
+    //     case 'P2002':
+    //       return new Response(
+    //         JSON.stringify({ error: 'Client already exists!' }),
+    //         {
+    //           status: 500,
+    //         }
+    //       )
+    //     case 'P2003':
+    //       return new Response(JSON.stringify({ error: 'User not found!' }), {
+    //         status: 500,
+    //       })
+    //     default:
+    //       return new Response(JSON.stringify(error), {
+    //         status: 500,
+    //       })
+    //   }
+    // }
 
     return new Response(JSON.stringify(error), {
       status: 500,
