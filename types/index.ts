@@ -8,7 +8,7 @@ export type ClientProps = {
   phone: string
   businessName: string | null
   image: string | null
-  invoices: Invoice[]
+  invoiceCount: number
 }
 
 export type PostResponse =

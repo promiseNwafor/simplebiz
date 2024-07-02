@@ -1,4 +1,4 @@
-import SettingsContainer from '@/components/SettingsContainer'
+import SettingsContainer from '@/components/settings/SettingsContainer'
 import { currentUser } from '@/lib/auth'
 
 const SettingsPage = async () => {

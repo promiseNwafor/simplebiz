@@ -18,14 +18,22 @@ export const getClients = async (): Promise<GetResponse<ClientProps[]>> => {
         billingAddress: true,
         businessName: true,
         image: true,
-        invoices: true,
+        _count: {
+          select: { invoices: true },
+        },
       },
     })
 
-    return { data, success: true }
+    const transformedData = data.map((item) => {
+      const { _count, ...rest } = item
+      return {
+        ...rest,
+        invoiceCount: _count.invoices,
+      }
+    })
+    return { data: transformedData, success: true }
   } catch (error) {
     console.error(error)
-    // TODO: add error toast
     return { error: 'Error getting clients', success: false }
   }
 }

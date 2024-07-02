@@ -1,6 +1,6 @@
 import { currentUser } from '@/lib/auth'
-import AddButton from '../AddButton'
-import GoToButton from '../GoToButton'
+import AddButton from '@/components/reusables/AddButton'
+import GoToButton from '@/components/reusables/GoToButton'
 import ChartContainer from './ChartContainer'
 import OverviewCard from './OverviewCard'
 

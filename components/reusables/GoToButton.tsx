@@ -1,5 +1,5 @@
 import { MoveRight } from 'lucide-react'
-import { Button } from './ui/button'
+import { Button } from '@/components/ui/button'
 
 type GoToButtonProps = {
   children: string

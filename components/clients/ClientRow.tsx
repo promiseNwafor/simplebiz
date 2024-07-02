@@ -1,32 +1,22 @@
 import { useState } from 'react'
-import { Ellipsis } from 'lucide-react'
-import capitalize from 'lodash/capitalize'
 import { useRouter } from 'next/navigation'
 import { Pages } from '@/routes'
 
-import { addClient } from '@/actions/clients'
+import { deleteClient, editClient } from '@/actions/clients'
 import { ClientProps } from '@/types'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import Modal from '../Modal'
-import AddClientForm from './AddClientForm'
+import { ClientSchemaValues } from '@/schemas'
+import Modal from '../reusables/Modal'
+import ClientForm from './ClientForm'
+import DeleteClientContainer from './DeleteClientContainer'
+import ActionsDropdown from '../reusables/ActionsDropdown'
 
-enum MenuActions {
+export enum MenuActions {
   VIEW = 'view',
   EDIT = 'edit',
   DELETE = 'delete',
 }
 
-type ClientRowProps = {
-  client: ClientProps
-  index: number
-}
-
-type ActionMenuProps = {
+export type ActionMenuProps = {
   [key: string]: {
     onClick: () => void
     Content?: JSX.Element
@@ -34,11 +24,20 @@ type ActionMenuProps = {
   }
 }
 
+type ClientRowProps = {
+  client: ClientProps
+  index: number
+}
+
 const ClientRow: React.FC<ClientRowProps> = ({ client, index }) => {
   const [modalAction, setModalAction] = useState<MenuActions | null>(null)
   const router = useRouter()
 
-  const { id, name, email, phone, billingAddress, invoices } = client
+  const { id, name, email, phone, billingAddress, invoiceCount } = client
+
+  const editClientHandler = async (values: ClientSchemaValues) => {
+    await editClient(id, values)
+  }
 
   const actionMenus: ActionMenuProps = {
     [MenuActions.VIEW]: {
@@ -50,15 +49,21 @@ const ClientRow: React.FC<ClientRowProps> = ({ client, index }) => {
       onClick: () => {
         setModalAction(MenuActions.EDIT)
       },
-      Content: <AddClientForm client={client} submitHandler={addClient} />,
+      Content: (
+        <ClientForm
+          client={client}
+          submitHandler={editClientHandler}
+          toggleModal={() => setModalAction(null)}
+        />
+      ),
       title: 'Edit client',
     },
     [MenuActions.DELETE]: {
       onClick: () => {
         setModalAction(MenuActions.DELETE)
       },
-      Content: <div>Delete</div>, // TODO: Add delete modal
-      title: 'Delete client',
+      Content: <DeleteClientContainer deleteHandler={() => deleteClient(id)} />,
+      title: 'Delete client?',
     },
   }
 
@@ -74,23 +79,10 @@ const ClientRow: React.FC<ClientRowProps> = ({ client, index }) => {
       <div className='col-span-2 truncate max-w-44'>{name}</div>
       <div className='col-span-2 truncate max-w-max-w-44'>{email}</div>
       <div className='col-span-2 truncate max-w-max-w-44'>{phone}</div>
-      <div>{invoices.length}</div>
+      <div>{invoiceCount}</div>
       <div className='col-span-3 truncate max-w-64'>{billingAddress}</div>
       <div className='flex justify-end'>
-        <DropdownMenu>
-          <DropdownMenuTrigger className='flex items-center justify-between outline-none'>
-            <Ellipsis />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            <>
-              {Object.keys(actionMenus).map((key) => (
-                <DropdownMenuItem key={key} onClick={actionMenus[key].onClick}>
-                  {capitalize(key)}
-                </DropdownMenuItem>
-              ))}
-            </>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <ActionsDropdown menuItems={actionMenus} />
       </div>
     </div>
   )

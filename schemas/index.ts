@@ -116,7 +116,7 @@ export const SettingsSchema = z
     }
   )
 
-export const AddClientSchema = z.object({
+export const ClientSchema = z.object({
   name: z.string().min(2, {
     message: 'Full name must be at least 2 characters.',
   }),
@@ -135,4 +135,4 @@ export const AddClientSchema = z.object({
     .transform((val) => val ?? ''),
 })
 
-export type AddClientSchemaValues = z.infer<typeof AddClientSchema>
+export type ClientSchemaValues = z.infer<typeof ClientSchema>

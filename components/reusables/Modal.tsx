@@ -15,10 +15,7 @@ type ModalProps = {
 const Modal: React.FC<ModalProps> = ({ open, onClose, content, title }) => {
   return (
     <Dialog modal open={open} onOpenChange={onClose}>
-      <DialogContent
-        className='sm:max-w-[428px]'
-        aria-describedby='description'
-      >
+      <DialogContent className='sm:max-w-[428px]' aria-describedby={title}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>

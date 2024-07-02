@@ -3,9 +3,10 @@
 import { useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { toast } from 'sonner'
 
-import { AddClientSchema, AddClientSchemaValues } from '@/schemas'
-import { ClientProps } from '@/types'
+import { ClientSchema, ClientSchemaValues } from '@/schemas'
+import { ClientProps, PostResponse } from '@/types'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -21,15 +22,13 @@ import { Form } from '@/components/ui/form'
 import { AuthError } from '../auth/AuthError'
 import { AuthSuccess } from '../auth/AuthSuccess'
 
-type AddClientFormProps = {
-  toggleModal?: () => void
+type ClientFormProps = {
+  toggleModal: () => void
   client?: ClientProps
-  submitHandler: (
-    values: AddClientSchemaValues
-  ) => Promise<{ error?: string; success?: string }>
+  submitHandler: (values: ClientSchemaValues) => Promise<PostResponse | void>
 }
 
-const AddClientForm: React.FC<AddClientFormProps> = ({
+const ClientForm: React.FC<ClientFormProps> = ({
   toggleModal,
   client,
   submitHandler,
@@ -40,8 +39,8 @@ const AddClientForm: React.FC<AddClientFormProps> = ({
 
   const { name, email, phone, billingAddress, businessName } = client || {}
 
-  const form = useForm<AddClientSchemaValues>({
-    resolver: zodResolver(AddClientSchema),
+  const form = useForm<ClientSchemaValues>({
+    resolver: zodResolver(ClientSchema),
     defaultValues: {
       name: name || undefined,
       email: email || undefined,
@@ -51,20 +50,30 @@ const AddClientForm: React.FC<AddClientFormProps> = ({
     },
   })
 
-  const { handleSubmit, control, reset } = form
+  const { handleSubmit, control } = form
 
-  const onSubmit = (values: AddClientSchemaValues) => {
+  const onSubmit = (values: ClientSchemaValues) => {
     setError('')
     setSuccess('')
 
     startTransition(() => {
-      submitHandler(values).then((res) => {
-        setError(res?.error)
-        setSuccess(res?.success)
-      })
+      submitHandler(values)
+        .then((res) => {
+          if (res?.error) {
+            setError(res?.error)
+            toast.error(res.error)
+            return
+          }
+
+          setSuccess(res?.success)
+          toggleModal()
+          toast.success('Clients table updated successfully')
+        })
+        .catch(() => {
+          setError('Something went wrong')
+          toast.error('Something went wrong')
+        })
     })
-    reset()
-    success && toggleModal && toggleModal()
   }
 
   return (
@@ -150,4 +159,4 @@ const AddClientForm: React.FC<AddClientFormProps> = ({
   )
 }
 
-export default AddClientForm
+export default ClientForm
