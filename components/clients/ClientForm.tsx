@@ -52,26 +52,33 @@ const ClientForm: React.FC<ClientFormProps> = ({
 
   const { handleSubmit, control } = form
 
-  const onSubmit = (values: ClientSchemaValues) => {
+  const onSubmit = async (values: ClientSchemaValues) => {
     setError('')
     setSuccess('')
 
     startTransition(() => {
       submitHandler(values)
         .then((res) => {
+          if (res?.success) {
+            setSuccess(res?.success)
+            toggleModal()
+            toast.success(res?.success)
+            return
+          }
           if (res?.error) {
             setError(res?.error)
             toast.error(res.error)
             return
           }
 
-          setSuccess(res?.success)
-          toggleModal()
-          toast.success('Clients table updated successfully')
+          setError('Something went wrong!')
+          toast.error(
+            'Something went wrong! Check if the email exists already.'
+          )
         })
         .catch(() => {
-          setError('Something went wrong')
-          toast.error('Something went wrong')
+          setError('Something went wrong!')
+          toast.error('Something went wrong!')
         })
     })
   }

@@ -1,9 +1,17 @@
 import { getClients } from '@/store/clients'
+import { ClientProps, DataCountReturn } from '@/types'
 import ClientsContainer from '@/components/clients/ClientsContainer'
-import { ClientProps } from '@/types'
 
-const ClientsPage = async () => {
-  const { data, success, error } = await getClients()
+interface IClientsPage {
+  searchParams: { page: string }
+}
+
+const itemsPerPage = 5
+
+const ClientsPage: React.FC<IClientsPage> = async ({ searchParams }) => {
+  const page = parseInt(searchParams.page) || 1
+
+  const { data, success, error } = await getClients(page, itemsPerPage)
 
   if (!success) {
     return (
@@ -13,7 +21,13 @@ const ClientsPage = async () => {
     )
   }
 
-  return <ClientsContainer clients={data as ClientProps[]} />
+  return (
+    <ClientsContainer
+      allData={data as DataCountReturn<ClientProps[]>}
+      currentPage={page}
+      itemsPerPage={itemsPerPage}
+    />
+  )
 }
 
 export default ClientsPage

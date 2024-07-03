@@ -4,7 +4,22 @@ import { revalidatePath } from 'next/cache'
 import { currentUser } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { ClientSchema, ClientSchemaValues } from '@/schemas'
-import { PostResponse } from '@/types'
+import { ClientProps, GetResponse, PostResponse } from '@/types'
+import { getClients } from '@/store/clients'
+
+type GetClientsAction = (
+  pageNumber: number,
+  itemsPerPage: number
+) => Promise<GetResponse<ClientProps[]>>
+
+export const getClientsAction: GetClientsAction = async (
+  pageNumber,
+  itemsPerPage
+) => {
+  const res = await getClients(pageNumber, itemsPerPage)
+
+  return res
+}
 
 export const addClient = async (
   values: ClientSchemaValues
@@ -20,6 +35,15 @@ export const addClient = async (
     const { name, email, phoneNumber, billingAddress, businessName } =
       validatedFields.data
 
+    // Check if client email already exists for the user
+    const existingClient = await db.client.findFirst({
+      where: { email, userId: user.id },
+    })
+
+    if (existingClient) {
+      return { error: 'Client already exists!' }
+    }
+
     await db.client.create({
       data: {
         userId: user.id,
@@ -31,7 +55,7 @@ export const addClient = async (
       },
     })
 
-    revalidatePath('/clients')
+    revalidatePath('/clients?page=1')
 
     return { success: 'Client added successfully' }
   } catch (error) {
@@ -65,11 +89,15 @@ export const editClient = async (
       return { error: 'Client does not exist!' }
     }
 
-    // Check if updated email already exists
+    // Check if updated email already exists for the user
     if (email && email !== client.email) {
-      const existingClient = await db.client.findUnique({
+      //  if email is updated
+      const user = await currentUser()
+
+      const existingClient = await db.client.findFirst({
         where: {
           email,
+          userId: user.id,
         },
       })
 

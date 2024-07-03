@@ -1,5 +1,3 @@
-import { Invoice } from '@prisma/client'
-
 export type ClientProps = {
   id: string
   name: string
@@ -9,6 +7,12 @@ export type ClientProps = {
   businessName: string | null
   image: string | null
   invoiceCount: number
+  serialNumber: number
+}
+
+export type DataCountReturn<T> = {
+  count: number
+  data: T
 }
 
 export type PostResponse =
@@ -29,6 +33,6 @@ export type GetResponse<T = unknown> =
     }
   | {
       success: boolean
-      data: T
+      data: DataCountReturn<T>
       error?: never
     }

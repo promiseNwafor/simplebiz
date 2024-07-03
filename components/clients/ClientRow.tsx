@@ -26,14 +26,14 @@ export type ActionMenuProps = {
 
 type ClientRowProps = {
   client: ClientProps
-  index: number
 }
 
-const ClientRow: React.FC<ClientRowProps> = ({ client, index }) => {
+const ClientRow: React.FC<ClientRowProps> = ({ client }) => {
   const [modalAction, setModalAction] = useState<MenuActions | null>(null)
   const router = useRouter()
 
-  const { id, name, email, phone, billingAddress, invoiceCount } = client
+  const { id, name, email, phone, billingAddress, invoiceCount, serialNumber } =
+    client
 
   const editClientHandler = async (values: ClientSchemaValues) => {
     await editClient(id, values)
@@ -68,14 +68,14 @@ const ClientRow: React.FC<ClientRowProps> = ({ client, index }) => {
   }
 
   return (
-    <div className='grid grid-cols-12 text-xs font-medium p-4 border-b border-gray-200'>
+    <div className='grid grid-cols-12 text-xs font-medium p-4 border-b border-gray-200 items-center'>
       <Modal
         open={!!modalAction}
         onClose={() => setModalAction(null)}
         content={modalAction && actionMenus[modalAction]?.Content}
         title={(modalAction && actionMenus[modalAction]?.title) || ''}
       />
-      <div>{index + 1}</div>
+      <div>{serialNumber}</div>
       <div className='col-span-2 truncate max-w-44'>{name}</div>
       <div className='col-span-2 truncate max-w-max-w-44'>{email}</div>
       <div className='col-span-2 truncate max-w-max-w-44'>{phone}</div>

@@ -114,7 +114,7 @@ model TwoFactorConfirmation {
 model Client {
   id             String  @id @default(cuid())
   name           String
-  email          String  @unique
+  email          String
   billingAddress String  @map("billing_address")
   phone          String
   businessName   String? @map("business_name")
