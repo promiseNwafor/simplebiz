@@ -112,3 +112,31 @@ h4 {
 .centered {
   @apply flex justify-center items-center;
 }
+
+.pagination-container {
+  @apply flex justify-center items-center gap-2 text-black;
+}
+
+.pagination-container li {
+  @apply w-8 h-8 rounded-full flex justify-center items-center hover:bg-secondary;
+}
+
+.pagination-container li.active {
+  @apply bg-primary;
+}
+
+.pagination-container li a {
+  @apply text-black text-sm w-full h-full flex justify-center items-center;
+}
+
+.pagination-container li.active a {
+  @apply text-white;
+}
+
+.pagination-container .action-button {
+  @apply bg-secondary;
+}
+
+.pagination-container .disabled-page-button a {
+  @apply opacity-50 cursor-not-allowed;
+}

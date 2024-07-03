@@ -2,23 +2,22 @@
 
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import ReactPaginate from 'react-paginate'
+import {
+  ChevronFirst,
+  ChevronLast,
+  ChevronLeft,
+  ChevronRight,
+  MoreHorizontal,
+} from 'lucide-react'
 import { addClient, getClientsAction } from '@/actions/clients'
 import { ClientProps, DataCountReturn } from '@/types'
 
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination'
 import AddButton from '@/components/reusables/AddButton'
 import Modal from '@/components/reusables/Modal'
+import { Button } from '@/components/ui/button'
 import ClientForm from './ClientForm'
 import ClientsTable from './ClientsTable'
-import PaginationContainer from '../reusables/PaginationContainer'
 
 interface IClientsContainer {
   allData: DataCountReturn<ClientProps[]>
@@ -43,14 +42,14 @@ const ClientsContainer: React.FC<IClientsContainer> = ({
     setModalOpen((prevState) => !prevState)
   }
 
-  const handlePageChange = async (pageNumber: number) => {
+  const handlePageClick = async (selectedPage: { selected: number }) => {
+    const pageNumber = selectedPage.selected + 1
     const response = await getClientsAction(pageNumber, itemsPerPage)
-    console.log('++++++++++++++', 'response', { response, pageNumber })
 
     if (response.success) {
       setClientsData(response.data?.data as ClientProps[])
 
-      const newSearchParams = new URLSearchParams(searchParams.toString())
+      const newSearchParams = new URLSearchParams()
       newSearchParams.set('page', pageNumber.toString())
 
       router.push(`?${newSearchParams.toString()}`)
@@ -83,13 +82,42 @@ const ClientsContainer: React.FC<IClientsContainer> = ({
           </div>
           <ClientsTable clients={clientsData} pageNumber={page} />
 
-          <div className='p-5 pb-0'>
-            <PaginationContainer
-              itemsCount={count}
-              itemsPerPage={itemsPerPage}
-              page={page}
-              handlePageChange={handlePageChange}
+          <div className='p-5 pb-0 centered gap-1'>
+            <Button
+              variant='ghost'
+              disabled={page === 1}
+              onClick={async () => await handlePageClick({ selected: 0 })}
+            >
+              <ChevronFirst />
+            </Button>
+            <ReactPaginate
+              pageCount={Math.ceil(count / itemsPerPage)}
+              pageRangeDisplayed={2}
+              marginPagesDisplayed={1}
+              previousLabel={
+                <ChevronLeft size={20} className='text-black/70' />
+              }
+              nextLabel={<ChevronRight size={20} className='text-black/70' />}
+              breakLabel={<MoreHorizontal className='h-4 w-4' />}
+              breakClassName='break-me'
+              onPageChange={handlePageClick}
+              containerClassName='pagination-container'
+              activeClassName='active'
+              previousClassName='action-button'
+              nextClassName='action-button'
+              disabledClassName='disabled-page-button'
             />
+            <Button
+              variant='ghost'
+              disabled={page === Math.ceil(count / itemsPerPage)}
+              onClick={async () =>
+                await handlePageClick({
+                  selected: Math.ceil(count / itemsPerPage) - 1,
+                })
+              }
+            >
+              <ChevronLast />
+            </Button>
           </div>
         </div>
       )}
