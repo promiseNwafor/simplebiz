@@ -23,7 +23,7 @@ const PaginationContainer: React.FC<PaginationContainerProps> = ({
   return (
     <Pagination>
       <PaginationContent>
-        <PaginationItem disabled={page === 1}>
+        <PaginationItem>
           <PaginationPrevious
             href='#'
             onClick={() => handlePageChange(Math.max(1, page - 1))}
@@ -44,7 +44,7 @@ const PaginationContainer: React.FC<PaginationContainerProps> = ({
           </PaginationItem>
         ))}
         <PaginationItem
-          disabled={page === Math.ceil(itemsCount / itemsPerPage)}
+        // disabled={page === Math.ceil(itemsCount / itemsPerPage)}
         >
           <PaginationNext
             href='#'
