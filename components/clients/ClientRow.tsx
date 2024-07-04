@@ -1,14 +1,7 @@
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Pages } from '@/routes'
-
-import { deleteClient, editClient } from '@/actions/clients'
 import { ClientProps } from '@/types'
-import { ClientSchemaValues } from '@/schemas'
-import Modal from '../reusables/Modal'
-import ClientForm from './ClientForm'
-import DeleteClientContainer from './DeleteClientContainer'
-import ActionsDropdown from '../reusables/ActionsDropdown'
+import useActionMenus from '@/hooks/useActionMenus'
+import Modal from '@/components/reusables/Modal'
+import ActionsDropdown from '@/components/reusables/ActionsDropdown'
 
 export enum MenuActions {
   VIEW = 'view',
@@ -29,43 +22,10 @@ type ClientRowProps = {
 }
 
 const ClientRow: React.FC<ClientRowProps> = ({ client }) => {
-  const [modalAction, setModalAction] = useState<MenuActions | null>(null)
-  const router = useRouter()
+  const { modalAction, setModalAction, actionMenus } = useActionMenus(client)
 
   const { id, name, email, phone, billingAddress, invoiceCount, serialNumber } =
     client
-
-  const editClientHandler = async (values: ClientSchemaValues) => {
-    await editClient(id, values)
-  }
-
-  const actionMenus: ActionMenuProps = {
-    [MenuActions.VIEW]: {
-      onClick: () => {
-        router.push(`${Pages.CLIENTS}/${id}`)
-      },
-    },
-    [MenuActions.EDIT]: {
-      onClick: () => {
-        setModalAction(MenuActions.EDIT)
-      },
-      Content: (
-        <ClientForm
-          client={client}
-          submitHandler={editClientHandler}
-          toggleModal={() => setModalAction(null)}
-        />
-      ),
-      title: 'Edit client',
-    },
-    [MenuActions.DELETE]: {
-      onClick: () => {
-        setModalAction(MenuActions.DELETE)
-      },
-      Content: <DeleteClientContainer deleteHandler={() => deleteClient(id)} />,
-      title: 'Delete client?',
-    },
-  }
 
   return (
     <div className='grid grid-cols-12 text-xs font-medium p-4 border-b border-gray-200 items-center'>

@@ -1,6 +1,7 @@
 import { currentUser } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { ClientProps, GetResponse } from '@/types'
+import { Client } from '@prisma/client'
 
 type GetClients = (
   page: number,
@@ -54,5 +55,28 @@ export const getClients: GetClients = async (page, itemsPerPage) => {
   } catch (error) {
     console.error(error)
     return { error: 'Error getting clients', success: false }
+  }
+}
+
+export const getClient = async (id: string): Promise<GetResponse<Client>> => {
+  try {
+    const user = await currentUser()
+    const userId = user?.id
+
+    const data = await db.client.findFirst({
+      where: {
+        id,
+        userId,
+      },
+    })
+
+    if (!data) {
+      return { error: 'Client not found', success: false }
+    }
+
+    return { data: { data, count: 1 }, success: true }
+  } catch (error) {
+    console.error(error)
+    return { error: 'Error getting client', success: false }
   }
 }

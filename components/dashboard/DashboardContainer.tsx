@@ -2,7 +2,7 @@ import { currentUser } from '@/lib/auth'
 import AddButton from '@/components/reusables/AddButton'
 import GoToButton from '@/components/reusables/GoToButton'
 import ChartContainer from './ChartContainer'
-import OverviewCard from './OverviewCard'
+import OverviewCard from '../reusables/OverviewCard'
 
 const featuredItems = [
   { label: 'No. of Clients', title: '100' },

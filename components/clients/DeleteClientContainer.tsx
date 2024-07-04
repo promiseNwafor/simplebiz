@@ -1,30 +1,37 @@
 import { useTransition } from 'react'
 import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 import { PostResponse } from '@/types'
-import { Button } from '../ui/button'
+import { Button } from '@/components/ui/button'
 
 type DeleteClientContainerProps = {
   deleteHandler: () => Promise<PostResponse>
+  toggleModal: () => void
 }
 
 const DeleteClientContainer: React.FC<DeleteClientContainerProps> = ({
   deleteHandler,
+  toggleModal,
 }) => {
   const [isPending, startTransition] = useTransition()
+  const router = useRouter()
 
   const handleDelete = async () => {
     startTransition(() => {
       deleteHandler()
         .then((res) => {
-          if (res?.error) {
-            toast.error(res.error)
+          if (res?.success) {
+            router.push('/clients')
+            toast.success('Clients table deleted successfully')
+            toggleModal()
             return
           }
 
-          toast.success('Clients table deleted successfully')
+          toast.error(res?.error || 'Something went wrong!')
+          return
         })
         .catch(() => {
-          toast.error('Something went wrong')
+          toast.error('Something went wrong!')
         })
     })
   }

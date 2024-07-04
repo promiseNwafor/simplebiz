@@ -19,8 +19,8 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Form } from '@/components/ui/form'
-import { AuthError } from '../auth/AuthError'
-import { AuthSuccess } from '../auth/AuthSuccess'
+import { AuthError } from '@/components/auth/AuthError'
+import { AuthSuccess } from '@/components/auth/AuthSuccess'
 
 type ClientFormProps = {
   toggleModal: () => void
@@ -61,20 +61,13 @@ const ClientForm: React.FC<ClientFormProps> = ({
         .then((res) => {
           if (res?.success) {
             setSuccess(res?.success)
-            toggleModal()
             toast.success(res?.success)
+            toggleModal()
             return
           }
-          if (res?.error) {
-            setError(res?.error)
-            toast.error(res.error)
-            return
-          }
-
-          setError('Something went wrong!')
-          toast.error(
-            'Something went wrong! Check if the email exists already.'
-          )
+          setError(res?.error)
+          toast.error(res?.error || 'Something went wrong!')
+          return
         })
         .catch(() => {
           setError('Something went wrong!')

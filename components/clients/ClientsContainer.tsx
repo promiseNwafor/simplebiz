@@ -3,19 +3,12 @@
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import ReactPaginate from 'react-paginate'
-import {
-  ChevronFirst,
-  ChevronLast,
-  ChevronLeft,
-  ChevronRight,
-  MoreHorizontal,
-} from 'lucide-react'
+import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react'
 import { addClient, getClientsAction } from '@/actions/clients'
 import { ClientProps, DataCountReturn } from '@/types'
 
 import AddButton from '@/components/reusables/AddButton'
 import Modal from '@/components/reusables/Modal'
-import { Button } from '@/components/ui/button'
 import ClientForm from './ClientForm'
 import ClientsTable from './ClientsTable'
 
@@ -83,13 +76,13 @@ const ClientsContainer: React.FC<IClientsContainer> = ({
           <ClientsTable clients={clientsData} pageNumber={page} />
 
           <div className='p-5 pb-0 centered gap-1'>
-            <Button
+            {/* <Button
               variant='ghost'
               disabled={page === 1}
               onClick={async () => await handlePageClick({ selected: 0 })}
             >
               <ChevronFirst />
-            </Button>
+            </Button> */}
             <ReactPaginate
               pageCount={Math.ceil(count / itemsPerPage)}
               pageRangeDisplayed={2}
@@ -107,7 +100,7 @@ const ClientsContainer: React.FC<IClientsContainer> = ({
               nextClassName='action-button'
               disabledClassName='disabled-page-button'
             />
-            <Button
+            {/* <Button
               variant='ghost'
               disabled={page === Math.ceil(count / itemsPerPage)}
               onClick={async () =>
@@ -117,7 +110,7 @@ const ClientsContainer: React.FC<IClientsContainer> = ({
               }
             >
               <ChevronLast />
-            </Button>
+            </Button> */}
           </div>
         </div>
       )}
