@@ -56,8 +56,8 @@ const ClientForm: React.FC<ClientFormProps> = ({
     setError('')
     setSuccess('')
 
-    startTransition(() => {
-      submitHandler(values)
+    startTransition(async () => {
+      await submitHandler(values)
         .then((res) => {
           if (res?.success) {
             setSuccess(res?.success)
