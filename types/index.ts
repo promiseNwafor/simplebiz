@@ -36,3 +36,13 @@ export type GetResponse<T = unknown> =
       data: DataCountReturn<T>
       error?: never
     }
+
+export type Product = {
+  id: string
+  name: string
+  amount: number
+  type: string
+  available: boolean
+  imageURL: string
+  totalStock: number
+}

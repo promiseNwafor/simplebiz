@@ -95,8 +95,8 @@ const ClientsContainer: React.FC<IClientsContainer> = ({
                 <h4>No clients available</h4>
               </div>
             ) : (
-              <>
-                <ClientsTable clients={clientsData} pageNumber={page} />
+              <div className='w-[567px]'>
+                <ClientsTable clients={clientsData} />
 
                 <div className='p-5 pb-0 centered gap-1'>
                   <ReactPaginate
@@ -119,7 +119,7 @@ const ClientsContainer: React.FC<IClientsContainer> = ({
                     disabledClassName='disabled-page-button'
                   />
                 </div>
-              </>
+              </div>
             )}
           </>
         )}

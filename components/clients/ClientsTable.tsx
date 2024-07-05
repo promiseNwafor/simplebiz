@@ -3,10 +3,9 @@ import ClientRow from './ClientRow'
 
 type ClientsTableProps = {
   clients: ClientProps[]
-  pageNumber: number
 }
 
-const ClientsTable: React.FC<ClientsTableProps> = ({ clients, pageNumber }) => {
+const ClientsTable: React.FC<ClientsTableProps> = ({ clients }) => {
   return (
     <div className='min-w-[900px]'>
       {/* Thead */}
