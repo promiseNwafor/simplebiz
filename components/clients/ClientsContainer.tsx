@@ -95,7 +95,7 @@ const ClientsContainer: React.FC<IClientsContainer> = ({
                 <h4>No clients available</h4>
               </div>
             ) : (
-              <div className='w-[567px]'>
+              <div className='w-[567px] min-w-full'>
                 <ClientsTable clients={clientsData} />
 
                 <div className='p-5 pb-0 centered gap-1'>
