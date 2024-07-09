@@ -1,12 +1,12 @@
 import { Ellipsis } from 'lucide-react'
+import capitalize from 'lodash/capitalize'
+import { ActionMenuProps } from '@/types'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import capitalize from 'lodash/capitalize'
-import { ActionMenuProps } from '@/components/clients/ClientRow'
 
 type ActionsDropdownProps = {
   menuItems: ActionMenuProps

@@ -3,28 +3,20 @@ import { useRouter } from 'next/navigation'
 import { Client } from '@prisma/client'
 import { Pages } from '@/routes'
 
-import { ClientProps } from '@/types'
+import { ActionMenuProps, ClientProps } from '@/types'
 import { ClientSchemaValues } from '@/schemas'
 import { editClient, deleteClient } from '@/actions/clients'
 import ClientForm from '@/components/clients/ClientForm'
 import DeleteClientContainer from '@/components/clients/DeleteClientContainer'
 
-export enum MenuActions {
+export enum ClientMenuActions {
   VIEW = 'view',
   EDIT = 'edit',
   DELETE = 'delete',
 }
 
-export type ActionMenuProps = {
-  [key: string]: {
-    onClick: () => void
-    Content?: JSX.Element
-    title?: string
-  }
-}
-
-const useActionMenus = (client: ClientProps | Client) => {
-  const [modalAction, setModalAction] = useState<MenuActions | null>(null)
+const useClientMenus = (client: ClientProps | Client) => {
+  const [modalAction, setModalAction] = useState<ClientMenuActions | null>(null)
   const router = useRouter()
 
   const editClientHandler = async (values: ClientSchemaValues) => {
@@ -34,14 +26,14 @@ const useActionMenus = (client: ClientProps | Client) => {
   }
 
   const actionMenus: ActionMenuProps = {
-    [MenuActions.VIEW]: {
+    [ClientMenuActions.VIEW]: {
       onClick: () => {
         router.push(`${Pages.CLIENTS}/${client.id}`)
       },
     },
-    [MenuActions.EDIT]: {
+    [ClientMenuActions.EDIT]: {
       onClick: () => {
-        setModalAction(MenuActions.EDIT)
+        setModalAction(ClientMenuActions.EDIT)
       },
       Content: (
         <ClientForm
@@ -52,9 +44,9 @@ const useActionMenus = (client: ClientProps | Client) => {
       ),
       title: 'Edit client',
     },
-    [MenuActions.DELETE]: {
+    [ClientMenuActions.DELETE]: {
       onClick: () => {
-        setModalAction(MenuActions.DELETE)
+        setModalAction(ClientMenuActions.DELETE)
       },
       Content: (
         <DeleteClientContainer
@@ -73,4 +65,4 @@ const useActionMenus = (client: ClientProps | Client) => {
   }
 }
 
-export default useActionMenus
+export default useClientMenus

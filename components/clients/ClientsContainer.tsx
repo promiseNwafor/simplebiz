@@ -15,18 +15,15 @@ import ClientsTable from './ClientsTable'
 
 interface IClientsContainer {
   resData: GetResponse<ClientProps[]>
-  currentPage: number
   itemsPerPage: number
 }
 
 const ClientsContainer: React.FC<IClientsContainer> = ({
   resData,
-  currentPage,
   itemsPerPage,
 }) => {
   const { data: allData, error, success } = resData || {}
   const [modalOpen, setModalOpen] = useState(false)
-  const [page, setPage] = useState(currentPage)
   const [clientsData, setClientsData] = useState(allData?.data)
   const [isPending, startTransition] = useTransition()
 
@@ -42,25 +39,22 @@ const ClientsContainer: React.FC<IClientsContainer> = ({
     const pageNumber = selectedPage.selected + 1
 
     startTransition(async () => {
-      await getClientsAction(pageNumber, itemsPerPage)
-        .then((response) => {
-          if (response.success) {
-            setClientsData(response.data?.data as ClientProps[])
+      try {
+        const response = await getClientsAction(pageNumber, itemsPerPage)
+        if (response.success) {
+          setClientsData(response.data?.data as ClientProps[])
 
-            const newSearchParams = new URLSearchParams()
-            newSearchParams.set('page', pageNumber.toString())
+          const newSearchParams = new URLSearchParams()
+          newSearchParams.set('page', pageNumber.toString())
 
-            router.push(`?${newSearchParams.toString()}`)
-            !isPending && setPage(pageNumber)
-            return
-          }
-
-          toast.error(response?.error || 'Something went wrong!')
+          router.push(`?${newSearchParams.toString()}`)
           return
-        })
-        .catch(() => {
-          toast.error('Something went wrong!')
-        })
+        }
+        toast.error(response?.error || 'Something went wrong!')
+        return
+      } catch (error) {
+        toast.error('Something went wrong!')
+      }
     })
   }
 
@@ -85,7 +79,7 @@ const ClientsContainer: React.FC<IClientsContainer> = ({
 
         {!success ? (
           <div className='bg-white w-full h-[400px] py-5 centered border-t border-gray-200'>
-            <h4>{error}</h4>
+            <p>{error}</p>
           </div>
         ) : (
           <>
@@ -95,7 +89,7 @@ const ClientsContainer: React.FC<IClientsContainer> = ({
                 <h4>No clients available</h4>
               </div>
             ) : (
-              <div className='w-[567px] min-w-full'>
+              <div className='w-[360px] min-w-full'>
                 <ClientsTable clients={clientsData} />
 
                 <div className='p-5 pb-0 centered gap-1'>

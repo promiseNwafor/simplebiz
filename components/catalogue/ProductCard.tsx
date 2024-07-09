@@ -1,11 +1,13 @@
 import Image from 'next/image'
 import capitalize from 'lodash/capitalize'
-import { Ellipsis } from 'lucide-react'
 import { Product } from '@/types'
 import { cn } from '@/lib/utils'
 import { ngnFormatter } from '@/lib'
 import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
+import useProductMenus from '@/hooks/useProductMenus'
+import Modal from '@/components/reusables/Modal'
+import ActionsDropdown from '@/components/reusables/ActionsDropdown'
 
 type ProductCardProps = {
   product: Product
@@ -18,8 +20,16 @@ const bgColor = {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  const { modalAction, setModalAction, actionMenus } = useProductMenus(product)
+
   return (
     <div className='flex flex-col justify-between p-4 bg-white rounded-sm text-sm h-[230px]'>
+      <Modal
+        open={!!modalAction}
+        onClose={() => setModalAction(null)}
+        content={modalAction && actionMenus[modalAction]?.Content}
+        title={(modalAction && actionMenus[modalAction]?.title) || ''}
+      />
       <div
         className={cn(
           'w-full rounded-sm bg-primary-light',
@@ -43,7 +53,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       </div>
       <div className='flex justify-between items-center'>
         <p className='w-[88%]'>{product.name}</p>
-        <Ellipsis />
+        <ActionsDropdown menuItems={actionMenus} />
       </div>
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-2'>
@@ -53,7 +63,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </Badge>
         </div>
         <p className='font-semibold max-w-[46%] break-all'>
-          {ngnFormatter.format(product.amount)}
+          {ngnFormatter.format(product.price)}
         </p>
       </div>
     </div>

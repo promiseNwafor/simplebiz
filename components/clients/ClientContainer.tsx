@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { toast } from 'sonner'
 import { Client } from '@prisma/client'
 
-import useActionMenus from '@/hooks/useActionMenus'
+import useClientMenus from '@/hooks/useClientMenus'
 import { GetResponse } from '@/types'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { Button } from '@/components/ui/button'
@@ -27,7 +27,7 @@ const ClientContainer: React.FC<IClientContainer> = ({ data }) => {
   const { data: clientData, error, success } = data
   const client = clientData?.data
 
-  const { modalAction, setModalAction, actionMenus } = useActionMenus(
+  const { modalAction, setModalAction, actionMenus } = useClientMenus(
     client as Client
   )
 

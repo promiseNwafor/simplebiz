@@ -1,28 +1,14 @@
 import { ClientProps } from '@/types'
-import useActionMenus from '@/hooks/useActionMenus'
+import useClientMenus from '@/hooks/useClientMenus'
 import Modal from '@/components/reusables/Modal'
 import ActionsDropdown from '@/components/reusables/ActionsDropdown'
-
-export enum MenuActions {
-  VIEW = 'view',
-  EDIT = 'edit',
-  DELETE = 'delete',
-}
-
-export type ActionMenuProps = {
-  [key: string]: {
-    onClick: () => void
-    Content?: JSX.Element
-    title?: string
-  }
-}
 
 type ClientRowProps = {
   client: ClientProps
 }
 
 const ClientRow: React.FC<ClientRowProps> = ({ client }) => {
-  const { modalAction, setModalAction, actionMenus } = useActionMenus(client)
+  const { modalAction, setModalAction, actionMenus } = useClientMenus(client)
 
   const { id, name, email, phone, billingAddress, invoiceCount, serialNumber } =
     client

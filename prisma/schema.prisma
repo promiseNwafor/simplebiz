@@ -19,6 +19,13 @@ enum InvoiceStatus {
   OVERDUE
 }
 
+enum ProductType {
+  PHYSICAL
+  SERVICE
+  DIGITAL
+  OTHER
+}
+
 model User {
   id            String     @id @default(cuid())
   name          String?
@@ -33,6 +40,7 @@ model User {
   businesses    Business[]
   clients       Client[]
   invoices      Invoice[]
+  products      Product[]
 
   isTwoFactorEnabled    Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
@@ -121,7 +129,7 @@ model Client {
   image          String?
 
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @map("updated_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   invoices Invoice[]
 
@@ -141,7 +149,7 @@ model Invoice {
   status    InvoiceStatus @default(UNPAID)
 
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @map("updated_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   userId String @map("user_id")
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -151,4 +159,23 @@ model Invoice {
 
   @@unique([userId, clientId])
   @@map("invoices")
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  description String      @db.Text
+  price       Float
+  type        ProductType
+  available   Boolean     @default(true)
+  imageURL    String      @map("image_url")
+  quantity    Int
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("products")
 }

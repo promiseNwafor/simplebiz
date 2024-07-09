@@ -1,3 +1,5 @@
+import { ProductType } from '@prisma/client'
+
 export type ClientProps = {
   id: string
   name: string
@@ -40,9 +42,18 @@ export type GetResponse<T = unknown> =
 export type Product = {
   id: string
   name: string
-  amount: number
-  type: string
+  description: string
+  price: number
+  type: ProductType
   available: boolean
   imageURL: string
-  totalStock: number
+  quantity: number
+}
+
+export type ActionMenuProps = {
+  [key: string]: {
+    onClick: () => void
+    Content?: JSX.Element
+    title?: string
+  }
 }
