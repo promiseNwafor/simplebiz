@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import capitalize from 'lodash/capitalize'
 import { Product } from '@/types'
 import { cn } from '@/lib/utils'
@@ -14,9 +13,9 @@ type ProductCardProps = {
 }
 
 const bgColor = {
-  physical: 'bg-[#FFF6DA]',
-  service: 'bg-primary-light',
-  digital: 'bg-[#FDE3E1]',
+  PHYSICAL: 'bg-[#FFF6DA]',
+  SERVICE: 'bg-primary-light',
+  DIGITAL: 'bg-[#FDE3E1]',
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
@@ -36,15 +35,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           bgColor[product.type as keyof typeof bgColor]
         )}
       >
-        <div className='centered h-28'>
-          {product.imageURL ? (
-            <Image
-              src={product.imageURL}
-              width={120}
-              height={70}
-              alt={product.name}
-            />
-          ) : (
+        <div
+          className='centered h-28'
+          style={
+            product.imageURL
+              ? {
+                  background: `url(${product.imageURL}) no-repeat center center/cover`,
+                }
+              : {}
+          }
+        >
+          {!product.imageURL && (
             <p className='text-6xl opacity-65 font-mono'>
               {capitalize(product.name.split('')[0])}
             </p>

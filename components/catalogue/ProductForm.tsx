@@ -44,29 +44,28 @@ const ProductForm: React.FC<ProductFormProps> = ({
   const { handleSubmit, control, trigger } = form
 
   const onSubmit = async (values: ProductSchemaValues) => {
-    console.log('++++++++++++++', { values })
-    // const imageURL = values.imageURL[0]
-    // const cleanedValues = {
-    // ...values,
-    // imageURL: values.imageURL[0],
-    // imageURL: pick(values.imageURL[0], [
-    //   'name',
-    //   'size',
-    //   'type',
-    //   'lastModified',
-    //   'webkitRelativePath',
-    //   'lastModifiedDate',
-    // ]),
-    // }
-
-    // console.log('++++++++++++++', { cleanedValues })
+    const imageFile = values.imageURL
 
     startTransition(async () => {
       try {
-        const res = await submitHandler(values)
+        if (!imageFile) {
+          throw new Error('No image selected')
+        }
+
+        const formData = new FormData()
+        formData.append('file', imageFile)
+
+        const data = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        })
+
+        const imageURL = await data.json()
+
+        const res = await submitHandler({ ...values, imageURL: imageURL.url })
         if (res?.success) {
           toast.success(res?.success)
-          // toggleModal()
+          toggleModal()
           return
         }
         toast.error(res?.error || 'Something went wrong!')
@@ -103,7 +102,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
           {screen === 1 ? (
             <ProductFormDetails control={control} onSubmit={handleSave} />
           ) : (
-            <ProductFormFileUpload control={control} />
+            <ProductFormFileUpload control={control} isPending={isPending} />
           )}
         </form>
       </Form>

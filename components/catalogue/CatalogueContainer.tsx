@@ -8,7 +8,7 @@ import ProductCard from './ProductCard'
 import ProductForm from './ProductForm'
 import { addProduct } from '@/actions/products'
 
-const products = [
+const products1 = [
   {
     id: 'a1&t=u7f7i0JB5tDWinXt',
     name: 'Nike Air Max 97',
@@ -75,7 +75,11 @@ const products = [
   },
 ]
 
-const CatalogueContainer = () => {
+interface ICatalogueContainer {
+  products: Product[]
+}
+
+const CatalogueContainer: React.FC<ICatalogueContainer> = ({ products }) => {
   const [modalOpen, setModalOpen] = useState(false)
 
   const toggleModal = () => {
