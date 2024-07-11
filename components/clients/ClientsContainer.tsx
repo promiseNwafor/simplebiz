@@ -25,7 +25,7 @@ const ClientsContainer: React.FC<IClientsContainer> = ({
   const { data: allData, error, success } = resData || {}
   const [modalOpen, setModalOpen] = useState(false)
   const [clientsData, setClientsData] = useState(allData?.data)
-  const [isPending, startTransition] = useTransition()
+  const [_isPending, startTransition] = useTransition()
 
   const router = useRouter()
 

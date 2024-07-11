@@ -1,13 +1,12 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Client } from '@prisma/client'
 import { Pages } from '@/routes'
 
-import { ActionMenuProps, ClientProps, Product } from '@/types'
-import { ClientSchemaValues } from '@/schemas'
-import { editClient, deleteClient } from '@/actions/clients'
-import ClientForm from '@/components/clients/ClientForm'
-import DeleteClientContainer from '@/components/clients/DeleteClientContainer'
+import { ActionMenuProps, Product } from '@/types'
+import DeleteActionContainer from '@/components/reusables/DeleteActionContainer'
+import ProductForm from '@/components/catalogue/ProductForm'
+import { deleteProduct, editProduct } from '@/actions/products'
+import { ProductSchemaValues } from '@/schemas'
 
 export enum ProductMenuActions {
   VIEW = 'view',
@@ -21,17 +20,36 @@ const useProductMenus = (product: Product) => {
   )
   const router = useRouter()
 
+  const editProductHandler = async (values: ProductSchemaValues) => {
+    const response = await editProduct(product.id, values)
+
+    return response
+  }
+
+  const deleteProductHandler = async () => {
+    const response = await deleteProduct(product.id)
+    //TODO: Delete product image from vercel blob storage
+
+    return response
+  }
+
   const actionMenus: ActionMenuProps = {
     [ProductMenuActions.VIEW]: {
       onClick: () => {
-        router.push(`${Pages.CLIENTS}/${product.id}`)
+        router.push(`${Pages.CATALOGUE}/${product.id}`)
       },
     },
     [ProductMenuActions.EDIT]: {
       onClick: () => {
         setModalAction(ProductMenuActions.EDIT)
       },
-      Content: <div>Product</div>,
+      Content: (
+        <ProductForm
+          toggleModal={() => setModalAction(null)}
+          submitHandler={editProductHandler}
+          product={product}
+        />
+      ),
       title: 'Edit client',
     },
     [ProductMenuActions.DELETE]: {
@@ -39,9 +57,11 @@ const useProductMenus = (product: Product) => {
         setModalAction(ProductMenuActions.DELETE)
       },
       Content: (
-        <DeleteClientContainer
-          deleteHandler={async () => await deleteClient(product.id)}
+        <DeleteActionContainer
+          deleteHandler={deleteProductHandler}
           toggleModal={() => setModalAction(null)}
+          statement='Are you sure you want to delete this product? This action
+            cannot be reversed.'
         />
       ),
       title: 'Delete client?',

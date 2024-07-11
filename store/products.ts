@@ -1,17 +1,33 @@
 import { currentUser } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { GetResponse, Product } from '@/types'
 
-export const getProducts = async () => {
+type GetProducts = (
+  page: number,
+  itemsPerPage: number
+) => Promise<GetResponse<Product[]>>
+
+export const getProducts: GetProducts = async (page, itemsPerPage) => {
   try {
     const user = await currentUser()
+    const offset = (page - 1) * itemsPerPage
 
-    const data = await db.product.findMany({
+    const count = await db.product.count({
       where: {
         userId: user?.id,
       },
     })
 
-    return { data, count: data.length }
+    const data = await db.product.findMany({
+      where: {
+        userId: user?.id,
+      },
+      orderBy: { updatedAt: 'desc' },
+      skip: offset,
+      take: itemsPerPage,
+    })
+
+    return { data: { data, count }, success: true }
   } catch (error) {
     console.error(error)
     return { error: 'Error getting products', success: false }

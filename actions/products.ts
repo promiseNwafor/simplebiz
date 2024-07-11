@@ -47,7 +47,7 @@ export const addProduct = async (
         description,
         price,
         imageURL,
-        type: type.toUpperCase() as ProductType,
+        type: type as ProductType,
         quantity,
       },
     })
@@ -55,6 +55,83 @@ export const addProduct = async (
     revalidatePath('/products')
 
     return { success: 'Product added successfully' }
+  } catch (error) {
+    console.error(error)
+    return { error: 'Something went wrong!' }
+  }
+}
+
+export const editProduct = async (
+  id: string,
+  values: ProductSchemaValues
+): Promise<PostResponse> => {
+  try {
+    const validatedFields = ProductSchema.safeParse(values)
+
+    if (!validatedFields.success) {
+      return { error: 'Invalid fields!' }
+    }
+
+    const { name, description, price, imageURL, type, quantity } =
+      validatedFields.data
+
+    const product = await db.product.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!product) {
+      return { error: 'Product does not exist!' }
+    }
+
+    // Check if product already exists with the same name for the user
+    const user = await currentUser()
+    const existingProduct = await db.product.findFirst({
+      where: {
+        name,
+        userId: user?.id,
+      },
+    })
+
+    if (existingProduct && existingProduct.id !== id) {
+      return { error: 'Product already exists!' }
+    }
+
+    await db.product.update({
+      where: {
+        id,
+      },
+      data: {
+        name,
+        description,
+        price,
+        imageURL,
+        type: type as ProductType,
+        quantity,
+      },
+    })
+
+    revalidatePath('/products')
+
+    return { success: 'Product updated successfully' }
+  } catch (error) {
+    console.error(error)
+    return { error: 'Something went wrong!' }
+  }
+}
+
+export const deleteProduct = async (id: string): Promise<PostResponse> => {
+  try {
+    await db.product.delete({
+      where: {
+        id,
+      },
+    })
+
+    revalidatePath('/products')
+
+    return { success: 'Product deleted successfully' }
   } catch (error) {
     console.error(error)
     return { error: 'Something went wrong!' }

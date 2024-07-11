@@ -22,7 +22,7 @@ const ProductFormFileUpload: React.FC<ProductFormFileUploadProps> = ({
   control,
   isPending,
 }) => {
-  const [selectedImage, setSelectedImage] = useState<File | null>(null)
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
   return (
     <>
@@ -37,9 +37,9 @@ const ProductFormFileUpload: React.FC<ProductFormFileUploadProps> = ({
             </FormLabel>
             <FormControl>
               <div className='flex flex-col items-center justify-center gap-8 py-5'>
-                {selectedImage ? (
+                {selectedImage || field.value ? (
                   <Image
-                    src={URL.createObjectURL(selectedImage)}
+                    src={selectedImage || field.value}
                     width={200}
                     height={100}
                     alt='Selected'
@@ -56,7 +56,7 @@ const ProductFormFileUpload: React.FC<ProductFormFileUploadProps> = ({
                   onChange={(e) => {
                     const url = e.target.files ? e.target.files[0] : null
                     field.onChange(url)
-                    setSelectedImage(url)
+                    setSelectedImage(URL.createObjectURL(url as Blob))
                   }}
                   ref={field.ref}
                 />

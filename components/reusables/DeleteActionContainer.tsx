@@ -4,14 +4,16 @@ import { useRouter } from 'next/navigation'
 import { PostResponse } from '@/types'
 import { Button } from '@/components/ui/button'
 
-type DeleteClientContainerProps = {
+type DeleteActionContainerProps = {
   deleteHandler: () => Promise<PostResponse>
   toggleModal: () => void
+  statement: string
 }
 
-const DeleteClientContainer: React.FC<DeleteClientContainerProps> = ({
+const DeleteActionContainer: React.FC<DeleteActionContainerProps> = ({
   deleteHandler,
   toggleModal,
+  statement,
 }) => {
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
@@ -38,11 +40,7 @@ const DeleteClientContainer: React.FC<DeleteClientContainerProps> = ({
 
   return (
     <div>
-      <p className='text-sm leading-loose'>
-        Are you sure you want to delete this client? This action cannot be
-        reversed and all related info including invoices and payment history
-        will be lost.
-      </p>
+      <p className='text-sm leading-loose'>{statement}</p>
       <div className='grid justify-end w-full mt-6'>
         <Button
           variant='destructive'
@@ -56,4 +54,4 @@ const DeleteClientContainer: React.FC<DeleteClientContainerProps> = ({
   )
 }
 
-export default DeleteClientContainer
+export default DeleteActionContainer

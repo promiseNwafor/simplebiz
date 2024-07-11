@@ -7,7 +7,7 @@ import { ActionMenuProps, ClientProps } from '@/types'
 import { ClientSchemaValues } from '@/schemas'
 import { editClient, deleteClient } from '@/actions/clients'
 import ClientForm from '@/components/clients/ClientForm'
-import DeleteClientContainer from '@/components/clients/DeleteClientContainer'
+import DeleteActionContainer from '@/components/reusables/DeleteActionContainer'
 
 export enum ClientMenuActions {
   VIEW = 'view',
@@ -49,9 +49,12 @@ const useClientMenus = (client: ClientProps | Client) => {
         setModalAction(ClientMenuActions.DELETE)
       },
       Content: (
-        <DeleteClientContainer
+        <DeleteActionContainer
           deleteHandler={async () => await deleteClient(client.id)}
           toggleModal={() => setModalAction(null)}
+          statement='Are you sure you want to delete this client? This action cannot be
+        reversed and all related info including invoices and payment history
+        will be lost.'
         />
       ),
       title: 'Delete client?',

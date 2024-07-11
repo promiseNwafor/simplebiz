@@ -44,6 +44,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 }
               : {}
           }
+          aria-label='product image'
         >
           {!product.imageURL && (
             <p className='text-6xl opacity-65 font-mono'>

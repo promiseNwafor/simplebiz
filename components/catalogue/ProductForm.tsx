@@ -45,6 +45,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
 
   const onSubmit = async (values: ProductSchemaValues) => {
     const imageFile = values.imageURL
+    let imageURL
 
     startTransition(async () => {
       try {
@@ -52,15 +53,22 @@ const ProductForm: React.FC<ProductFormProps> = ({
           throw new Error('No image selected')
         }
 
-        const formData = new FormData()
-        formData.append('file', imageFile)
+        if (
+          typeof imageFile === 'string' &&
+          imageFile.includes(process.env.NEXT_PUBLIC_VERCEL_BLOB_URL as string)
+        ) {
+          imageURL = { url: imageFile }
+        } else {
+          const formData = new FormData()
+          formData.append('file', imageFile)
 
-        const data = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        })
+          const data = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData,
+          })
 
-        const imageURL = await data.json()
+          imageURL = await data.json()
+        }
 
         const res = await submitHandler({ ...values, imageURL: imageURL.url })
         if (res?.success) {
@@ -68,6 +76,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
           toggleModal()
           return
         }
+
         toast.error(res?.error || 'Something went wrong!')
         return
       } catch (err) {
