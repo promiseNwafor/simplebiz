@@ -10,7 +10,7 @@ type ClientRowProps = {
 const ClientRow: React.FC<ClientRowProps> = ({ client }) => {
   const { modalAction, setModalAction, actionMenus } = useClientMenus(client)
 
-  const { id, name, email, phone, billingAddress, invoiceCount, serialNumber } =
+  const { name, email, phone, billingAddress, invoiceCount, serialNumber } =
     client
 
   return (

@@ -33,3 +33,26 @@ export const getProducts: GetProducts = async (page, itemsPerPage) => {
     return { error: 'Error getting products', success: false }
   }
 }
+
+export const getProduct = async (id: string): Promise<GetResponse<Product>> => {
+  try {
+    const user = await currentUser()
+    const userId = user?.id
+
+    const data = await db.product.findFirst({
+      where: {
+        id,
+        userId,
+      },
+    })
+
+    if (!data) {
+      return { error: 'Product not found', success: false }
+    }
+
+    return { data: { data, count: 1 }, success: true }
+  } catch (error) {
+    console.error(error)
+    return { error: 'Error getting product', success: false }
+  }
+}

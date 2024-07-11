@@ -1,5 +1,10 @@
+import { getProduct } from '@/store/products'
+import ProductContainer from '@/components/catalogue/ProductContainer'
+
 const ProductPage = async ({ params }: { params: { id: string } }) => {
-  return <div>{params.id}</div>
+  const data = await getProduct(params.id)
+
+  return <ProductContainer data={data} />
 }
 
 export default ProductPage

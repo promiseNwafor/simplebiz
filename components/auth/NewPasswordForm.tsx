@@ -1,12 +1,12 @@
 'use client'
 
-import * as z from 'zod'
 import { useForm } from 'react-hook-form'
 import { useState, useTransition } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { NewPasswordSchema, NewPasswordSchemaValues } from '@/schemas'
+import { newPassword } from '@/actions/new-password'
 import { Input } from '@/components/ui/input'
 import {
   Form,
@@ -16,11 +16,10 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import { Button } from '@/components/ui/button'
 import { CardWrapper } from './CardWrapper'
 import { AuthError } from './AuthError'
 import { AuthSuccess } from './AuthSuccess'
-import { Button } from '../ui/button'
-import { newPassword } from '@/actions/new-password'
 
 export const NewPasswordForm = () => {
   const searchParams = useSearchParams()

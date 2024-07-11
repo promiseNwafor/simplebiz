@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Pages } from '@/routes'
 
+import { deleteProduct, editProduct } from '@/actions/products'
+import { ProductSchemaValues } from '@/schemas'
 import { ActionMenuProps, Product } from '@/types'
 import DeleteActionContainer from '@/components/reusables/DeleteActionContainer'
 import ProductForm from '@/components/catalogue/ProductForm'
-import { deleteProduct, editProduct } from '@/actions/products'
-import { ProductSchemaValues } from '@/schemas'
 
 export enum ProductMenuActions {
   VIEW = 'view',

@@ -5,13 +5,12 @@ import Image from 'next/image'
 import { toast } from 'sonner'
 import { Client } from '@prisma/client'
 
-import useClientMenus from '@/hooks/useClientMenus'
+import useClientMenus, { ClientMenuActions } from '@/hooks/useClientMenus'
 import { GetResponse } from '@/types'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { Button } from '@/components/ui/button'
 import OverviewCard from '@/components/reusables/OverviewCard'
 import Modal from '@/components/reusables/Modal'
-import { MenuActions } from './ClientRow'
 
 const orders = [
   { label: 'All Orders', title: '15' },
@@ -46,14 +45,14 @@ const ClientContainer: React.FC<IClientContainer> = ({ data }) => {
       />
       <div className='flex items-center justify-end gap-4'>
         <Button
-          onClick={() => setModalAction(MenuActions.DELETE)}
+          onClick={() => setModalAction(ClientMenuActions.DELETE)}
           variant='destructive-outline'
           size='sm'
           className='py-5'
         >
           <Trash2 />
         </Button>
-        <Button onClick={() => setModalAction(MenuActions.EDIT)}>
+        <Button onClick={() => setModalAction(ClientMenuActions.EDIT)}>
           Edit client info
         </Button>
       </div>

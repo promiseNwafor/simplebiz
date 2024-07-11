@@ -12,7 +12,7 @@ type ProductCardProps = {
   product: Product
 }
 
-const bgColor = {
+export const bgColor = {
   PHYSICAL: 'bg-[#FFF6DA]',
   SERVICE: 'bg-primary-light',
   DIGITAL: 'bg-[#FDE3E1]',

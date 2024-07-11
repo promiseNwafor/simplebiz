@@ -138,18 +138,18 @@ export const ClientSchema = z.object({
 
 export type ClientSchemaValues = z.infer<typeof ClientSchema>
 
-const fileSchema = z.instanceof(File, { message: 'Upload a valid file' })
-const imageSchema = fileSchema.refine(
-  (file) => file.size === 0 || file.type.startsWith('image/')
-)
+// const fileSchema = z.instanceof(File, { message: 'Upload a valid file' })
+// const imageSchema = fileSchema.refine(
+//   (file) => file.size === 0 || file.type.startsWith('image/')
+// )
 
-const MAX_FILE_SIZE = 1024 * 1024 * 5 // 5MB
-const ACCEPTED_IMAGE_MIME_TYPES = [
-  'image/jpeg',
-  'image/jpg',
-  'image/png',
-  'image/webp',
-]
+// const MAX_FILE_SIZE = 1024 * 1024 * 5 // 5MB
+// const ACCEPTED_IMAGE_MIME_TYPES = [
+//   'image/jpeg',
+//   'image/jpg',
+//   'image/png',
+//   'image/webp',
+// ]
 
 export const ProductSchema = z.object({
   name: z.string().min(2, {
