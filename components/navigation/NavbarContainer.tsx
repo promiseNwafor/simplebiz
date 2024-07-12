@@ -14,7 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { LogoutButton } from '../auth/LogoutButton'
+import { LogoutButton } from '@/components/auth/LogoutButton'
 
 const NavbarContainer = () => {
   const pathName = usePathname()
