@@ -57,7 +57,7 @@ const ProductContainer: React.FC<IProductContainer> = ({ data }) => {
           Edit product info
         </Button>
       </div>
-      <div className='bg-white rounded-lg p-5 flex gap-8 h-[360px]'>
+      <div className='bg-white rounded-lg p-5 flex flex-col md:flex-row gap-8 md:h-[360px]'>
         <div
           className={cn(
             'w-full rounded-sm bg-primary-light',
@@ -65,7 +65,7 @@ const ProductContainer: React.FC<IProductContainer> = ({ data }) => {
           )}
         >
           <div
-            className='centered h-full'
+            className='centered h-[260px] md:h-full'
             style={
               product?.imageURL
                 ? {
@@ -82,7 +82,7 @@ const ProductContainer: React.FC<IProductContainer> = ({ data }) => {
             )}
           </div>
         </div>
-        <div className='flex flex-col justify-between h-full'>
+        <div className='flex flex-col gap-5 justify-between h-full'>
           <div className='space-y-1'>
             <h2>{product?.name}</h2>
             <p className='text-base font-medium'>
@@ -91,7 +91,7 @@ const ProductContainer: React.FC<IProductContainer> = ({ data }) => {
             <p className='text-xs font-medium pt-3'>Description</p>
             <p className='text-base'>{product?.description}</p>
           </div>
-          <div className='w-[300px]'>
+          <div className='sm:w-[300px]'>
             <OverviewCard
               label='Total Earnings'
               title='₦248,054'

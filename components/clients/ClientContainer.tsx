@@ -7,7 +7,6 @@ import { Client } from '@prisma/client'
 
 import useClientMenus, { ClientMenuActions } from '@/hooks/useClientMenus'
 import { GetResponse } from '@/types'
-import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { Button } from '@/components/ui/button'
 import OverviewCard from '@/components/reusables/OverviewCard'
 import Modal from '@/components/reusables/Modal'
@@ -56,27 +55,25 @@ const ClientContainer: React.FC<IClientContainer> = ({ data }) => {
           Edit client info
         </Button>
       </div>
-      <div className='bg-white rounded-lg p-5 flex gap-8 h-[320px]'>
-        <div className='w-[360px]'>
-          <AspectRatio ratio={16 / 9}>
-            <Image
-              src='/images/placeholder.png'
-              alt='Image'
-              width={360}
-              height={360}
-              className='rounded-md object-cover'
-            />
-          </AspectRatio>
+      <div className='bg-white rounded-lg p-5 flex flex-col md:flex-row gap-4 lg:gap-8 md:h-auto'>
+        <div className='w-full md:w-[320px]'>
+          <Image
+            src='/images/placeholder.png'
+            alt='Image'
+            width={320}
+            height={320}
+            className='rounded-md object-cover'
+          />
         </div>
-        <div className='flex flex-col justify-between h-full'>
+        <div className='flex flex-col gap-4 justify-between h-full'>
           <div className='space-y-1'>
             <h2>{client?.name}</h2>
-            <p className='text-base font-medium space-x-5'>
+            <p className='text-base font-medium flex flex-col md:flex-row md:gap-5 w-full'>
               <span>{client?.email}</span>
               <span>{client?.phone}</span>
             </p>
           </div>
-          <div className='w-[300px]'>
+          <div className='sm:w-[300px]'>
             <OverviewCard
               label='All time payments'
               title='₦248,054'
