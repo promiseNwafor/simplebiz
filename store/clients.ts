@@ -1,3 +1,5 @@
+'use server'
+
 import { currentUser } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { ClientProps, GetResponse } from '@/types'

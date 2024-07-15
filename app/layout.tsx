@@ -5,6 +5,7 @@ import { auth } from '@/auth'
 import { cn } from '@/lib/utils'
 import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
+import ProvidersContainer from './providers'
 
 const inter = Poppins({
   subsets: ['latin'],
@@ -34,8 +35,10 @@ export default async function RootLayout({
             inter.variable
           )}
         >
-          <Toaster />
-          {children}
+          <ProvidersContainer>
+            <Toaster />
+            {children}
+          </ProvidersContainer>
         </body>
       </html>
     </SessionProvider>

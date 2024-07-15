@@ -1,5 +1,11 @@
-import { getProducts } from '@/store/products'
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from '@tanstack/react-query'
+import { getAllProducts, getProducts } from '@/store/products'
 import CatalogueContainer from '@/components/catalogue/CatalogueContainer'
+import { productsQueryKeys } from '@/store/useStoreData'
 
 interface ICataloguePage {
   searchParams: { page: string }
@@ -12,7 +18,18 @@ const CataloguePage: React.FC<ICataloguePage> = async ({ searchParams }) => {
 
   const data = await getProducts(page, itemsPerPage)
 
-  return <CatalogueContainer productsData={data} itemsPerPage={itemsPerPage} />
+  const queryClient = new QueryClient()
+
+  await queryClient.prefetchQuery({
+    queryKey: [productsQueryKeys.getProducts, page],
+    queryFn: async () => await getProducts(page, itemsPerPage),
+  })
+
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <CatalogueContainer productsData={data} itemsPerPage={itemsPerPage} />
+    </HydrationBoundary>
+  )
 }
 
 export default CataloguePage

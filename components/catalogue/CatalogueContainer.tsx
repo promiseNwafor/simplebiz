@@ -12,6 +12,7 @@ import AddButton from '@/components/reusables/AddButton'
 import Modal from '@/components/reusables/Modal'
 import ProductCard from './ProductCard'
 import ProductForm from './ProductForm'
+import { useGetProducts } from '@/store/useStoreData'
 
 interface ICatalogueContainer {
   productsData: GetResponse<Product[]>
@@ -28,6 +29,8 @@ const CatalogueContainer: React.FC<ICatalogueContainer> = ({
   const [_isPending, startTransition] = useTransition()
 
   const router = useRouter()
+  const { data } = useGetProducts()
+  console.log('++++++++++++++', { data, productsData })
 
   const count = allData?.count as number
 

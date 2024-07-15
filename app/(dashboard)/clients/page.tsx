@@ -1,5 +1,10 @@
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from '@tanstack/react-query'
 import { getClients } from '@/store/clients'
-import { ClientProps, GetResponse } from '@/types'
+import { productsQueryKeys, useGetClients } from '@/store/useStoreData'
 import ClientsContainer from '@/components/clients/ClientsContainer'
 
 interface IClientsPage {
@@ -11,13 +16,14 @@ const itemsPerPage = 5
 const ClientsPage: React.FC<IClientsPage> = async ({ searchParams }) => {
   const page = parseInt(searchParams.page) || 1
 
-  const resData = await getClients(page, itemsPerPage)
+  const queryClient = new QueryClient()
+
+  await queryClient.prefetchQuery(useGetClients(page, itemsPerPage))
 
   return (
-    <ClientsContainer
-      resData={resData as GetResponse<ClientProps[]>}
-      itemsPerPage={itemsPerPage}
-    />
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <ClientsContainer itemsPerPage={itemsPerPage} />
+    </HydrationBoundary>
   )
 }
 

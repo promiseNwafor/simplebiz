@@ -4,22 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { currentUser } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { ClientSchema, ClientSchemaValues } from '@/schemas'
-import { ClientProps, GetResponse, PostResponse } from '@/types'
-import { getClients } from '@/store/clients'
-
-type GetClientsAction = (
-  pageNumber: number,
-  itemsPerPage: number
-) => Promise<GetResponse<ClientProps[]>>
-
-export const getClientsAction: GetClientsAction = async (
-  pageNumber,
-  itemsPerPage
-) => {
-  const res = await getClients(pageNumber, itemsPerPage)
-
-  return res
-}
+import { PostResponse } from '@/types'
 
 export const addClient = async (
   values: ClientSchemaValues

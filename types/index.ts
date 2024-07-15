@@ -1,4 +1,4 @@
-import { ProductType } from '@prisma/client'
+import { InvoiceStatus, ProductType } from '@prisma/client'
 
 export type ClientProps = {
   id: string
@@ -38,6 +38,20 @@ export type GetResponse<T = unknown> =
       data: DataCountReturn<T>
       error?: never
     }
+
+export type Invoice = {
+  id: string
+  issueDate: Date
+  dueDate: Date
+  issuedTo: string
+  amount: number
+  invoiceNo: number
+  status: InvoiceStatus
+  createdAt: Date
+  updatedAt: Date
+  userId: string
+  clientId: string
+}
 
 export type Product = {
   id: string

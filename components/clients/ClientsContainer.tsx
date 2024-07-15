@@ -1,61 +1,49 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { Suspense, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import ReactPaginate from 'react-paginate'
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react'
-import { toast } from 'sonner'
-import { addClient, getClientsAction } from '@/actions/clients'
-import { ClientProps, GetResponse } from '@/types'
+import { BeatLoader } from 'react-spinners'
+import { addClient } from '@/actions/clients'
+import { useGetClients } from '@/store/useStoreData'
 
 import AddButton from '@/components/reusables/AddButton'
 import Modal from '@/components/reusables/Modal'
 import ClientForm from './ClientForm'
 import ClientsTable from './ClientsTable'
+import { useQuery } from '@tanstack/react-query'
 
 interface IClientsContainer {
-  resData: GetResponse<ClientProps[]>
   itemsPerPage: number
 }
 
-const ClientsContainer: React.FC<IClientsContainer> = ({
-  resData,
-  itemsPerPage,
-}) => {
-  const { data: allData, error, success } = resData || {}
+const ClientsContainer: React.FC<IClientsContainer> = ({ itemsPerPage }) => {
+  const [page, setPage] = useState(1)
+  const { data, isFetching, isPlaceholderData } = useQuery(
+    useGetClients(page, itemsPerPage)
+  )
   const [modalOpen, setModalOpen] = useState(false)
-  const [clientsData, setClientsData] = useState(allData?.data)
-  const [_isPending, startTransition] = useTransition()
 
   const router = useRouter()
+  console.log('++++++++++++++', { data }, { allData: data?.data })
 
-  const count = allData?.count as number
+  const count = data?.data?.count as number
 
   const toggleModal = () => {
     setModalOpen((prevState) => !prevState)
   }
 
-  const handlePageClick = async (selectedPage: { selected: number }) => {
-    const pageNumber = selectedPage.selected + 1
+  const handlePageClick = (selectedPage: { selected: number }) => {
+    if (!isPlaceholderData) {
+      const pageNumber = selectedPage.selected + 1
 
-    startTransition(async () => {
-      try {
-        const response = await getClientsAction(pageNumber, itemsPerPage)
-        if (response.success) {
-          setClientsData(response.data?.data as ClientProps[])
+      const params = new URLSearchParams()
+      params.set('page', pageNumber.toString())
 
-          const newSearchParams = new URLSearchParams()
-          newSearchParams.set('page', pageNumber.toString())
-
-          router.push(`?${newSearchParams.toString()}`)
-          return
-        }
-        toast.error(response?.error || 'Something went wrong!')
-        return
-      } catch (error) {
-        toast.error('Something went wrong!')
-      }
-    })
+      router.push(`?${params.toString()}`)
+      setPage(pageNumber)
+    }
   }
 
   return (
@@ -77,45 +65,43 @@ const ClientsContainer: React.FC<IClientsContainer> = ({
           <h4>Client</h4>
         </div>
 
-        {!success ? (
+        {/* Table */}
+        {!data?.data || !data?.data?.data.length ? (
           <div className='bg-white w-full h-[400px] py-5 centered border-t border-gray-200'>
-            <p>{error}</p>
+            <p>No clients available</p>
           </div>
         ) : (
-          <>
-            {/* Table */}
-            {!clientsData || !clientsData.length ? (
-              <div className='bg-white w-full h-[400px] py-5 centered border-t border-gray-200'>
-                <h4>No clients available</h4>
-              </div>
-            ) : (
-              <div className='w-[360px] min-w-full'>
-                <ClientsTable clients={clientsData} />
-
-                <div className='p-5 pb-0 centered gap-1'>
-                  <ReactPaginate
-                    pageCount={Math.ceil(count / itemsPerPage)}
-                    pageRangeDisplayed={2}
-                    marginPagesDisplayed={1}
-                    previousLabel={
-                      <ChevronLeft size={20} className='text-black/70' />
-                    }
-                    nextLabel={
-                      <ChevronRight size={20} className='text-black/70' />
-                    }
-                    breakLabel={<MoreHorizontal className='h-4 w-4' />}
-                    breakClassName='break-me'
-                    onPageChange={handlePageClick}
-                    containerClassName='pagination-container'
-                    activeClassName='active'
-                    previousClassName='action-button'
-                    nextClassName='action-button'
-                    disabledClassName='disabled-page-button'
-                  />
+          <div className='w-[360px] min-w-full'>
+            <Suspense
+              fallback={
+                <div className='bg-white w-full h-[400px] py-5 centered border-t border-gray-200'>
+                  <BeatLoader />
                 </div>
-              </div>
-            )}
-          </>
+              }
+            >
+              <ClientsTable clients={data?.data?.data} />
+            </Suspense>
+
+            <div className='p-5 pb-0 centered gap-1'>
+              <ReactPaginate
+                pageCount={Math.ceil(count / itemsPerPage)}
+                pageRangeDisplayed={2}
+                marginPagesDisplayed={1}
+                previousLabel={
+                  <ChevronLeft size={20} className='text-black/70' />
+                }
+                nextLabel={<ChevronRight size={20} className='text-black/70' />}
+                breakLabel={<MoreHorizontal className='h-4 w-4' />}
+                breakClassName='break-me'
+                onPageChange={handlePageClick}
+                containerClassName='pagination-container'
+                activeClassName='active'
+                previousClassName='action-button'
+                nextClassName='action-button'
+                disabledClassName='disabled-page-button'
+              />
+            </div>
+          </div>
         )}
       </div>
     </div>
