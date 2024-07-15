@@ -6,6 +6,9 @@ import { LuWallet } from 'react-icons/lu'
 import { IoSettingsOutline } from 'react-icons/io5'
 import { IconType } from 'react-icons/lib'
 
+export const CLIENTS_PER_PAGE = 5
+export const PRODUCTS_PER_PAGE = 4
+
 type ISideBarItems = {
   displayName: string
   path: string

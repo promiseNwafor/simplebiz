@@ -1,10 +1,13 @@
+import { QueryClient } from '@tanstack/react-query'
+import { useGetClient } from '@/store/useStoreData'
 import ClientContainer from '@/components/clients/ClientContainer'
-import { getClient } from '@/store/clients'
 
 const ClientPage = async ({ params }: { params: { id: string } }) => {
-  const data = await getClient(params.id)
+  const queryClient = new QueryClient()
 
-  return <ClientContainer data={data} />
+  await queryClient.prefetchQuery(useGetClient(params.id))
+
+  return <ClientContainer id={params.id} />
 }
 
 export default ClientPage

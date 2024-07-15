@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Pages } from '@/routes'
 
-import { deleteProduct, editProduct } from '@/actions/products'
+import { useDeleteProduct, useEditProduct } from '@/store/useStoreData'
 import { ProductSchemaValues } from '@/schemas'
 import { ActionMenuProps, Product } from '@/types'
 import DeleteActionContainer from '@/components/reusables/DeleteActionContainer'
@@ -20,8 +20,11 @@ const useProductMenus = (product: Product) => {
   )
   const router = useRouter()
 
+  const { mutateAsync: editProduct } = useEditProduct()
+  const { mutateAsync: deleteProduct } = useDeleteProduct()
+
   const editProductHandler = async (values: ProductSchemaValues) => {
-    const response = await editProduct(product.id, values)
+    const response = await editProduct({ id: product.id, values })
 
     return response
   }

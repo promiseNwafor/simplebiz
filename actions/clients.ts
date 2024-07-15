@@ -40,7 +40,7 @@ export const addClient = async (
       },
     })
 
-    revalidatePath('/clients?page=1')
+    // revalidatePath('/clients')
 
     return { success: 'Client added successfully' }
   } catch (error) {
@@ -104,7 +104,7 @@ export const editClient = async (
       },
     })
 
-    revalidatePath('/clients')
+    // revalidatePath('/clients')
 
     return { success: 'Client updated successfully' }
   } catch (error) {

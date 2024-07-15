@@ -1,10 +1,13 @@
-import { getProduct } from '@/store/products'
+import { QueryClient } from '@tanstack/react-query'
+import { useGetProduct } from '@/store/useStoreData'
 import ProductContainer from '@/components/catalogue/ProductContainer'
 
 const ProductPage = async ({ params }: { params: { id: string } }) => {
-  const data = await getProduct(params.id)
+  const queryClient = new QueryClient()
 
-  return <ProductContainer data={data} />
+  await queryClient.prefetchQuery(useGetProduct(params.id))
+
+  return <ProductContainer id={params.id} />
 }
 
 export default ProductPage

@@ -1,9 +1,12 @@
 'use client'
 
-import AddButton from '@/components/reusables/AddButton'
-import InvoicesRow from './InvoicesRow'
-import Modal from '../reusables/Modal'
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { useGetProducts } from '@/store/useStoreData'
+import { Product } from '@/types'
+import AddButton from '@/components/reusables/AddButton'
+import Modal from '@/components/reusables/Modal'
+import InvoicesRow from './InvoicesRow'
 import InvoiceForm from './InvoiceForm'
 
 const invoices = [
@@ -14,7 +17,7 @@ const invoices = [
     invoiceNo: '1001',
     issuedTo: 'John Doe',
     amount: 500.0,
-    outstanding: 200.0,
+    // outstanding: 200.0,
     status: 'UNPAID',
   },
   {
@@ -24,7 +27,7 @@ const invoices = [
     invoiceNo: '1002',
     issuedTo: 'Jane Smith',
     amount: 300.0,
-    outstanding: 0.0,
+    // outstanding: 0.0,
     status: 'PAID',
   },
   {
@@ -34,7 +37,7 @@ const invoices = [
     invoiceNo: '1003',
     issuedTo: 'Acme Corp',
     amount: 750.0,
-    outstanding: 750.0,
+    // outstanding: 750.0,
     status: 'OVERDUE',
   },
   {
@@ -44,7 +47,7 @@ const invoices = [
     invoiceNo: '1004',
     issuedTo: 'Global Industries',
     amount: 1000.0,
-    outstanding: 500.0,
+    // outstanding: 500.0,
     status: 'PAID',
   },
   {
@@ -54,7 +57,7 @@ const invoices = [
     invoiceNo: '1005',
     issuedTo: 'ABC Ltd',
     amount: 250.0,
-    outstanding: 250.0,
+    // outstanding: 250.0,
     status: 'UNPAID',
   },
   {
@@ -64,7 +67,7 @@ const invoices = [
     invoiceNo: '1006',
     issuedTo: 'XYZ Inc',
     amount: 400.0,
-    outstanding: 100.0,
+    // outstanding: 100.0,
     status: 'UNPAID',
   },
   {
@@ -74,7 +77,7 @@ const invoices = [
     invoiceNo: '1007',
     issuedTo: 'QWERTY Solutions',
     amount: 150.0,
-    outstanding: 0.0,
+    // outstanding: 0.0,
     status: 'PAID',
   },
   {
@@ -84,7 +87,7 @@ const invoices = [
     invoiceNo: '1008',
     issuedTo: 'Acme Corp',
     amount: 800.0,
-    outstanding: 800.0,
+    // outstanding: 800.0,
     status: 'OVERDUE',
   },
   {
@@ -94,7 +97,7 @@ const invoices = [
     invoiceNo: '1009',
     issuedTo: 'Jane Smith',
     amount: 600.0,
-    outstanding: 200.0,
+    // outstanding: 200.0,
     status: 'UNPAID',
   },
   {
@@ -104,13 +107,15 @@ const invoices = [
     invoiceNo: '1010',
     issuedTo: 'John Doe',
     amount: 350.0,
-    outstanding: 0.0,
+    // outstanding: 0.0,
     status: 'PAID',
   },
 ]
 
 const InvoicesContainer = () => {
   const [modalOpen, setModalOpen] = useState(false)
+
+  const { data } = useQuery(useGetProducts(1))
 
   const toggleModal = () => {
     setModalOpen((prevState) => !prevState)
@@ -122,7 +127,11 @@ const InvoicesContainer = () => {
         open={modalOpen}
         onClose={toggleModal}
         content={
-          <InvoiceForm toggleModal={toggleModal} submitHandler={() => {}} />
+          <InvoiceForm
+            toggleModal={toggleModal}
+            // submitHandler={() => {}}
+            products={data?.data?.data as Product[]}
+          />
         }
         title='Generate Invoice'
       />
@@ -147,7 +156,7 @@ const InvoicesContainer = () => {
 
           <div className='min-h-[280px]'>
             {invoices.map((invoice) => {
-              return <InvoicesRow key={invoice.id} invoice={invoice} />
+              return <InvoicesRow key={invoice.id} invoice={invoice as any} />
             })}
           </div>
         </div>

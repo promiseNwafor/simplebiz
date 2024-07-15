@@ -1,20 +1,19 @@
 'use server'
 
+import { CLIENTS_PER_PAGE } from '@/constants'
 import { currentUser } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { ClientProps, GetResponse } from '@/types'
 import { Client } from '@prisma/client'
 
-type GetClients = (
-  page: number,
-  itemsPerPage: number
-) => Promise<GetResponse<ClientProps[]>>
+type GetClients = (page: number) => Promise<GetResponse<ClientProps[]>>
 
-export const getClients: GetClients = async (page, itemsPerPage) => {
+export const getClients: GetClients = async (page) => {
   try {
     const user = await currentUser()
     const userId = user?.id
 
+    const itemsPerPage = CLIENTS_PER_PAGE
     const offset = (page - 1) * itemsPerPage
 
     // Get the total count of clients for the user

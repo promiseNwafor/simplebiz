@@ -52,7 +52,7 @@ export const addProduct = async (
       },
     })
 
-    revalidatePath('/products')
+    // revalidatePath('/products')
 
     return { success: 'Product added successfully' }
   } catch (error) {

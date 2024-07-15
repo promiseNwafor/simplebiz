@@ -4,29 +4,23 @@ import { Suspense, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import ReactPaginate from 'react-paginate'
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 import { BeatLoader } from 'react-spinners'
-import { addClient } from '@/actions/clients'
-import { useGetClients } from '@/store/useStoreData'
+import { useAddClient, useGetClients } from '@/store/useStoreData'
 
 import AddButton from '@/components/reusables/AddButton'
 import Modal from '@/components/reusables/Modal'
 import ClientForm from './ClientForm'
 import ClientsTable from './ClientsTable'
-import { useQuery } from '@tanstack/react-query'
+import { CLIENTS_PER_PAGE } from '@/constants'
 
-interface IClientsContainer {
-  itemsPerPage: number
-}
-
-const ClientsContainer: React.FC<IClientsContainer> = ({ itemsPerPage }) => {
+const ClientsContainer: React.FC = () => {
   const [page, setPage] = useState(1)
-  const { data, isFetching, isPlaceholderData } = useQuery(
-    useGetClients(page, itemsPerPage)
-  )
+  const { data, isPlaceholderData } = useQuery(useGetClients(page))
   const [modalOpen, setModalOpen] = useState(false)
 
   const router = useRouter()
-  console.log('++++++++++++++', { data }, { allData: data?.data })
+  const { mutateAsync: addClient } = useAddClient()
 
   const count = data?.data?.count as number
 
@@ -41,8 +35,8 @@ const ClientsContainer: React.FC<IClientsContainer> = ({ itemsPerPage }) => {
       const params = new URLSearchParams()
       params.set('page', pageNumber.toString())
 
-      router.push(`?${params.toString()}`)
       setPage(pageNumber)
+      router.push(`?${params.toString()}`)
     }
   }
 
@@ -84,7 +78,7 @@ const ClientsContainer: React.FC<IClientsContainer> = ({ itemsPerPage }) => {
 
             <div className='p-5 pb-0 centered gap-1'>
               <ReactPaginate
-                pageCount={Math.ceil(count / itemsPerPage)}
+                pageCount={Math.ceil(count / CLIENTS_PER_PAGE)}
                 pageRangeDisplayed={2}
                 marginPagesDisplayed={1}
                 previousLabel={

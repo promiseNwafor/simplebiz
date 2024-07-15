@@ -5,9 +5,9 @@ import { Pages } from '@/routes'
 
 import { ActionMenuProps, ClientProps } from '@/types'
 import { ClientSchemaValues } from '@/schemas'
-import { editClient, deleteClient } from '@/actions/clients'
 import ClientForm from '@/components/clients/ClientForm'
 import DeleteActionContainer from '@/components/reusables/DeleteActionContainer'
+import { useDeleteClient, useEditClient } from '@/store/useStoreData'
 
 export enum ClientMenuActions {
   VIEW = 'view',
@@ -19,8 +19,11 @@ const useClientMenus = (client: ClientProps | Client) => {
   const [modalAction, setModalAction] = useState<ClientMenuActions | null>(null)
   const router = useRouter()
 
+  const { mutateAsync: editClient } = useEditClient()
+  const { mutateAsync: deleteClient } = useDeleteClient()
+
   const editClientHandler = async (values: ClientSchemaValues) => {
-    const response = await editClient(client.id, values)
+    const response = await editClient({ id: client.id, values })
 
     return response
   }

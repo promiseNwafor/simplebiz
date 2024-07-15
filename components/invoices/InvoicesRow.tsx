@@ -24,7 +24,9 @@ type InvoicesRowProps = {
 }
 
 const InvoicesRow: React.FC<InvoicesRowProps> = ({ invoice }) => {
-  const { modalAction, setModalAction, actionMenus } = useInvoiceMenus(invoice)
+  const { modalAction, setModalAction, actionMenus } = useInvoiceMenus(
+    invoice as any
+  )
   const colorStatus = statusColor[invoice.status]
   const bgColorStatus = statusBgColor[invoice.status]
 
@@ -39,8 +41,8 @@ const InvoicesRow: React.FC<InvoicesRowProps> = ({ invoice }) => {
       <div>
         <Checkbox id={invoice.id} />
       </div>
-      <div className='col-span-2'>{invoice.issueDate}</div>
-      <div className='col-span-2'>{invoice.dueDate}</div>
+      <div className='col-span-2'>{invoice.issueDate as any}</div>
+      <div className='col-span-2'>{invoice.dueDate as any}</div>
       <div>{invoice.invoiceNo}</div>
       <div className='col-span-2'>{invoice.issuedTo}</div>
       <div className='col-span-2'>{ngnFormatter.format(invoice.amount)}</div>

@@ -1,13 +1,11 @@
 'use server'
 
+import { PRODUCTS_PER_PAGE } from '@/constants'
 import { currentUser } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { GetResponse, Product } from '@/types'
 
-type GetProducts = (
-  page: number,
-  itemsPerPage: number
-) => Promise<GetResponse<Product[]>>
+type GetProducts = (page: number) => Promise<GetResponse<Product[]>>
 
 export const getAllProducts: () => Promise<
   GetResponse<Product[]>
@@ -35,9 +33,11 @@ export const getAllProducts: () => Promise<
   }
 }
 
-export const getProducts: GetProducts = async (page, itemsPerPage) => {
+export const getProducts: GetProducts = async (page) => {
   try {
     const user = await currentUser()
+
+    const itemsPerPage = PRODUCTS_PER_PAGE
     const offset = (page - 1) * itemsPerPage
 
     const count = await db.product.count({

@@ -2,12 +2,14 @@
 
 import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { useQuery } from '@tanstack/react-query'
 import capitalize from 'lodash/capitalize'
 
 import useProductMenus, { ProductMenuActions } from '@/hooks/useProductMenus'
 import { ngnFormatter } from '@/lib'
 import { cn } from '@/lib/utils'
-import { GetResponse, Product } from '@/types'
+import { Product } from '@/types'
+import { useGetProduct } from '@/store/useStoreData'
 import { Button } from '@/components/ui/button'
 import OverviewCard from '@/components/reusables/OverviewCard'
 import Modal from '@/components/reusables/Modal'
@@ -20,19 +22,19 @@ const orders = [
 ]
 
 interface IProductContainer {
-  data: GetResponse<Product>
+  id: string
 }
 
-const ProductContainer: React.FC<IProductContainer> = ({ data }) => {
-  const { data: productData, error, success } = data
-  const product = productData?.data
+const ProductContainer: React.FC<IProductContainer> = ({ id }) => {
+  const { data: productData, error } = useQuery(useGetProduct(id))
+  const product = productData?.data?.data
 
   const { modalAction, setModalAction, actionMenus } = useProductMenus(
     product as Product
   )
 
-  if (!success) {
-    toast.error(error)
+  if (error) {
+    toast.error('Something went wrong!')
     return
   }
 

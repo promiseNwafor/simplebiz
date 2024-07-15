@@ -3,10 +3,11 @@
 import { Trash2 } from 'lucide-react'
 import Image from 'next/image'
 import { toast } from 'sonner'
+import { useQuery } from '@tanstack/react-query'
 import { Client } from '@prisma/client'
 
 import useClientMenus, { ClientMenuActions } from '@/hooks/useClientMenus'
-import { GetResponse } from '@/types'
+import { useGetClient } from '@/store/useStoreData'
 import { Button } from '@/components/ui/button'
 import OverviewCard from '@/components/reusables/OverviewCard'
 import Modal from '@/components/reusables/Modal'
@@ -18,19 +19,19 @@ const orders = [
 ]
 
 interface IClientContainer {
-  data: GetResponse<Client>
+  id: string
 }
 
-const ClientContainer: React.FC<IClientContainer> = ({ data }) => {
-  const { data: clientData, error, success } = data
-  const client = clientData?.data
+const ClientContainer: React.FC<IClientContainer> = ({ id }) => {
+  const { data: clientData, error } = useQuery(useGetClient(id))
+  const client = clientData?.data?.data
 
   const { modalAction, setModalAction, actionMenus } = useClientMenus(
     client as Client
   )
 
-  if (!success) {
-    toast.error(error)
+  if (error) {
+    toast.error('Something went wrong!')
     return
   }
 
