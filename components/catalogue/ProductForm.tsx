@@ -55,7 +55,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
 
         if (
           typeof imageFile === 'string' &&
-          imageFile.includes(process.env.NEXT_PUBLIC_VERCEL_BLOB_URL as string)
+          imageFile.includes(process.env.NEXT_PUBLIC_VERCEL_BLOB_URL as string) // image coming from vercel blob
         ) {
           imageURL = { url: imageFile }
         } else {
@@ -78,9 +78,11 @@ const ProductForm: React.FC<ProductFormProps> = ({
         }
 
         toast.error(res?.error || 'Something went wrong!')
+        // TODO: Delete product image from vercel blob storage
         return
       } catch (err) {
         console.error(err)
+        // TODO: Delete product image from vercel blob storage
         toast.error('Something went wrong!')
       }
     })

@@ -88,7 +88,11 @@ export const useGetProducts = (page: number) => {
   return queryOptions({
     queryKey: [queryKeys.getProducts, page],
     queryFn: async () => {
-      return await getProducts(page)
+      const res = await getProducts(page)
+      if (res.success) return res
+      if (res.error) throw new Error(res.error)
+
+      return res
     },
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false,

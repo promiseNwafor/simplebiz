@@ -18,8 +18,10 @@ const CatalogueContainer: React.FC = () => {
   const [page, setPage] = useState(1)
 
   const router = useRouter()
-  const { data, isPlaceholderData } = useQuery(useGetProducts(page))
+  const { data, error, isPlaceholderData } = useQuery(useGetProducts(page))
   const { mutateAsync: addProduct } = useAddProduct()
+
+  console.log('++++++++++++++', { data, error })
 
   const count = data?.data?.count as number
 
@@ -57,19 +59,27 @@ const CatalogueContainer: React.FC = () => {
         <h4>Product List</h4>
       </div>
 
-      <div className='min-h-[400px]'>
-        {!data?.data || !data?.data?.data.length ? (
+      {data?.error || error ? (
+        <div className='min-h-[400px]'>
           <div className='bg-white w-full h-[400px] py-5 centered border-t border-gray-200'>
-            <h4>No available products</h4>
+            <p>{data?.error || 'Something went wrong'}</p>
           </div>
-        ) : (
-          <div className='grid sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 xl:gap-8'>
-            {data?.data?.data.map((product) => (
-              <ProductCard product={product as Product} key={product.id} />
-            ))}
-          </div>
-        )}
-      </div>
+        </div>
+      ) : (
+        <div className='min-h-[400px]'>
+          {!data?.data?.data.length ? (
+            <div className='bg-white w-full h-[400px] py-5 centered border-t border-gray-200'>
+              <p>No available products</p>
+            </div>
+          ) : (
+            <div className='grid sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 xl:gap-8'>
+              {data?.data?.data.map((product) => (
+                <ProductCard product={product as Product} key={product.id} />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
       <div className='p-5 centered gap-1 border-t bg-white rounded-b-lg'>
         <ReactPaginate
           pageCount={Math.ceil(count / PRODUCTS_PER_PAGE)}

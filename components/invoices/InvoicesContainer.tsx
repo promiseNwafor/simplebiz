@@ -1,9 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { useGetProducts } from '@/store/useStoreData'
-import { Product } from '@/types'
 import AddButton from '@/components/reusables/AddButton'
 import Modal from '@/components/reusables/Modal'
 import InvoicesRow from './InvoicesRow'
@@ -115,8 +112,6 @@ const invoices = [
 const InvoicesContainer = () => {
   const [modalOpen, setModalOpen] = useState(false)
 
-  const { data } = useQuery(useGetProducts(1))
-
   const toggleModal = () => {
     setModalOpen((prevState) => !prevState)
   }
@@ -130,7 +125,6 @@ const InvoicesContainer = () => {
           <InvoiceForm
             toggleModal={toggleModal}
             // submitHandler={() => {}}
-            products={data?.data?.data as Product[]}
           />
         }
         title='Generate Invoice'

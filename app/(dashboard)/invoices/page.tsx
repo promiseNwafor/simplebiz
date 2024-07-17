@@ -1,6 +1,6 @@
-import InvoicesContainer from '@/components/invoices/InvoicesContainer'
-import { useGetProducts } from '@/store/useStoreData'
 import { QueryClient } from '@tanstack/react-query'
+import { useGetProducts } from '@/store/useStoreData'
+import InvoicesContainer from '@/components/invoices/InvoicesContainer'
 
 const InvoicesPage = async () => {
   const queryClient = new QueryClient()
