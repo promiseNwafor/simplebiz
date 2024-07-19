@@ -5,6 +5,7 @@ import AddButton from '@/components/reusables/AddButton'
 import Modal from '@/components/reusables/Modal'
 import InvoicesRow from './InvoicesRow'
 import InvoiceForm from './InvoiceForm'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 const invoices = [
   {
@@ -112,7 +113,14 @@ const invoices = [
 const InvoicesContainer = () => {
   const [modalOpen, setModalOpen] = useState(false)
 
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  const modalScreen = searchParams.get('screen')
+
   const toggleModal = () => {
+    router.push('/invoices')
+
     setModalOpen((prevState) => !prevState)
   }
 
@@ -121,13 +129,8 @@ const InvoicesContainer = () => {
       <Modal
         open={modalOpen}
         onClose={toggleModal}
-        content={
-          <InvoiceForm
-            toggleModal={toggleModal}
-            // submitHandler={() => {}}
-          />
-        }
-        title='Generate Invoice'
+        content={<InvoiceForm toggleModal={toggleModal} />}
+        title={modalScreen === '2' ? 'Action Details' : 'Generate Invoice'}
       />
       <div className='flex items-center justify-end'>
         <AddButton onClick={toggleModal}>Generate Invoice</AddButton>

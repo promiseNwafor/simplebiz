@@ -3,7 +3,7 @@
 import { CLIENTS_PER_PAGE } from '@/constants'
 import { currentUser } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { ClientProps, GetResponse } from '@/types'
+import { ClientNameAndBiz, ClientProps, GetResponse } from '@/types'
 import { Client } from '@prisma/client'
 
 type GetClients = (page: number) => Promise<GetResponse<ClientProps[]>>
@@ -53,6 +53,31 @@ export const getClients: GetClients = async (page) => {
       }
     })
     return { data: { data: transformedData, count }, success: true }
+  } catch (error) {
+    console.error(error)
+    return { error: 'Error getting clients', success: false }
+  }
+}
+
+export const getClientsNameAndBiz = async (): Promise<
+  GetResponse<ClientNameAndBiz[]>
+> => {
+  try {
+    const user = await currentUser()
+    const userId = user?.id
+
+    const data = await db.client.findMany({
+      where: {
+        userId,
+      },
+      select: {
+        id: true,
+        name: true,
+        businessName: true,
+      },
+    })
+
+    return { data: { data, count: data.length }, success: true }
   } catch (error) {
     console.error(error)
     return { error: 'Error getting clients', success: false }

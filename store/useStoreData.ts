@@ -2,19 +2,26 @@ import {
   keepPreviousData,
   queryOptions,
   useMutation,
+  useQuery,
   useQueryClient,
 } from '@tanstack/react-query'
 import { addProduct, deleteProduct, editProduct } from '@/actions/products'
-import { ClientSchemaValues, ProductSchemaValues } from '@/schemas'
+import {
+  ClientSchemaValues,
+  InvoiceSchemaValues,
+  ProductSchemaValues,
+} from '@/schemas'
 import { addClient, deleteClient, editClient } from '@/actions/clients'
+import { sendInvoice } from '@/actions/invoice'
 import { getProduct, getProducts } from './products'
-import { getClient, getClients } from './clients'
+import { getClient, getClients, getClientsNameAndBiz } from './clients'
 
 export const queryKeys = {
   getProducts: 'getProducts',
   getProduct: 'getProduct',
   getClients: 'getClients',
   getClient: 'getClient',
+  getClientsNameAndBiz: 'getClientsNameAndBiz',
 }
 
 /** =============== Clients ============== */
@@ -26,6 +33,16 @@ export const useGetClients = (page: number) => {
       return await getClients(page)
     },
     placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false,
+  })
+}
+
+export const useGetClientsNameAndBiz = () => {
+  return useQuery({
+    queryKey: [queryKeys.getClientsNameAndBiz],
+    queryFn: async () => {
+      return await getClientsNameAndBiz()
+    },
     refetchOnWindowFocus: false,
   })
 }
@@ -147,6 +164,20 @@ export const useDeleteProduct = () => {
       queryClient.invalidateQueries({
         queryKey: [queryKeys.getProduct, queryKeys.getProducts],
       })
+    },
+  })
+}
+
+/** =============== Invoice ============== */
+
+export const useSendInvoice = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (values: InvoiceSchemaValues) =>
+      await sendInvoice(values),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [''] })
     },
   })
 }

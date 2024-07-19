@@ -34,3 +34,20 @@ export const sendVerificationEmail = async (email: string, token: string) => {
     html: `<p>Click <a href="${confirmLink}">here</a> to confirm email.</p>`,
   })
 }
+
+export const sendInvoiceEmail = async (email: string, attachment: string) => {
+  const emailOptions = {
+    attachments: [
+      {
+        filename: 'invoice.pdf',
+        content: attachment,
+      },
+    ],
+    from: 'onboarding@resend.dev',
+    to: email,
+    subject: 'Your Invoice',
+    html: '<p>Please find your invoice attached.</p>',
+  }
+
+  return resend.emails.send(emailOptions)
+}

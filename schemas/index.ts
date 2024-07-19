@@ -185,3 +185,20 @@ export const ProductSchema = z.object({
 })
 
 export type ProductSchemaValues = z.infer<typeof ProductSchema>
+
+export const InvoiceSchema = z.object({
+  selectedProducts: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      price: z.number(),
+      quantity: z.number(),
+      total: z.number(),
+    })
+  ),
+  client: z.string(),
+  dueDate: z.string(),
+  message: z.string().optional(),
+})
+
+export type InvoiceSchemaValues = z.infer<typeof InvoiceSchema>

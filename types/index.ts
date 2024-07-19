@@ -12,6 +12,12 @@ export type ClientProps = {
   serialNumber: number
 }
 
+export type ClientNameAndBiz = {
+  id: string
+  name: string
+  businessName: string | null
+}
+
 export type DataCountReturn<T> = {
   count: number
   data: T
