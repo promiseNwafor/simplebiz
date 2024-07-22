@@ -46,7 +46,7 @@ export const NewVerificationForm = () => {
       backButtonHref='/auth/login'
     >
       <div className='flex items-center w-full justify-center'>
-        {!success && !error && <BeatLoader />}
+        {!success && !error && <BeatLoader color='#008678' />}
         <AuthSuccess message={success} />
         {!success && <AuthError message={error} />}
       </div>

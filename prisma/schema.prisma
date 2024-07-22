@@ -140,13 +140,14 @@ model Client {
 }
 
 model Invoice {
-  id        String        @id @default(cuid())
-  issueDate DateTime      @default(now()) @map("issue_date")
-  dueDate   DateTime      @map("due_date")
-  issuedTo  String        @map("issued_to")
-  amount    Float
-  invoiceNo Int           @default(autoincrement()) @map("invoice_no")
-  status    InvoiceStatus @default(UNPAID)
+  id         String        @id @default(cuid())
+  issueDate  DateTime      @map("issue_date")
+  dueDate    DateTime      @map("due_date")
+  issuedTo   String        @map("issued_to")
+  amount     Float
+  invoiceNo  Int           @default(autoincrement()) @map("invoice_no")
+  status     InvoiceStatus @default(UNPAID)
+  invoiceRef String        @unique
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -157,7 +158,6 @@ model Invoice {
   clientId String @map("client_id")
   client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, clientId])
   @@map("invoices")
 }
 

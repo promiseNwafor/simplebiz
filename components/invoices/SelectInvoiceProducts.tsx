@@ -111,120 +111,120 @@ const SelectInvoiceProducts: React.FC<SelectProductsProps> = ({
       return selectedProduct
     })
 
-    console.log('++++++++++++++', selectedProducts)
     setValue('selectedProducts', newProducts)
   }
 
   return (
     <>
-      {isPending ? (
-        <div className='min-h-[400px] w-full'>
-          <BeatLoader className='flex justify-center text-center m-auto' />
-        </div>
-      ) : (
-        <>
-          {data?.error || !products ? (
-            <div className='min-h-[400px]'>
-              <div className='bg-white w-full h-[400px] py-5 centered border-t border-gray-200'>
+      <ScrollArea className='h-[calc(100vh-260px)] w-full'>
+        {isPending ? (
+          <BeatLoader
+            color='#008678'
+            className='text-center w-full m-auto mt-6 text-primary'
+          />
+        ) : (
+          <>
+            {data?.error || !products ? (
+              <div className='w-full h-full centered'>
                 <p>{data?.error || 'Something went wrong'}</p>
               </div>
-            </div>
-          ) : (
-            <ScrollArea className='h-[calc(100vh-260px)] w-full'>
-              {products.map((product) => {
-                const { id, quantity: productQuantity } = product
+            ) : (
+              <>
+                {products.map((product) => {
+                  const { id, quantity: productQuantity } = product
 
-                return (
-                  <div
-                    key={id}
-                    className='w-full flex justify-between items-center py-4'
-                  >
-                    <div className='flex items-center gap-4 w-full'>
-                      <Checkbox
-                        id={id}
-                        checked={selectedProducts?.some(
-                          (selectedProduct) => selectedProduct.id === id
-                        )}
-                        onClick={() => {
-                          const selected = getProduct(id)
-                          if (selected) {
-                            removeProduct(product)
-                          } else {
-                            updateQuantity(product)
-                          }
-                        }}
-                      />
-                      <div className='flex gap-4'>
-                        <div
-                          className={cn(
-                            'w-16 rounded-sm bg-primary-light',
-                            bgColor[product?.type as keyof typeof bgColor]
+                  return (
+                    <div
+                      key={id}
+                      className='w-full flex justify-between items-center py-4'
+                    >
+                      <div className='flex items-center gap-4 w-full'>
+                        <Checkbox
+                          id={id}
+                          checked={selectedProducts?.some(
+                            (selectedProduct) => selectedProduct.id === id
                           )}
-                        >
-                          <div
-                            className='centered h-full w-full'
-                            style={
-                              product?.imageURL
-                                ? {
-                                    background: `url(${product?.imageURL}) no-repeat center center/cover`,
-                                  }
-                                : {}
+                          onClick={() => {
+                            const selected = getProduct(id)
+                            if (selected) {
+                              removeProduct(product)
+                            } else {
+                              updateQuantity(product)
                             }
-                            aria-label='product image'
-                          >
-                            {!product?.imageURL && (
-                              <p className='opacity-65'>
-                                {capitalize(product?.name.split('')[0])}
-                              </p>
+                          }}
+                        />
+                        <div className='flex gap-4'>
+                          <div
+                            className={cn(
+                              'w-16 rounded-sm bg-primary-light',
+                              bgColor[product?.type as keyof typeof bgColor]
                             )}
+                          >
+                            <div
+                              className='centered h-full w-full'
+                              style={
+                                product?.imageURL
+                                  ? {
+                                      background: `url(${product?.imageURL}) no-repeat center center/cover`,
+                                    }
+                                  : {}
+                              }
+                              aria-label='product image'
+                            >
+                              {!product?.imageURL && (
+                                <p className='opacity-65'>
+                                  {capitalize(product?.name.split('')[0])}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          <div className='space-y-1'>
+                            <p className='text-xs'>{product?.name}</p>
+                            <p className='font-medium text-xs'>
+                              {ngnFormatter.format(product?.price as number)}
+                            </p>
                           </div>
                         </div>
-                        <div className='space-y-1'>
-                          <p className='text-xs'>{product?.name}</p>
-                          <p className='font-medium text-xs'>
-                            {ngnFormatter.format(product?.price as number)}
-                          </p>
-                        </div>
+                      </div>
+                      <div className='flex items-center'>
+                        <Button
+                          variant='ghost'
+                          className='hover:bg-transparent'
+                          disabled={disableMinus(id)}
+                          onClick={() => decreaseQuantity(product)}
+                        >
+                          <Minus size={15} />
+                        </Button>
+                        <Input
+                          placeholder='0'
+                          className='w-12 text-center'
+                          min={0}
+                          max={productQuantity}
+                          disabled
+                          value={getProduct(id)?.quantity || 0}
+                          onChange={(e) =>
+                            updateQuantity(product, parseInt(e.target.value))
+                          }
+                        />
+                        <Button
+                          variant='ghost'
+                          className='hover:bg-transparent'
+                          disabled={
+                            productQuantity <= (getProduct(id)?.quantity || 0)
+                          }
+                          onClick={() => updateQuantity(product)}
+                        >
+                          <Plus size={15} />
+                        </Button>
                       </div>
                     </div>
-                    <div className='flex items-center'>
-                      <Button
-                        variant='ghost'
-                        className='hover:bg-transparent'
-                        disabled={disableMinus(id)}
-                        onClick={() => decreaseQuantity(product)}
-                      >
-                        <Minus size={15} />
-                      </Button>
-                      <Input
-                        placeholder='0'
-                        className='w-12 text-center'
-                        min={0}
-                        max={productQuantity}
-                        disabled
-                        value={getProduct(id)?.quantity || 0}
-                        onChange={(e) =>
-                          updateQuantity(product, parseInt(e.target.value))
-                        }
-                      />
-                      <Button
-                        variant='ghost'
-                        className='hover:bg-transparent'
-                        disabled={
-                          productQuantity <= (getProduct(id)?.quantity || 0)
-                        }
-                        onClick={() => updateQuantity(product)}
-                      >
-                        <Plus size={15} />
-                      </Button>
-                    </div>
-                  </div>
-                )
-              })}
-            </ScrollArea>
-          )}
-        </>
-      )}
+                  )
+                })}
+              </>
+            )}
+          </>
+        )}
+      </ScrollArea>
       <Button
         type='button'
         disabled={!selectedProducts?.length}

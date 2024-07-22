@@ -78,6 +78,7 @@ const SidebarContainer = () => {
                       alt='logo'
                       width={200}
                       height={200}
+                      priority
                     />
                   </Link>
                 </div>
@@ -98,6 +99,7 @@ const SidebarContainer = () => {
               alt='logo'
               width={200}
               height={200}
+              priority
             />
           </Link>
         </div>

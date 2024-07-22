@@ -219,7 +219,7 @@ const SettingsContainer: React.FC<ISettingsContainer> = ({ user }) => {
     </>
   ) : (
     <>
-      <BeatLoader />
+      <BeatLoader color='#008678' />
     </>
   )
 }

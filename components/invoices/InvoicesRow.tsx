@@ -1,7 +1,7 @@
 import capitalize from 'lodash/capitalize'
 import useInvoiceMenus from '@/hooks/useInvoiceMenus'
 import { Invoice } from '@/types'
-import { ngnFormatter } from '@/lib'
+import { formatDate, ngnFormatter } from '@/lib'
 import ActionsDropdown from '@/components/reusables/ActionsDropdown'
 import Modal from '@/components/reusables/Modal'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -41,8 +41,8 @@ const InvoicesRow: React.FC<InvoicesRowProps> = ({ invoice }) => {
       <div>
         <Checkbox id={invoice.id} />
       </div>
-      <div className='col-span-2'>{invoice.issueDate as any}</div>
-      <div className='col-span-2'>{invoice.dueDate as any}</div>
+      <div className='col-span-2'>{formatDate(invoice.issueDate)}</div>
+      <div className='col-span-2'>{formatDate(invoice.dueDate)}</div>
       <div>{invoice.invoiceNo}</div>
       <div className='col-span-2'>{invoice.issuedTo}</div>
       <div className='col-span-2'>{ngnFormatter.format(invoice.amount)}</div>

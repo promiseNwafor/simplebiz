@@ -15,6 +15,7 @@ import { addClient, deleteClient, editClient } from '@/actions/clients'
 import { sendInvoice } from '@/actions/invoice'
 import { getProduct, getProducts } from './products'
 import { getClient, getClients, getClientsNameAndBiz } from './clients'
+import { getInvoices } from './invoices'
 
 export const queryKeys = {
   getProducts: 'getProducts',
@@ -22,6 +23,7 @@ export const queryKeys = {
   getClients: 'getClients',
   getClient: 'getClient',
   getClientsNameAndBiz: 'getClientsNameAndBiz',
+  getInvoices: 'getInvoices',
 }
 
 /** =============== Clients ============== */
@@ -106,7 +108,6 @@ export const useGetProducts = (page: number) => {
     queryKey: [queryKeys.getProducts, page],
     queryFn: async () => {
       const res = await getProducts(page)
-      if (res.success) return res
       if (res.error) throw new Error(res.error)
 
       return res
@@ -168,16 +169,36 @@ export const useDeleteProduct = () => {
   })
 }
 
-/** =============== Invoice ============== */
+/** =============== Invoices ============== */
 
 export const useSendInvoice = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (values: InvoiceSchemaValues) =>
-      await sendInvoice(values),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [''] })
+    mutationFn: async (values: InvoiceSchemaValues) => {
+      const res = await sendInvoice(values)
+
+      if (res.error) throw new Error(res.error)
+
+      return res
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [queryKeys.getInvoices, 1] })
+    },
+  })
+}
+
+export const useGetInvoices = (page: number) => {
+  return queryOptions({
+    queryKey: [queryKeys.getInvoices, page],
+    queryFn: async () => {
+      const res = await getInvoices(page)
+      if (res.success) return res
+      if (res.error) throw new Error(res.error)
+
+      return res
+    },
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false,
   })
 }

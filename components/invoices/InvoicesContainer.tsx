@@ -1,127 +1,47 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useQuery } from '@tanstack/react-query'
+import { BeatLoader } from 'react-spinners'
+import ReactPaginate from 'react-paginate'
+import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react'
+
+import { useGetInvoices } from '@/store/useStoreData'
+import { INVOICES_PER_PAGE } from '@/constants'
 import AddButton from '@/components/reusables/AddButton'
 import Modal from '@/components/reusables/Modal'
 import InvoicesRow from './InvoicesRow'
 import InvoiceForm from './InvoiceForm'
-import { useRouter, useSearchParams } from 'next/navigation'
-
-const invoices = [
-  {
-    id: 'INV001',
-    issueDate: '2024-01-15',
-    dueDate: '2024-02-15',
-    invoiceNo: '1001',
-    issuedTo: 'John Doe',
-    amount: 500.0,
-    // outstanding: 200.0,
-    status: 'UNPAID',
-  },
-  {
-    id: 'INV002',
-    issueDate: '2024-01-20',
-    dueDate: '2024-02-20',
-    invoiceNo: '1002',
-    issuedTo: 'Jane Smith',
-    amount: 300.0,
-    // outstanding: 0.0,
-    status: 'PAID',
-  },
-  {
-    id: 'INV003',
-    issueDate: '2024-01-25',
-    dueDate: '2024-02-25',
-    invoiceNo: '1003',
-    issuedTo: 'Acme Corp',
-    amount: 750.0,
-    // outstanding: 750.0,
-    status: 'OVERDUE',
-  },
-  {
-    id: 'INV004',
-    issueDate: '2024-01-30',
-    dueDate: '2024-02-28',
-    invoiceNo: '1004',
-    issuedTo: 'Global Industries',
-    amount: 1000.0,
-    // outstanding: 500.0,
-    status: 'PAID',
-  },
-  {
-    id: 'INV005',
-    issueDate: '2024-02-01',
-    dueDate: '2024-03-01',
-    invoiceNo: '1005',
-    issuedTo: 'ABC Ltd',
-    amount: 250.0,
-    // outstanding: 250.0,
-    status: 'UNPAID',
-  },
-  {
-    id: 'INV006',
-    issueDate: '2024-02-05',
-    dueDate: '2024-03-05',
-    invoiceNo: '1006',
-    issuedTo: 'XYZ Inc',
-    amount: 400.0,
-    // outstanding: 100.0,
-    status: 'UNPAID',
-  },
-  {
-    id: 'INV007',
-    issueDate: '2024-02-10',
-    dueDate: '2024-03-10',
-    invoiceNo: '1007',
-    issuedTo: 'QWERTY Solutions',
-    amount: 150.0,
-    // outstanding: 0.0,
-    status: 'PAID',
-  },
-  {
-    id: 'INV008',
-    issueDate: '2024-02-12',
-    dueDate: '2024-03-12',
-    invoiceNo: '1008',
-    issuedTo: 'Acme Corp',
-    amount: 800.0,
-    // outstanding: 800.0,
-    status: 'OVERDUE',
-  },
-  {
-    id: 'INV009',
-    issueDate: '2024-02-15',
-    dueDate: '2024-03-15',
-    invoiceNo: '1009',
-    issuedTo: 'Jane Smith',
-    amount: 600.0,
-    // outstanding: 200.0,
-    status: 'UNPAID',
-  },
-  {
-    id: 'INV010',
-    issueDate: '2024-02-20',
-    dueDate: '2024-03-20',
-    invoiceNo: '1010',
-    issuedTo: 'John Doe',
-    amount: 350.0,
-    // outstanding: 0.0,
-    status: 'PAID',
-  },
-]
 
 const InvoicesContainer = () => {
   const [modalOpen, setModalOpen] = useState(false)
+  const [page, setPage] = useState(1)
+  const { data, isPlaceholderData, isPending } = useQuery(useGetInvoices(page))
 
   const searchParams = useSearchParams()
   const router = useRouter()
 
+  const invoices = data?.data?.data
+  const count = data?.data?.count as number
   const modalScreen = searchParams.get('screen')
 
   const toggleModal = () => {
     router.push('/invoices')
 
     setModalOpen((prevState) => !prevState)
+  }
+
+  const handlePageClick = (selectedPage: { selected: number }) => {
+    if (!isPlaceholderData) {
+      const pageNumber = selectedPage.selected + 1
+
+      const params = new URLSearchParams()
+      params.set('page', pageNumber.toString())
+
+      setPage(pageNumber)
+      router.push(`?${params.toString()}`)
+    }
   }
 
   return (
@@ -152,9 +72,47 @@ const InvoicesContainer = () => {
           </div>
 
           <div className='min-h-[280px]'>
-            {invoices.map((invoice) => {
-              return <InvoicesRow key={invoice.id} invoice={invoice as any} />
-            })}
+            {isPending ? (
+              <BeatLoader color='#008678' className='text-center mt-6' />
+            ) : (
+              <>
+                {data?.error || !invoices || !invoices.length ? (
+                  <div className='bg-white w-full h-[280px] py-5 centered border-t border-gray-200'>
+                    <p>No invoice available</p>
+                  </div>
+                ) : (
+                  <>
+                    {invoices.map((invoice) => {
+                      return (
+                        <InvoicesRow
+                          key={invoice.id}
+                          invoice={invoice as any}
+                        />
+                      )
+                    })}
+                  </>
+                )}
+              </>
+            )}
+          </div>
+          <div className='p-5 pb-0 centered gap-1'>
+            <ReactPaginate
+              pageCount={Math.ceil(count / INVOICES_PER_PAGE)}
+              pageRangeDisplayed={2}
+              marginPagesDisplayed={1}
+              previousLabel={
+                <ChevronLeft size={20} className='text-black/70' />
+              }
+              nextLabel={<ChevronRight size={20} className='text-black/70' />}
+              breakLabel={<MoreHorizontal className='h-4 w-4' />}
+              breakClassName='break-me'
+              onPageChange={handlePageClick}
+              containerClassName='pagination-container'
+              activeClassName='active'
+              previousClassName='action-button'
+              nextClassName='action-button'
+              disabledClassName='disabled-page-button'
+            />
           </div>
         </div>
       </div>

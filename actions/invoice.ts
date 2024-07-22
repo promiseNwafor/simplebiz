@@ -3,8 +3,14 @@
 import { InvoiceSchema, InvoiceSchemaValues } from '@/schemas'
 import { getClient } from '@/store/clients'
 import { sendInvoiceEmail } from '@/lib/mail'
-import { generateInvoice } from '@/lib'
+import { generateInvoice, generateInvoiceReference } from '@/lib'
 import { db } from '@/lib/db'
+import fs from 'fs/promises'
+
+export const readImageFile = async (filePath: string) => {
+  const data = await fs.readFile(filePath)
+  return data.buffer
+}
 
 export const sendInvoice = async (values: InvoiceSchemaValues) => {
   try {
@@ -29,26 +35,52 @@ export const sendInvoice = async (values: InvoiceSchemaValues) => {
       0
     )
 
+    const ref = generateInvoiceReference()
+    const issueDate = new Date().toISOString()
+    const due = new Date(dueDate).toISOString()
+
     // Generate invoice
-    const invoiceContent = await generateInvoice(
-      selectedClient,
-      selectedProducts,
-      totalAmount
+    const invoiceContent = await generateInvoice({
+      client: selectedClient,
+      products: selectedProducts,
+      totalAmount,
+      date: { due, issued: issueDate },
+      ref,
+    })
+
+    // Add invoice to the database
+    const dbRes = await db.invoice.create({
+      data: {
+        userId: selectedClient.userId,
+        clientId: selectedClient.id,
+        issuedTo: selectedClient.name,
+        dueDate: due,
+        amount: totalAmount,
+        issueDate,
+        invoiceRef: ref,
+      },
+    })
+
+    if (!dbRes) {
+      return { error: 'Error occurred while saving invoice!' }
+    }
+
+    // Send email
+    const emailRes = await sendInvoiceEmail(
+      dbRes.id,
+      'promisenwafor955@gmail.com',
+      invoiceContent
     )
 
-    // Send email and add invoice to the database concurrently
-    await Promise.all([
-      sendInvoiceEmail('promisenwafor955@gmail.com', invoiceContent),
-      db.invoice.create({
-        data: {
-          userId: selectedClient.userId,
-          clientId: selectedClient.id,
-          issuedTo: selectedClient.name,
-          dueDate: new Date(dueDate).toISOString(),
-          amount: totalAmount,
+    if (!emailRes || emailRes.error) {
+      db.invoice.delete({
+        where: {
+          id: dbRes.id,
         },
-      }),
-    ])
+      })
+
+      return { error: 'Error occurred while sending email!' }
+    }
 
     return {
       success: 'Invoice sent successfully!',

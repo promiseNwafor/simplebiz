@@ -52,7 +52,7 @@ const InvoiceDetails: React.FC<InvoiceDetailsProps> = ({
               <SelectContent id={name}>
                 {clients.map((option, i) => (
                   <SelectItem key={`${option.id}-${i}`} value={option.id}>
-                    {`${option.name} ${option.businessName && option.businessName}`}
+                    {`${option.name} ${option.businessName && '-' + option.businessName}`}
                   </SelectItem>
                 ))}
               </SelectContent>

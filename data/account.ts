@@ -11,3 +11,15 @@ export const getAccountByUserId = async (userId: string) => {
     return null
   }
 }
+
+export const getBusinessDetail = async (userId: string) => {
+  try {
+    const business = await db.business.findFirst({
+      where: { userId },
+    })
+
+    return business
+  } catch {
+    return null
+  }
+}

@@ -35,7 +35,11 @@ export const sendVerificationEmail = async (email: string, token: string) => {
   })
 }
 
-export const sendInvoiceEmail = async (email: string, attachment: string) => {
+export const sendInvoiceEmail = async (
+  id: string,
+  email: string,
+  attachment: string
+) => {
   const emailOptions = {
     attachments: [
       {
@@ -46,7 +50,7 @@ export const sendInvoiceEmail = async (email: string, attachment: string) => {
     from: 'onboarding@resend.dev',
     to: email,
     subject: 'Your Invoice',
-    html: '<p>Please find your invoice attached.</p>',
+    html: `<p>Please find your invoice attached. Click <a href="${domain}/invoices/${id}">here</a> to make payment</p>`,
   }
 
   return resend.emails.send(emailOptions)

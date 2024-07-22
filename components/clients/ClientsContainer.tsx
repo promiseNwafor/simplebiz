@@ -69,7 +69,7 @@ const ClientsContainer: React.FC = () => {
             <Suspense
               fallback={
                 <div className='bg-white w-full h-[400px] py-5 centered border-t border-gray-200'>
-                  <BeatLoader />
+                  <BeatLoader color='#008678' />
                 </div>
               }
             >
