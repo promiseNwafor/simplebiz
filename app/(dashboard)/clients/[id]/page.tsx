@@ -1,4 +1,8 @@
-import { QueryClient } from '@tanstack/react-query'
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from '@tanstack/react-query'
 import { useGetClient } from '@/store/useStoreData'
 import ClientContainer from '@/components/clients/ClientContainer'
 
@@ -7,7 +11,11 @@ const ClientPage = async ({ params }: { params: { id: string } }) => {
 
   await queryClient.prefetchQuery(useGetClient(params.id))
 
-  return <ClientContainer id={params.id} />
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <ClientContainer id={params.id} />
+    </HydrationBoundary>
+  )
 }
 
 export default ClientPage

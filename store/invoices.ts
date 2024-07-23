@@ -5,7 +5,7 @@ import { currentUser } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { GetResponse } from '@/types'
 import { INVOICES_PER_PAGE } from '@/constants'
-import { getInvoiceByRef } from '../data/invoices'
+import { getInvoiceByRef } from '@/data/invoices'
 
 type GetInvoices = (page: number) => Promise<GetResponse<Invoice[]>>
 

@@ -9,6 +9,7 @@ import { IconType } from 'react-icons/lib'
 export const CLIENTS_PER_PAGE = 5
 export const PRODUCTS_PER_PAGE = 4
 export const INVOICES_PER_PAGE = 5
+export const PAYMENT_PER_PAGE = 5
 
 type ISideBarItems = {
   displayName: string

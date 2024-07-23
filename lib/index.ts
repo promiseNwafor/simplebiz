@@ -4,7 +4,7 @@ import path from 'path'
 import { Client } from '@prisma/client'
 import { SelectedProducts } from '@/components/invoices/InvoiceForm'
 import { getBusinessDetail } from '@/data/account'
-import { readImageFile } from '@/actions/invoice'
+import { readImageFile } from '@/actions/invoices'
 
 export const ngnFormatter = new Intl.NumberFormat('en-NG', {
   style: 'currency',

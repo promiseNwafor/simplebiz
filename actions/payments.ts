@@ -1,8 +1,8 @@
 'use server'
 
+import { InvoiceStatus } from '@prisma/client'
 import { db } from '@/lib/db'
 import { Payment } from '@/types'
-import { InvoiceStatus } from '@prisma/client'
 
 export const addPayment = async (values: Payment) => {
   try {

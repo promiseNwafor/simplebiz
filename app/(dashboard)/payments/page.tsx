@@ -3,10 +3,10 @@ import {
   HydrationBoundary,
   QueryClient,
 } from '@tanstack/react-query'
-import { useGetInvoices } from '@/store/useStoreData'
-import InvoicesContainer from '@/components/invoices/InvoicesContainer'
+import { useGetPayments } from '@/store/useStoreData'
+import PaymentsContainer from '@/components/payments/PaymentsContainer'
 
-const InvoicesPage = async ({
+const PaymentsPage = async ({
   searchParams,
 }: {
   searchParams: { page: string }
@@ -15,13 +15,13 @@ const InvoicesPage = async ({
 
   const queryClient = new QueryClient()
 
-  await queryClient.prefetchQuery(useGetInvoices(page))
+  await queryClient.prefetchQuery(useGetPayments(page))
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <InvoicesContainer />
+      <PaymentsContainer />
     </HydrationBoundary>
   )
 }
 
-export default InvoicesPage
+export default PaymentsPage

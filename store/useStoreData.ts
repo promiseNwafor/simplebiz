@@ -12,12 +12,13 @@ import {
   ProductSchemaValues,
 } from '@/schemas'
 import { addClient, deleteClient, editClient } from '@/actions/clients'
-import { sendInvoice } from '@/actions/invoice'
-import { getProduct, getProducts } from './products'
-import { getClient, getClients, getClientsNameAndBiz } from './clients'
-import { getInvoiceById, getInvoices } from './invoices'
 import { Payment } from '@/types'
 import { addPayment } from '@/actions/payments'
+import { sendInvoice } from '@/actions/invoices'
+import { getClient, getClients, getClientsNameAndBiz } from './clients'
+import { getInvoiceById, getInvoices } from './invoices'
+import { getProduct, getProducts } from './products'
+import { getPayments } from './payments'
 
 export const queryKeys = {
   getProducts: 'getProducts',
@@ -239,5 +240,20 @@ export const useAddPayment = () => {
       queryClient.invalidateQueries({ queryKey: [queryKeys.getPayments, 1] })
       queryClient.invalidateQueries({ queryKey: [queryKeys.getInvoices, 1] })
     },
+  })
+}
+
+export const useGetPayments = (page: number) => {
+  return queryOptions({
+    queryKey: [queryKeys.getPayments, page],
+    queryFn: async () => {
+      const res = await getPayments(page)
+      if (res.success) return res
+      if (res.error) throw new Error(res.error)
+
+      return res
+    },
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false,
   })
 }
