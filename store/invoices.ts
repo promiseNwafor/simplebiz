@@ -1,6 +1,6 @@
 'use server'
 
-import { Invoice } from '@prisma/client'
+import { Invoice, InvoiceStatus } from '@prisma/client'
 import { currentUser } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { GetResponse } from '@/types'
@@ -16,6 +16,20 @@ export const getInvoices: GetInvoices = async (page) => {
 
     const itemsPerPage = INVOICES_PER_PAGE
     const offset = (page - 1) * itemsPerPage
+
+    // check if some invoices are overdue and set status to OVERDUE
+    await db.invoice.updateMany({
+      where: {
+        userId,
+        dueDate: {
+          lt: new Date(),
+        },
+        status: InvoiceStatus.UNPAID,
+      },
+      data: {
+        status: InvoiceStatus.OVERDUE,
+      },
+    })
 
     const count = await db.invoice.count({
       where: {
@@ -75,7 +89,7 @@ export const getInvoiceByToken = async (
     }
 
     if (new Date(data.expires) < new Date()) {
-      throw new Error('Token expired')
+      throw new Error('Token expired! Please contact support')
     }
 
     const invoice = await getInvoiceByRef(data.ref)

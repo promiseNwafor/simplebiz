@@ -48,9 +48,7 @@ const InvoicePaymentContainer: React.FC<InvoicePaymentContainerProps> = ({
         return router.replace('/invoices')
       })
     },
-    onClose: () => {
-      console.log('++++++++++++++')
-    },
+    onClose: () => {},
   }
 
   return (
