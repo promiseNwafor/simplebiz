@@ -50,7 +50,7 @@ export const sendInvoiceEmail = async (
     from: 'onboarding@resend.dev',
     to: email,
     subject: 'Your Invoice',
-    html: `<p>Please find your invoice attached. Click <a href="${domain}/invoices/${id}">here</a> to make payment</p>`,
+    html: `<p>Please find your invoice attached. Click <a href="${domain}/invoice/${id}">here</a> to make payment</p>`,
   }
 
   return resend.emails.send(emailOptions)

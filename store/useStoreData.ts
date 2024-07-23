@@ -15,7 +15,9 @@ import { addClient, deleteClient, editClient } from '@/actions/clients'
 import { sendInvoice } from '@/actions/invoice'
 import { getProduct, getProducts } from './products'
 import { getClient, getClients, getClientsNameAndBiz } from './clients'
-import { getInvoices } from './invoices'
+import { getInvoiceById, getInvoices } from './invoices'
+import { Payment } from '@/types'
+import { addPayment } from '@/actions/payments'
 
 export const queryKeys = {
   getProducts: 'getProducts',
@@ -24,6 +26,8 @@ export const queryKeys = {
   getClient: 'getClient',
   getClientsNameAndBiz: 'getClientsNameAndBiz',
   getInvoices: 'getInvoices',
+  getInvoice: 'getInvoice',
+  getPayments: 'getPayments',
 }
 
 /** =============== Clients ============== */
@@ -82,7 +86,10 @@ export const useEditClient = () => {
     }) => await editClient(id, values),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [queryKeys.getClient, queryKeys.getClients],
+        queryKey: [queryKeys.getClient],
+      })
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.getClients],
       })
     },
   })
@@ -95,7 +102,10 @@ export const useDeleteClient = () => {
     mutationFn: async (id: string) => await deleteClient(id),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [queryKeys.getClient, queryKeys.getClients],
+        queryKey: [queryKeys.getClient],
+      })
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.getClients],
       })
     },
   })
@@ -150,7 +160,10 @@ export const useEditProduct = () => {
     }) => await editProduct(id, values),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [queryKeys.getProduct, queryKeys.getProducts],
+        queryKey: [queryKeys.getProduct],
+      })
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.getProducts],
       })
     },
   })
@@ -163,7 +176,10 @@ export const useDeleteProduct = () => {
     mutationFn: async (id: string) => await deleteProduct(id),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [queryKeys.getProduct, queryKeys.getProducts],
+        queryKey: [queryKeys.getProduct],
+      })
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.getProducts],
       })
     },
   })
@@ -200,5 +216,28 @@ export const useGetInvoices = (page: number) => {
     },
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false,
+  })
+}
+
+export const useGetInvoice = (id: string) => {
+  return queryOptions({
+    queryKey: [queryKeys.getInvoice, id],
+    queryFn: async () => {
+      return await getInvoiceById(id)
+    },
+  })
+}
+
+/** =============== Payments ============== */
+
+export const useAddPayment = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (values: Payment) => await addPayment(values),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [queryKeys.getPayments, 1] })
+      queryClient.invalidateQueries({ queryKey: [queryKeys.getInvoices, 1] })
+    },
   })
 }

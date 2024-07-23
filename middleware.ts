@@ -16,9 +16,10 @@ export default auth((req): any => {
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix)
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname)
+  const isPaymentRoute = nextUrl.pathname.includes('/invoice/')
   const isAuthRoute = authRoutes.includes(nextUrl.pathname)
 
-  if (isApiAuthRoute) {
+  if (isApiAuthRoute || isPaymentRoute) {
     return null
   }
 

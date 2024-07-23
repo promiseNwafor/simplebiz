@@ -99,7 +99,7 @@ export const generateInvoice: (
     const col2Item = invoiceCol2[i]
     const col3Item = invoiceCol3[i]
     const y = height - (80 + (i + 1) * 15)
-    const opacity = i === 0 ? 1 : 0.5
+    const opacity = i === 0 ? 1 : 0.7
 
     page.drawText(row, {
       x,
@@ -146,7 +146,7 @@ export const generateInvoice: (
     size: 8,
     font,
     color,
-    opacity: 0.5,
+    opacity: 0.7,
   })
   page.drawText('QTY', {
     x: x * 3 + 200,
@@ -154,7 +154,7 @@ export const generateInvoice: (
     size: 8,
     font,
     color,
-    opacity: 0.5,
+    opacity: 0.7,
   })
   page.drawText('RATE (NGN)', {
     x: x * 3 + 250,
@@ -162,7 +162,7 @@ export const generateInvoice: (
     size: 8,
     font,
     color,
-    opacity: 0.5,
+    opacity: 0.7,
   })
   page.drawText('AMOUNT (NGN)', {
     x: x * 3 + 350,
@@ -170,7 +170,7 @@ export const generateInvoice: (
     size: 8,
     font,
     color,
-    opacity: 0.5,
+    opacity: 0.7,
   })
 
   products.forEach((product, i) => {
@@ -210,9 +210,9 @@ export const generateInvoice: (
       page.drawLine({
         start: { x: xPos + 10, y: y - 15 },
         end: { x: xPos + 450, y: y - 15 },
-        thickness: 0.5,
+        thickness: 0.7,
         color: rgb(0, 0, 0),
-        opacity: 0.5,
+        opacity: 0.7,
       })
   })
 

@@ -52,6 +52,7 @@ export type Invoice = {
   issuedTo: string
   amount: number
   invoiceNo: number
+  invoiceRef: string
   status: InvoiceStatus
   createdAt: Date
   updatedAt: Date
@@ -68,6 +69,14 @@ export type Product = {
   available: boolean
   imageURL: string
   quantity: number
+}
+
+export type Payment = {
+  id: string
+  amount: number
+  invoiceRef: string
+  clientName: string
+  token: string
 }
 
 export type ActionMenuProps = {

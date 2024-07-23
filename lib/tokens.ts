@@ -1,9 +1,36 @@
 import { v4 as uuidv4 } from 'uuid'
 import crypto from 'crypto'
-import { getVerificationTokenByEmail } from '@/data/verification-token'
+import {
+  getPaymentTokenByRef,
+  getVerificationTokenByEmail,
+} from '@/data/verification-token'
 import { db } from './db'
 import { getPasswordResetTokenByEmail } from '@/data/password-reset-token'
 import { getTwoFactorTokenByEmail } from '@/data/two-factor-token'
+
+export const generatePaymentToken = async (ref: string, dueDate: string) => {
+  const token = uuidv4()
+
+  const existingToken = await getPaymentTokenByRef(ref)
+
+  if (existingToken) {
+    await db.paymentToken.delete({
+      where: {
+        id: existingToken.id,
+      },
+    })
+  }
+
+  const paymentToken = await db.paymentToken.create({
+    data: {
+      ref,
+      token,
+      expires: dueDate,
+    },
+  })
+
+  return paymentToken
+}
 
 export const generateTwoFactorToken = async (email: string) => {
   const token = crypto.randomInt(100_000, 1_000_000).toString()

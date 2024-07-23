@@ -41,6 +41,7 @@ model User {
   clients       Client[]
   invoices      Invoice[]
   products      Product[]
+  payments      Payment[]
 
   isTwoFactorEnabled    Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
@@ -178,4 +179,30 @@ model Product {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("products")
+}
+
+model PaymentToken {
+  id      String   @id @default(cuid())
+  ref     String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([ref, token])
+}
+
+model Payment {
+  id            String   @id @default(cuid())
+  amount        Float
+  transactionNo Int      @default(autoincrement()) @map("transaction_no")
+  paymentDate   DateTime @default(now()) @map("payment_date")
+  invoiceRef    String   @map("invoice_ref")
+  clientName    String   @map("client_name")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
 }

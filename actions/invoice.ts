@@ -1,11 +1,12 @@
 'use server'
 
+import fs from 'fs/promises'
 import { InvoiceSchema, InvoiceSchemaValues } from '@/schemas'
 import { getClient } from '@/store/clients'
 import { sendInvoiceEmail } from '@/lib/mail'
 import { generateInvoice, generateInvoiceReference } from '@/lib'
 import { db } from '@/lib/db'
-import fs from 'fs/promises'
+import { generatePaymentToken } from '@/lib/tokens'
 
 export const readImageFile = async (filePath: string) => {
   const data = await fs.readFile(filePath)
@@ -65,9 +66,15 @@ export const sendInvoice = async (values: InvoiceSchemaValues) => {
       return { error: 'Error occurred while saving invoice!' }
     }
 
+    const paymentToken = await generatePaymentToken(ref, due)
+
+    if (!paymentToken) {
+      return { error: 'Error occurred!' }
+    }
+
     // Send email
     const emailRes = await sendInvoiceEmail(
-      dbRes.id,
+      paymentToken.token,
       'promisenwafor955@gmail.com',
       invoiceContent
     )
