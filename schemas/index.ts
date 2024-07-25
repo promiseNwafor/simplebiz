@@ -228,7 +228,8 @@ export const PaymentAccountSchema = z.object({
 export type PaymentAccountSchemaValues = z.infer<typeof PaymentAccountSchema>
 
 export const PaymentWithdrawalSchema = z.object({
-  amount: z.string().min(1, { message: 'Amount must be at least 1' }),
+  amount: z.number().min(1, { message: 'Amount must be at least 1' }),
+
   paymentDetailId: z.string(),
 })
 

@@ -2,7 +2,11 @@ import { useState } from 'react'
 
 import { useQuery } from '@tanstack/react-query'
 import { PaymentDetail } from '@prisma/client'
-import { useGetPaymentDetails, useGetWalletDetails } from '@/store/useStoreData'
+import {
+  useGetPaymentDetails,
+  useGetPendingWithdrawals,
+  useGetWalletDetails,
+} from '@/store/useStoreData'
 import { ngnFormatter } from '@/lib'
 import { Button } from '@/components/ui/button'
 import Modal from '@/components/reusables/Modal'
@@ -39,11 +43,13 @@ const PaymentDetails = () => {
 
   const { data: walletData } = useQuery(useGetWalletDetails())
   const { data: paymentDetailsData } = useQuery(useGetPaymentDetails())
+  const { data: pendingWithdrawals } = useQuery(useGetPendingWithdrawals())
 
   const toggleModal = (screen = ModalScreen.INITIAL) => setModalScreen(screen)
 
   const wallet = walletData?.data?.data
   const accountDetails = paymentDetailsData?.data?.data
+  const pendingAmount = pendingWithdrawals?.data?.amount
 
   const modalComponent = () => {
     switch (modalScreen) {
@@ -60,6 +66,7 @@ const PaymentDetails = () => {
             toggleModal={toggleModal}
             balance={wallet?.balance || 0}
             accountDetails={accountDetails}
+            pendingAmount={pendingAmount}
           />
         )
       default:
@@ -79,10 +86,22 @@ const PaymentDetails = () => {
       />
       <div className='grid md:grid-cols-2 gap-6'>
         <div className='bg-primary text-white flex flex-col justify-between rounded-lg p-5 h-52'>
-          <p className='font-medium'>Wallet balance</p>
-          <p className='text-3xl font-semibold'>
-            {ngnFormatter.format(wallet?.balance || 0)}
-          </p>
+          <div className='flex justify-between'>
+            <p className='font-medium'>Wallet balance</p>
+            {pendingAmount && <p className='font-medium'>Pending amount</p>}
+          </div>
+          <div className='flex justify-between'>
+            <p className='text-3xl font-semibold'>
+              {ngnFormatter.format(
+                (wallet?.balance || 0) - (pendingAmount || 0)
+              )}
+            </p>
+            {pendingAmount && (
+              <p className='text-xl font-semibold opacity-60'>
+                {`+ ${ngnFormatter.format(pendingAmount)}`}
+              </p>
+            )}
+          </div>
           <Button
             size='full'
             className='bg-white text-primary hover:bg-white hover:opacity-90'

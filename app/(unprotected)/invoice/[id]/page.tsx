@@ -36,6 +36,7 @@ const InvoicePage = async ({ params }: { params: { id: string } }) => {
           alt='logo'
           width={208}
           height={32}
+          priority
         />
         <Card className='w-full max-w-[428px] p-4 lg:px-6 lg:py-4 shadow-md mx-auto space-y-6'>
           <p className='text-xl font-semibold text-center'>Payment detail</p>

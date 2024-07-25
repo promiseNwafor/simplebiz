@@ -58,6 +58,7 @@ export const sendInvoiceEmail = async (
 }
 
 export const sendWithdrawalEmail = async (data: {
+  withdrawalId: string
   email: string
   name: string
   amount: number
@@ -65,7 +66,15 @@ export const sendWithdrawalEmail = async (data: {
   accountNumber: string
   bankName: string
 }) => {
-  const { email, name, amount, accountName, accountNumber, bankName } = data
+  const {
+    withdrawalId,
+    email,
+    name,
+    amount,
+    accountName,
+    accountNumber,
+    bankName,
+  } = data
   const options = {
     from: 'onboarding@resend.dev',
     to: email,
@@ -77,6 +86,7 @@ export const sendWithdrawalEmail = async (data: {
       <li>Account number: ${accountNumber}</li>
       <li>Account name: ${accountName}</li>
     </ul>
+    <p>Click <a href="${domain}/withdrawal/${withdrawalId}">here</a> to mark this transaction as complete. </p>
     </div>`,
   }
 

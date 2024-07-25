@@ -1,6 +1,6 @@
 'use server'
 
-import { Payment, PaymentDetail } from '@prisma/client'
+import { Payment, PaymentDetail, WithdrawalStatus } from '@prisma/client'
 import { PAYMENT_PER_PAGE } from '@/constants'
 import { currentUser } from '@/lib/auth'
 import { db } from '@/lib/db'
@@ -75,5 +75,27 @@ export const getPaymentDetails: GetPaymentDetails = async () => {
   } catch (error) {
     console.error(error)
     return { error: 'Error getting payment details', success: false }
+  }
+}
+
+export const getPendingWithdrawals = async () => {
+  try {
+    const user = await currentUser()
+    const userId = user?.id
+
+    const data = await db.withdrawal.aggregate({
+      _sum: {
+        amount: true,
+      },
+      where: {
+        userId,
+        status: WithdrawalStatus.PENDING,
+      },
+    })
+
+    return { data: data._sum, success: true }
+  } catch (error) {
+    console.error(error)
+    return { error: 'Error getting pending withdrawals', success: false }
   }
 }

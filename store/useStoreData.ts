@@ -20,12 +20,18 @@ import {
   addPaymentDetails,
   editPaymentDetails,
   requestWithdrawal,
+  updateWithdrawalStatus,
 } from '@/actions/payments'
 import { sendInvoice } from '@/actions/invoices'
 import { getClient, getClients, getClientsNameAndBiz } from './clients'
 import { getInvoiceById, getInvoices } from './invoices'
 import { getProduct, getProducts } from './products'
-import { getPaymentDetails, getPayments, getWalletDetails } from './payments'
+import {
+  getPaymentDetails,
+  getPayments,
+  getPendingWithdrawals,
+  getWalletDetails,
+} from './payments'
 
 export const queryKeys = {
   getProducts: 'getProducts',
@@ -38,6 +44,7 @@ export const queryKeys = {
   getPayments: 'getPayments',
   getWalletDetails: 'getWalletDetails',
   getPaymentDetails: 'getPaymentDetails',
+  getPendingWithdrawals: 'getPendingWithdrawals',
 }
 
 /** =============== Clients ============== */
@@ -321,8 +328,50 @@ export const useEditPaymentDetails = () => {
 }
 
 export const useRequestWithdrawal = () => {
+  const queryClient = useQueryClient()
+
   return useMutation({
-    mutationFn: async (values: PaymentWithdrawalSchemaValues) =>
-      await requestWithdrawal(values),
+    mutationFn: async ({
+      values,
+      balance,
+    }: {
+      values: PaymentWithdrawalSchemaValues
+      balance: number
+    }) => await requestWithdrawal(values, balance),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.getPendingWithdrawals],
+      })
+    },
+  })
+}
+
+export const useGetPendingWithdrawals = () => {
+  return queryOptions({
+    queryKey: [queryKeys.getPendingWithdrawals],
+    queryFn: async () => {
+      const res = await getPendingWithdrawals()
+      if (res.success) return res
+      if (res.error) throw new Error(res.error)
+
+      return res
+    },
+    refetchOnWindowFocus: false,
+  })
+}
+
+export const useUpdateWithdrawalStatus = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (id: string) => await updateWithdrawalStatus(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.getPendingWithdrawals],
+      })
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.getWalletDetails],
+      })
+    },
   })
 }

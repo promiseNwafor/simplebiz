@@ -1,7 +1,9 @@
+import { ChangeEvent, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { CirclePlus, SquarePen } from 'lucide-react'
 import { toast } from 'sonner'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { PaymentDetail } from '@prisma/client'
 import { PaymentWithdrawalSchema } from '@/schemas'
 import { useRequestWithdrawal } from '@/store/useStoreData'
 import { ngnFormatter } from '@/lib'
@@ -15,12 +17,13 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { PaymentDetail } from '@prisma/client'
+import { AuthError } from '@/components/auth/AuthError'
 import { displayDetails, ModalScreen } from './PaymentDetails'
 
 type PaymentAccountProps = {
   toggleModal: (screen?: ModalScreen) => void
   balance: number
+  pendingAmount: number | undefined | null
   accountDetails: PaymentDetail | undefined
 }
 
@@ -28,22 +31,25 @@ const PaymentWithdrawal: React.FC<PaymentAccountProps> = ({
   balance,
   accountDetails,
   toggleModal,
+  pendingAmount,
 }) => {
+  const [inputError, setInputError] = useState('')
+
   const { mutateAsync: withdraw, isPending } = useRequestWithdrawal()
 
   const form = useForm({
     resolver: zodResolver(PaymentWithdrawalSchema),
     defaultValues: {
-      amount: undefined,
+      amount: undefined as unknown as number,
       paymentDetailId: accountDetails?.id || undefined,
     },
   })
 
-  const { handleSubmit, control } = form
+  const { handleSubmit, control, setValue } = form
 
   const onSubmit = async (values: any) => {
     try {
-      const res = await withdraw(values)
+      const res = await withdraw({ values, balance })
       if (res.error) {
         return toast.error(res.error)
       }
@@ -54,12 +60,23 @@ const PaymentWithdrawal: React.FC<PaymentAccountProps> = ({
     }
   }
 
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setInputError('')
+
+    const value = +e.target.value
+    setValue('amount', value)
+
+    if (value > balance) {
+      setInputError('Amount exceeds your wallet balance!')
+    }
+  }
+
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
         <div className='space-y-1'>
           <small className='font-medium'>Available balance</small>
-          <p>{ngnFormatter.format(balance)}</p>
+          <p>{ngnFormatter.format(balance - (pendingAmount || 0))}</p>
         </div>
         <div className='bg-white flex flex-col justify-between rounded-lg min-h-[60px]'>
           <small className='font-medium'>Account information</small>
@@ -95,14 +112,20 @@ const PaymentWithdrawal: React.FC<PaymentAccountProps> = ({
             <FormItem>
               <FormLabel className='text-sm'>Amount to withdraw</FormLabel>
               <FormControl>
-                <Input placeholder='0' type='number' {...field} />
+                <Input
+                  placeholder='0'
+                  type='number'
+                  {...field}
+                  onChange={onChange}
+                />
               </FormControl>
               <FormMessage />
+              <AuthError message={inputError} />
             </FormItem>
           )}
         />
 
-        <Button type='submit' disabled={isPending}>
+        <Button type='submit' disabled={isPending || !!inputError}>
           Save
         </Button>
       </form>

@@ -1,6 +1,6 @@
 'use server'
 
-import { InvoiceStatus } from '@prisma/client'
+import { InvoiceStatus, WithdrawalStatus } from '@prisma/client'
 import { db } from '@/lib/db'
 import { Payment } from '@/types'
 import {
@@ -146,7 +146,8 @@ export const editPaymentDetails = async (
 }
 
 export const requestWithdrawal = async (
-  values: PaymentWithdrawalSchemaValues
+  values: PaymentWithdrawalSchemaValues,
+  balance: number
 ) => {
   try {
     const validatedFields = PaymentWithdrawalSchema.safeParse(values)
@@ -157,17 +158,12 @@ export const requestWithdrawal = async (
 
     const { amount, paymentDetailId } = validatedFields.data
 
+    if (amount > balance) {
+      return { error: 'Amount exceeds wallet balance!' }
+    }
+
     const user = await currentUser()
     const ref = generateWithdrawalReference()
-
-    await db.withdrawal.create({
-      data: {
-        userId: user.id,
-        paymentDetailId: paymentDetailId,
-        amount: Number(amount),
-        withdrawalRef: ref,
-      },
-    })
 
     const paymentDetail = await db.paymentDetail.findUnique({
       where: {
@@ -179,16 +175,69 @@ export const requestWithdrawal = async (
       return { error: 'Payment detail not found!' }
     }
 
+    const withdrawalRes = await db.withdrawal.create({
+      data: {
+        userId: user.id,
+        paymentDetailId,
+        amount,
+        withdrawalRef: ref,
+      },
+    })
+
     await sendWithdrawalEmail({
+      withdrawalId: withdrawalRes.id,
       email: 'promisenwafor955@gmail.com',
       name: user.name,
-      amount: Number(amount),
+      amount,
       accountName: paymentDetail.accountName,
       accountNumber: paymentDetail.accountNumber,
       bankName: paymentDetail.bankName,
     })
 
     return { success: 'Withdrawal requested successfully' }
+  } catch (error) {
+    console.error(error)
+
+    return {
+      error: `Something went wrong! ${(error as Error).message}`,
+    }
+  }
+}
+
+export const updateWithdrawalStatus = async (id: string) => {
+  try {
+    const user = await currentUser()
+
+    if (!user) {
+      return {
+        error:
+          'User not found! You have to be logged in to complete this action.',
+      }
+    }
+
+    const withdrawalRes = await db.withdrawal.update({
+      where: {
+        id,
+      },
+      data: {
+        status: WithdrawalStatus.COMPLETED,
+      },
+    })
+
+    console.log('++++++++++++++', withdrawalRes)
+
+    await db.wallet.update({
+      where: {
+        userId: user.id,
+      },
+      data: {
+        balance: {
+          decrement: withdrawalRes.amount,
+        },
+      },
+    })
+
+    return { success: 'Status updated!' }
   } catch (error) {
     console.error(error)
 
