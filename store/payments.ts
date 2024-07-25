@@ -1,10 +1,10 @@
 'use server'
 
-import { Payment } from '@prisma/client'
+import { Payment, PaymentDetail } from '@prisma/client'
 import { PAYMENT_PER_PAGE } from '@/constants'
 import { currentUser } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { GetResponse } from '@/types'
+import { GetResponse, Wallet } from '@/types'
 
 type GetPayments = (page: number) => Promise<GetResponse<Payment[]>>
 
@@ -35,5 +35,45 @@ export const getPayments: GetPayments = async (page) => {
   } catch (error) {
     console.error(error)
     return { error: 'Error getting payments', success: false }
+  }
+}
+
+type GetWalletDetails = () => Promise<GetResponse<Wallet>>
+
+export const getWalletDetails: GetWalletDetails = async () => {
+  try {
+    const user = await currentUser()
+    const userId = user?.id
+
+    const data = (await db.wallet.findUnique({
+      where: {
+        userId,
+      },
+    })) as Wallet
+
+    return { data: { data, count: 1 }, success: true }
+  } catch (error) {
+    console.error(error)
+    return { error: 'Error getting wallet details', success: false }
+  }
+}
+
+type GetPaymentDetails = () => Promise<GetResponse<PaymentDetail>>
+
+export const getPaymentDetails: GetPaymentDetails = async () => {
+  try {
+    const user = await currentUser()
+    const userId = user?.id
+
+    const data = (await db.paymentDetail.findUnique({
+      where: {
+        userId,
+      },
+    })) as PaymentDetail
+
+    return { data: { data, count: 1 }, success: true }
+  } catch (error) {
+    console.error(error)
+    return { error: 'Error getting payment details', success: false }
   }
 }

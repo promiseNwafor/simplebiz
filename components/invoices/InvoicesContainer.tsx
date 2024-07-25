@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { BeatLoader } from 'react-spinners'
 import ReactPaginate from 'react-paginate'
@@ -19,16 +19,12 @@ const InvoicesContainer = () => {
   const [page, setPage] = useState(1)
   const { data, isPlaceholderData, isPending } = useQuery(useGetInvoices(page))
 
-  const searchParams = useSearchParams()
   const router = useRouter()
 
   const invoices = data?.data?.data
   const count = data?.data?.count as number
-  const modalScreen = searchParams.get('screen')
 
   const toggleModal = () => {
-    router.push('/invoices')
-
     setModalOpen((prevState) => !prevState)
   }
 
@@ -50,7 +46,7 @@ const InvoicesContainer = () => {
         open={modalOpen}
         onClose={toggleModal}
         content={<InvoiceForm toggleModal={toggleModal} />}
-        title={modalScreen === '2' ? 'Action Details' : 'Generate Invoice'}
+        title='Generate Invoice'
       />
       <div className='flex items-center justify-end'>
         <AddButton onClick={toggleModal}>Generate Invoice</AddButton>

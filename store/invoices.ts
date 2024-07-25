@@ -89,7 +89,7 @@ export const getInvoiceByToken = async (
     }
 
     if (new Date(data.expires) < new Date()) {
-      throw new Error('Token expired! Please contact support')
+      return { error: 'Token expired! Please contact support', success: false }
     }
 
     const invoice = await getInvoiceByRef(data.ref)
@@ -97,6 +97,6 @@ export const getInvoiceByToken = async (
     return { data: { data: invoice as Invoice, count: 1 }, success: true }
   } catch (error) {
     console.error(error)
-    return { error: 'Error getting invoice', success: false }
+    return { error: `${error || 'Error getting invoice'}`, success: false }
   }
 }

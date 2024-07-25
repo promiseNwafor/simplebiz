@@ -8,11 +8,8 @@ import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { useGetPayments } from '@/store/useStoreData'
 import { PAYMENT_PER_PAGE } from '@/constants'
-import { Button } from '@/components/ui/button'
-import PaymentsRow from './InvoicesRow'
-
-const accountInfoTitles = ['Bank', 'Account number', 'Account name']
-const accountInfoValues = ['Access Bank plc', '1234567890', 'John Doe']
+import PaymentsRow from './PaymentsRow'
+import PaymentDetails from './PaymentDetails'
 
 const PaymentsContainer = () => {
   const [page, setPage] = useState(1)
@@ -37,36 +34,7 @@ const PaymentsContainer = () => {
 
   return (
     <div className='space-y-8'>
-      <div className='grid md:grid-cols-2 gap-6'>
-        <div className='bg-primary text-white flex flex-col justify-between rounded-lg p-5 h-52'>
-          <p className='font-medium'>Wallet balance</p>
-          <p className='text-3xl font-semibold'>N200,000</p>
-          <Button
-            size='full'
-            className='bg-white text-primary hover:bg-white hover:opacity-90'
-          >
-            Withdraw
-          </Button>
-        </div>
-        <div className='bg-white flex flex-col justify-between rounded-lg p-5 h-52'>
-          <p className='font-medium'>Account information</p>
-          <div className='flex justify-between'>
-            {accountInfoTitles.map((title, index) => (
-              <div key={index}>
-                <small className='opacity-50'>{title}</small>
-                <p>{accountInfoValues[index]}</p>
-              </div>
-            ))}
-          </div>
-          <Button
-            size='full'
-            variant='outline'
-            className='border-primary text-primary hover:text-primary hover:opacity-90'
-          >
-            Withdraw
-          </Button>
-        </div>
-      </div>
+      <PaymentDetails />
 
       <div className='bg-white rounded-lg py-5 overflow-x-scroll'>
         <div className='p-5 pt-0'>
@@ -75,10 +43,10 @@ const PaymentsContainer = () => {
         <div className='min-w-[900px]'>
           <div className='bg-secondary grid grid-cols-12 text-xs font-semibold p-4 border-b border-gray-200'>
             <div></div>
-            <div className='col-span-2'>Transaction No.</div>
+            <div className='col-span-2'>Transaction No</div>
             <div className='col-span-2'>Payment Date</div>
             <div className='col-span-2'>Amount</div>
-            <div className='col-span-2'>Invoice Ref.</div>
+            <div className='col-span-2'>Invoice Ref</div>
             <div className='col-span-2'>Billed to</div>
             <div></div>
           </div>

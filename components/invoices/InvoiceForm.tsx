@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
-import { useRouter, useSearchParams } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { InvoiceSchemaValues, InvoiceSchema } from '@/schemas'
 import { useSendInvoice } from '@/store/useStoreData'
@@ -27,13 +26,8 @@ type InvoiceFormProps = {
 
 const InvoiceForm: React.FC<InvoiceFormProps> = () => {
   const [pdfData, setPdfData] = useState('')
-  const [isPending, startTransition] = useTransition()
-  const { mutateAsync: sendInvoice } = useSendInvoice()
-
-  const router = useRouter()
-  const searchParams = useSearchParams()
-
-  const modalScreen = searchParams.get('screen')
+  const [modalScreen, setModalScreen] = useState(1)
+  const { mutateAsync: sendInvoice, isPending } = useSendInvoice()
 
   const form = useForm<InvoiceSchemaValues>({
     resolver: zodResolver(InvoiceSchema),
@@ -48,38 +42,33 @@ const InvoiceForm: React.FC<InvoiceFormProps> = () => {
   const { handleSubmit, control } = form
 
   const onSubmit = async (values: InvoiceSchemaValues) => {
-    startTransition(async () => {
-      try {
-        const res = await sendInvoice(values)
-        if (res.success) {
-          toast.success(res.success)
-          setPdfData(res.data)
-        }
-        return
-      } catch (error) {
-        console.error(error)
-        toast.error('Something went wrong!')
+    try {
+      const res = await sendInvoice(values)
+      if (res.success) {
+        toast.success(res.success)
+        setPdfData(res.data)
       }
-    })
+      return
+    } catch (error) {
+      console.error(error)
+      toast.error('Something went wrong!')
+    }
   }
 
   const handleNextClick = (screen: number) => {
-    const params = new URLSearchParams()
-    params.set('screen', screen.toString())
-
-    router.push(`?${params.toString()}`)
+    setModalScreen(screen)
   }
 
   const modalComponent = () => {
     switch (modalScreen) {
-      case '1':
+      case 1:
         return (
           <SelectInvoiceProducts
             form={form}
             handleNextClick={handleNextClick}
           />
         )
-      case '2':
+      case 2:
         return <InvoiceDetails control={control} isPending={isPending} />
       default:
         return (

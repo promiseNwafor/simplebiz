@@ -9,16 +9,23 @@ import { addProduct, deleteProduct, editProduct } from '@/actions/products'
 import {
   ClientSchemaValues,
   InvoiceSchemaValues,
+  PaymentAccountSchemaValues,
+  PaymentWithdrawalSchemaValues,
   ProductSchemaValues,
 } from '@/schemas'
 import { addClient, deleteClient, editClient } from '@/actions/clients'
 import { Payment } from '@/types'
-import { addPayment } from '@/actions/payments'
+import {
+  addPayment,
+  addPaymentDetails,
+  editPaymentDetails,
+  requestWithdrawal,
+} from '@/actions/payments'
 import { sendInvoice } from '@/actions/invoices'
 import { getClient, getClients, getClientsNameAndBiz } from './clients'
 import { getInvoiceById, getInvoices } from './invoices'
 import { getProduct, getProducts } from './products'
-import { getPayments } from './payments'
+import { getPaymentDetails, getPayments, getWalletDetails } from './payments'
 
 export const queryKeys = {
   getProducts: 'getProducts',
@@ -29,6 +36,8 @@ export const queryKeys = {
   getInvoices: 'getInvoices',
   getInvoice: 'getInvoice',
   getPayments: 'getPayments',
+  getWalletDetails: 'getWalletDetails',
+  getPaymentDetails: 'getPaymentDetails',
 }
 
 /** =============== Clients ============== */
@@ -239,6 +248,7 @@ export const useAddPayment = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [queryKeys.getPayments, 1] })
       queryClient.invalidateQueries({ queryKey: [queryKeys.getInvoices, 1] })
+      queryClient.invalidateQueries({ queryKey: [queryKeys.getWalletDetails] })
     },
   })
 }
@@ -255,5 +265,64 @@ export const useGetPayments = (page: number) => {
     },
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false,
+  })
+}
+
+export const useGetWalletDetails = () => {
+  return queryOptions({
+    queryKey: [queryKeys.getWalletDetails],
+    queryFn: async () => {
+      const res = await getWalletDetails()
+      if (res.success) return res
+      if (res.error) throw new Error(res.error)
+
+      return res
+    },
+    refetchOnWindowFocus: false,
+  })
+}
+
+export const useAddPaymentDetails = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (values: PaymentAccountSchemaValues) =>
+      await addPaymentDetails(values),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [queryKeys.getPaymentDetails] })
+    },
+  })
+}
+
+export const useGetPaymentDetails = () => {
+  return queryOptions({
+    queryKey: [queryKeys.getPaymentDetails],
+    queryFn: async () => {
+      const res = await getPaymentDetails()
+      if (res.success) return res
+      if (res.error) throw new Error(res.error)
+
+      return res
+    },
+    refetchOnWindowFocus: false,
+  })
+}
+
+export const useEditPaymentDetails = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (values: PaymentAccountSchemaValues) =>
+      await editPaymentDetails(values),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [queryKeys.getPaymentDetails] })
+    },
+  })
+}
+
+export const useRequestWithdrawal = () => {
+  return useMutation({
+    mutationFn: async (values: PaymentWithdrawalSchemaValues) =>
+      await requestWithdrawal(values),
   })
 }

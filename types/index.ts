@@ -1,4 +1,4 @@
-import { InvoiceStatus, ProductType } from '@prisma/client'
+import { InvoiceStatus, PaymentDetail, ProductType } from '@prisma/client'
 
 export type ClientProps = {
   id: string
@@ -77,6 +77,15 @@ export type Payment = {
   invoiceRef: string
   clientName: string
   token: string
+}
+
+export type Wallet = {
+  id: string
+  balance: number
+  paymentDetails: PaymentDetail[]
+  createdAt: Date
+  updatedAt: Date
+  userId: string
 }
 
 export type ActionMenuProps = {

@@ -3,7 +3,7 @@ import {
   HydrationBoundary,
   QueryClient,
 } from '@tanstack/react-query'
-import { useGetPayments } from '@/store/useStoreData'
+import { useGetPayments, useGetWalletDetails } from '@/store/useStoreData'
 import PaymentsContainer from '@/components/payments/PaymentsContainer'
 
 const PaymentsPage = async ({
@@ -16,6 +16,7 @@ const PaymentsPage = async ({
   const queryClient = new QueryClient()
 
   await queryClient.prefetchQuery(useGetPayments(page))
+  await queryClient.prefetchQuery(useGetWalletDetails())
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

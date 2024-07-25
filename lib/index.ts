@@ -1,4 +1,3 @@
-import crypto from 'crypto'
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib'
 import path from 'path'
 import { Client } from '@prisma/client'
@@ -23,8 +22,12 @@ export const formatDate = (date: Date) => {
 
 export const generateInvoiceReference = () => {
   const timestamp = Date.now()
-  const randomString = crypto.randomBytes(4).toString('hex')
-  return `INV-${timestamp}-${randomString}`
+  return `INV-${timestamp}`
+}
+
+export const generateWithdrawalReference = () => {
+  const timestamp = Date.now()
+  return `WD-${timestamp}`
 }
 
 type GenerateInvoice = {
@@ -57,7 +60,7 @@ export const generateInvoice: (
     'Bill to',
     client.businessName || client.name,
     client.billingAddress,
-    client.phone,
+    client.email,
   ]
 
   const invoiceCol3 = [

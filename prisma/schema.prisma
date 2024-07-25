@@ -26,22 +26,30 @@ enum ProductType {
   OTHER
 }
 
+enum WithdrawalStatus {
+  PENDING
+  COMPLETED
+}
+
 model User {
-  id            String     @id @default(cuid())
-  name          String?
-  email         String?    @unique
-  emailVerified DateTime?  @map("email_verified")
-  image         String?
-  password      String?
-  phone         String?
-  address       String?
-  role          UserRole   @default(USER)
-  accounts      Account[]
-  businesses    Business[]
-  clients       Client[]
-  invoices      Invoice[]
-  products      Product[]
-  payments      Payment[]
+  id             String          @id @default(cuid())
+  name           String?
+  email          String?         @unique
+  emailVerified  DateTime?       @map("email_verified")
+  image          String?
+  password       String?
+  phone          String?
+  address        String?
+  role           UserRole        @default(USER)
+  accounts       Account[]
+  businesses     Business[]
+  clients        Client[]
+  invoices       Invoice[]
+  products       Product[]
+  payments       Payment[]
+  withdrawals    Withdrawal[]
+  wallets        Wallet[]
+  paymentDetails PaymentDetail[]
 
   isTwoFactorEnabled    Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
@@ -205,4 +213,57 @@ model Payment {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("payments")
+}
+
+model Withdrawal {
+  id            String           @id @default(cuid())
+  amount        Float
+  withdrawalNo  Int              @default(autoincrement()) @map("withdrawal_no")
+  withdrawalRef String           @map("withdrawal_ref")
+  status        WithdrawalStatus @default(PENDING)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userId          String        @map("user_id")
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  paymentDetailId String        @map("paymentDetail_id")
+  paymentDetail   PaymentDetail @relation(fields: [paymentDetailId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+  @@map("withdrawals")
+}
+
+model Wallet {
+  id             String          @id @default(cuid())
+  balance        Float           @default(0)
+  paymentDetails PaymentDetail[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+  @@map("wallets")
+}
+
+model PaymentDetail {
+  id            String       @id @default(cuid())
+  accountName   String       @map("account_name")
+  accountNumber String       @map("account_number")
+  bankName      String       @map("bank_name")
+  withdrawals   Withdrawal[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userId   String @map("user_id")
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  walletId String @map("wallet_id")
+  wallet   Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+  @@map("paymentDetails")
 }

@@ -202,3 +202,36 @@ export const InvoiceSchema = z.object({
 })
 
 export type InvoiceSchemaValues = z.infer<typeof InvoiceSchema>
+
+export const PaymentAccountSchema = z.object({
+  bankName: z
+    .string()
+    .min(2, { message: 'Bank name must be at least 2 characters long' })
+    .max(20, { message: 'Bank name must be at most 20 characters long' })
+    .regex(/^[a-zA-Z\s]*$/, {
+      message: 'Bank name can only contain letters and spaces',
+    }),
+  accountNumber: z
+    .string()
+    .min(8, { message: 'Enter a valid account number' })
+    .max(12, { message: 'Enter a valid account number' })
+    .regex(/^\d+$/, { message: 'Account number can only contain digits' }),
+  accountName: z
+    .string()
+    .min(2, { message: 'Account name must be at least 2 characters long' })
+    .max(50, { message: 'Account name must be at most 50 characters long' })
+    .regex(/^[a-zA-Z\s]*$/, {
+      message: 'Account name can only contain letters and spaces',
+    }),
+})
+
+export type PaymentAccountSchemaValues = z.infer<typeof PaymentAccountSchema>
+
+export const PaymentWithdrawalSchema = z.object({
+  amount: z.string().min(1, { message: 'Amount must be at least 1' }),
+  paymentDetailId: z.string(),
+})
+
+export type PaymentWithdrawalSchemaValues = z.infer<
+  typeof PaymentWithdrawalSchema
+>

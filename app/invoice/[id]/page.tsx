@@ -10,8 +10,8 @@ const InvoicePage = async ({ params }: { params: { id: string } }) => {
 
   if (invoiceData.error || !invoiceData.data) {
     return (
-      <div className='w-screen h-screen centered text-2xl'>
-        Invoice not found
+      <div className='w-screen h-screen centered text-xl'>
+        {invoiceData.error || 'Invoice not found'}
       </div>
     )
   }
@@ -24,9 +24,7 @@ const InvoicePage = async ({ params }: { params: { id: string } }) => {
 
   if (!clientData || clientData.error) {
     return (
-      <div className='w-screen h-screen centered text-2xl'>
-        Client not found
-      </div>
+      <div className='w-screen h-screen centered text-xl'>Client not found</div>
     )
   }
 

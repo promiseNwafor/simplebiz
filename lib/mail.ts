@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import { ngnFormatter } from '.'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -54,4 +55,30 @@ export const sendInvoiceEmail = async (
   }
 
   return resend.emails.send(emailOptions)
+}
+
+export const sendWithdrawalEmail = async (data: {
+  email: string
+  name: string
+  amount: number
+  accountName: string
+  accountNumber: string
+  bankName: string
+}) => {
+  const { email, name, amount, accountName, accountNumber, bankName } = data
+  const options = {
+    from: 'onboarding@resend.dev',
+    to: email,
+    subject: 'Withdrawal Request',
+    html: `<div>
+    <p>${name} has requested the withdrawal of ${ngnFormatter.format(amount)}</p>
+    <ul>
+      <li>Bank name: ${bankName}</li>
+      <li>Account number: ${accountNumber}</li>
+      <li>Account name: ${accountName}</li>
+    </ul>
+    </div>`,
+  }
+
+  return resend.emails.send(options)
 }
