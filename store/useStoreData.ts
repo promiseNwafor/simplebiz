@@ -33,7 +33,7 @@ import {
   getWalletDetails,
 } from './payments'
 
-export const queryKeys = {
+export const storeQueryKeys = {
   getProducts: 'getProducts',
   getProduct: 'getProduct',
   getClients: 'getClients',
@@ -51,7 +51,7 @@ export const queryKeys = {
 
 export const useGetClients = (page: number) => {
   return queryOptions({
-    queryKey: [queryKeys.getClients, page],
+    queryKey: [storeQueryKeys.getClients, page],
     queryFn: async () => {
       return await getClients(page)
     },
@@ -62,7 +62,7 @@ export const useGetClients = (page: number) => {
 
 export const useGetClientsNameAndBiz = () => {
   return useQuery({
-    queryKey: [queryKeys.getClientsNameAndBiz],
+    queryKey: [storeQueryKeys.getClientsNameAndBiz],
     queryFn: async () => {
       return await getClientsNameAndBiz()
     },
@@ -72,7 +72,7 @@ export const useGetClientsNameAndBiz = () => {
 
 export const useGetClient = (id: string) => {
   return queryOptions({
-    queryKey: [queryKeys.getClient, id],
+    queryKey: [storeQueryKeys.getClient, id],
     queryFn: async () => {
       return await getClient(id)
     },
@@ -85,7 +85,7 @@ export const useAddClient = () => {
   return useMutation({
     mutationFn: async (values: ClientSchemaValues) => await addClient(values),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [queryKeys.getClients] })
+      queryClient.invalidateQueries({ queryKey: [storeQueryKeys.getClients] })
     },
   })
 }
@@ -103,10 +103,10 @@ export const useEditClient = () => {
     }) => await editClient(id, values),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [queryKeys.getClient],
+        queryKey: [storeQueryKeys.getClient],
       })
       queryClient.invalidateQueries({
-        queryKey: [queryKeys.getClients],
+        queryKey: [storeQueryKeys.getClients],
       })
     },
   })
@@ -119,10 +119,10 @@ export const useDeleteClient = () => {
     mutationFn: async (id: string) => await deleteClient(id),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [queryKeys.getClient],
+        queryKey: [storeQueryKeys.getClient],
       })
       queryClient.invalidateQueries({
-        queryKey: [queryKeys.getClients],
+        queryKey: [storeQueryKeys.getClients],
       })
     },
   })
@@ -132,7 +132,7 @@ export const useDeleteClient = () => {
 
 export const useGetProducts = (page: number) => {
   return queryOptions({
-    queryKey: [queryKeys.getProducts, page],
+    queryKey: [storeQueryKeys.getProducts, page],
     queryFn: async () => {
       const res = await getProducts(page)
       if (res.error) throw new Error(res.error)
@@ -146,7 +146,7 @@ export const useGetProducts = (page: number) => {
 
 export const useGetProduct = (id: string) => {
   return queryOptions({
-    queryKey: [queryKeys.getProduct, id],
+    queryKey: [storeQueryKeys.getProduct, id],
     queryFn: async () => {
       return await getProduct(id)
     },
@@ -159,7 +159,7 @@ export const useAddProduct = () => {
   return useMutation({
     mutationFn: async (values: ProductSchemaValues) => await addProduct(values),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [queryKeys.getProducts] })
+      queryClient.invalidateQueries({ queryKey: [storeQueryKeys.getProducts] })
     },
   })
 }
@@ -177,10 +177,10 @@ export const useEditProduct = () => {
     }) => await editProduct(id, values),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [queryKeys.getProduct],
+        queryKey: [storeQueryKeys.getProduct],
       })
       queryClient.invalidateQueries({
-        queryKey: [queryKeys.getProducts],
+        queryKey: [storeQueryKeys.getProducts],
       })
     },
   })
@@ -193,10 +193,10 @@ export const useDeleteProduct = () => {
     mutationFn: async (id: string) => await deleteProduct(id),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [queryKeys.getProduct],
+        queryKey: [storeQueryKeys.getProduct],
       })
       queryClient.invalidateQueries({
-        queryKey: [queryKeys.getProducts],
+        queryKey: [storeQueryKeys.getProducts],
       })
     },
   })
@@ -216,14 +216,16 @@ export const useSendInvoice = () => {
       return res
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [queryKeys.getInvoices, 1] })
+      queryClient.invalidateQueries({
+        queryKey: [storeQueryKeys.getInvoices, 1],
+      })
     },
   })
 }
 
 export const useGetInvoices = (page: number) => {
   return queryOptions({
-    queryKey: [queryKeys.getInvoices, page],
+    queryKey: [storeQueryKeys.getInvoices, page],
     queryFn: async () => {
       const res = await getInvoices(page)
       if (res.success) return res
@@ -238,7 +240,7 @@ export const useGetInvoices = (page: number) => {
 
 export const useGetInvoice = (id: string) => {
   return queryOptions({
-    queryKey: [queryKeys.getInvoice, id],
+    queryKey: [storeQueryKeys.getInvoice, id],
     queryFn: async () => {
       return await getInvoiceById(id)
     },
@@ -253,16 +255,22 @@ export const useAddPayment = () => {
   return useMutation({
     mutationFn: async (values: Payment) => await addPayment(values),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [queryKeys.getPayments, 1] })
-      queryClient.invalidateQueries({ queryKey: [queryKeys.getInvoices, 1] })
-      queryClient.invalidateQueries({ queryKey: [queryKeys.getWalletDetails] })
+      queryClient.invalidateQueries({
+        queryKey: [storeQueryKeys.getPayments, 1],
+      })
+      queryClient.invalidateQueries({
+        queryKey: [storeQueryKeys.getInvoices, 1],
+      })
+      queryClient.invalidateQueries({
+        queryKey: [storeQueryKeys.getWalletDetails],
+      })
     },
   })
 }
 
 export const useGetPayments = (page: number) => {
   return queryOptions({
-    queryKey: [queryKeys.getPayments, page],
+    queryKey: [storeQueryKeys.getPayments, page],
     queryFn: async () => {
       const res = await getPayments(page)
       if (res.success) return res
@@ -277,7 +285,7 @@ export const useGetPayments = (page: number) => {
 
 export const useGetWalletDetails = () => {
   return queryOptions({
-    queryKey: [queryKeys.getWalletDetails],
+    queryKey: [storeQueryKeys.getWalletDetails],
     queryFn: async () => {
       const res = await getWalletDetails()
       if (res.success) return res
@@ -296,14 +304,16 @@ export const useAddPaymentDetails = () => {
     mutationFn: async (values: PaymentAccountSchemaValues) =>
       await addPaymentDetails(values),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [queryKeys.getPaymentDetails] })
+      queryClient.invalidateQueries({
+        queryKey: [storeQueryKeys.getPaymentDetails],
+      })
     },
   })
 }
 
 export const useGetPaymentDetails = () => {
   return queryOptions({
-    queryKey: [queryKeys.getPaymentDetails],
+    queryKey: [storeQueryKeys.getPaymentDetails],
     queryFn: async () => {
       const res = await getPaymentDetails()
       if (res.success) return res
@@ -322,7 +332,9 @@ export const useEditPaymentDetails = () => {
     mutationFn: async (values: PaymentAccountSchemaValues) =>
       await editPaymentDetails(values),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [queryKeys.getPaymentDetails] })
+      queryClient.invalidateQueries({
+        queryKey: [storeQueryKeys.getPaymentDetails],
+      })
     },
   })
 }
@@ -340,7 +352,7 @@ export const useRequestWithdrawal = () => {
     }) => await requestWithdrawal(values, balance),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [queryKeys.getPendingWithdrawals],
+        queryKey: [storeQueryKeys.getPendingWithdrawals],
       })
     },
   })
@@ -348,7 +360,7 @@ export const useRequestWithdrawal = () => {
 
 export const useGetPendingWithdrawals = () => {
   return queryOptions({
-    queryKey: [queryKeys.getPendingWithdrawals],
+    queryKey: [storeQueryKeys.getPendingWithdrawals],
     queryFn: async () => {
       const res = await getPendingWithdrawals()
       if (res.success) return res
@@ -367,10 +379,10 @@ export const useUpdateWithdrawalStatus = () => {
     mutationFn: async (id: string) => await updateWithdrawalStatus(id),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [queryKeys.getPendingWithdrawals],
+        queryKey: [storeQueryKeys.getPendingWithdrawals],
       })
       queryClient.invalidateQueries({
-        queryKey: [queryKeys.getWalletDetails],
+        queryKey: [storeQueryKeys.getWalletDetails],
       })
     },
   })

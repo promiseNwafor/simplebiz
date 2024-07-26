@@ -2,13 +2,25 @@
 
 import Image from 'next/image'
 import { toast } from 'sonner'
-import { useUpdateWithdrawalStatus } from '@/store/useStoreData'
+import { useQuery } from '@tanstack/react-query'
+import { useRouter } from 'next/navigation'
+import {
+  useGetPendingWithdrawals,
+  useUpdateWithdrawalStatus,
+} from '@/store/useStoreData'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
 const WithdrawalPage = ({ params }: { params: { id: string } }) => {
   const { mutateAsync: updateWithdrawalStatus, isPending } =
     useUpdateWithdrawalStatus()
+  const { data: pendingWithdrawals } = useQuery(useGetPendingWithdrawals())
+
+  const router = useRouter()
+
+  if (!pendingWithdrawals?.data?.amount) {
+    return <div className='centered h-screen'>No pending status to update</div>
+  }
 
   const updateStatus = async () => {
     try {
@@ -17,7 +29,8 @@ const WithdrawalPage = ({ params }: { params: { id: string } }) => {
         return toast.error(res.error)
       }
 
-      return toast.success(res?.success)
+      toast.success(res?.success)
+      return router.replace('/invoices')
     } catch (error) {
       toast.error('Something went wrong!')
     }

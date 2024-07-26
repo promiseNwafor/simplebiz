@@ -50,6 +50,48 @@ export const sideBarItems: ISideBarItems[] = [
   },
 ]
 
+export const userDetailsTitles = [
+  {
+    name: 'name',
+    label: 'Full name',
+  },
+  {
+    name: 'email',
+    label: 'Email',
+  },
+  {
+    name: 'phone',
+    label: 'Phone number',
+  },
+  {
+    name: 'address',
+    label: 'Address',
+  },
+]
+
+export const businessDetailsTitles = [
+  {
+    name: 'name',
+    label: 'Full name',
+  },
+  {
+    name: 'address',
+    label: 'Address',
+  },
+  {
+    name: 'registrationNumber',
+    label: 'RC number',
+  },
+  {
+    name: 'description',
+    label: 'Business description',
+  },
+  {
+    name: 'industry',
+    label: 'Industry',
+  },
+]
+
 export const trendData = [
   {
     name: 'Page A',

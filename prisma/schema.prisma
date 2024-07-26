@@ -230,7 +230,6 @@ model Withdrawal {
   paymentDetailId String        @map("paymentDetail_id")
   paymentDetail   PaymentDetail @relation(fields: [paymentDetailId], references: [id], onDelete: Cascade)
 
-  @@unique([userId])
   @@map("withdrawals")
 }
 

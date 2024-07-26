@@ -18,6 +18,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { AuthError } from '@/components/auth/AuthError'
+import ActionIcon from '@/components/reusables/ActionIcons'
 import { displayDetails, ModalScreen } from './PaymentDetails'
 
 type PaymentAccountProps = {
@@ -87,22 +88,11 @@ const PaymentWithdrawal: React.FC<PaymentAccountProps> = ({
               Account information not added yet
             </div>
           )}
-          <Button
-            variant='ghost'
-            size='icon'
-            className='text-primary hover:text-primary hover:bg-transparent'
+          <ActionIcon
+            icon={accountDetails ? <SquarePen /> : <CirclePlus />}
+            label={accountDetails ? 'Edit' : 'Add'}
             onClick={() => toggleModal(ModalScreen.DETAILS)}
-          >
-            {accountDetails ? (
-              <div className='flex items-center gap-1 ml-2'>
-                <SquarePen /> Edit
-              </div>
-            ) : (
-              <div className='flex items-center gap-1 ml-2'>
-                <CirclePlus /> Add
-              </div>
-            )}
-          </Button>
+          />
         </div>
 
         <FormField

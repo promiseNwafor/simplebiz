@@ -29,7 +29,7 @@ import { LogoutButton } from '@/components/auth/LogoutButton'
 
 const SidebarContainer = () => {
   const pathName = usePathname()
-  const user = useCurrentUser()
+  const user = useCurrentUser() // TODO: replace with react query
   const [sheetOpen, setSheetOpen] = useState(false)
 
   const toggleSheet = () => setSheetOpen((prevSheet) => !prevSheet)

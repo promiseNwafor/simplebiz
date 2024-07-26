@@ -224,8 +224,6 @@ export const updateWithdrawalStatus = async (id: string) => {
       },
     })
 
-    console.log('++++++++++++++', withdrawalRes)
-
     await db.wallet.update({
       where: {
         userId: user.id,

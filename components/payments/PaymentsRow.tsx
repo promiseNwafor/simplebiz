@@ -1,5 +1,5 @@
 import { Payment } from '@prisma/client'
-import useInvoiceMenus from '@/hooks/useInvoiceMenus'
+import usePaymentMenu from '@/hooks/usePaymentMenu'
 import { formatDate, ngnFormatter } from '@/lib'
 import ActionsDropdown from '@/components/reusables/ActionsDropdown'
 import Modal from '@/components/reusables/Modal'
@@ -10,9 +10,7 @@ type PaymentsRowProps = {
 }
 
 const PaymentsRow: React.FC<PaymentsRowProps> = ({ payment }) => {
-  const { modalAction, setModalAction, actionMenus } = useInvoiceMenus(
-    payment as any
-  )
+  const { modalAction, setModalAction, actionMenus } = usePaymentMenu(payment)
 
   return (
     <div className='grid grid-cols-12 text-xs font-medium p-4 border-b border-gray-200 items-center'>

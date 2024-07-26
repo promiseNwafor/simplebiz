@@ -17,7 +17,7 @@ type UseCurrentSession = {
 // This hook doesn't rely on the session provider
 export const useCurrentSession = (): UseCurrentSession => {
   const [session, setSession] = useState<Session | null>(null)
-  // Changed the default status to loading
+  // Change the default status to loading
   const [status, setStatus] = useState<SessionStatus>(SessionStatus.LOADING)
   const pathName = usePathname()
 
