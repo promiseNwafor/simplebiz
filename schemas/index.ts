@@ -236,3 +236,39 @@ export const PaymentWithdrawalSchema = z.object({
 export type PaymentWithdrawalSchemaValues = z.infer<
   typeof PaymentWithdrawalSchema
 >
+
+export const UserProfileFormSchema = z.object({
+  name: z.string().min(2, {
+    message: 'Full name must be at least 2 characters.',
+  }),
+  email: z.string().email({
+    message: 'Please enter a valid email.',
+  }),
+  phoneNumber: z.string().min(7, {
+    message: 'Please enter a valid phone number.',
+  }),
+  address: z.string().min(5, {
+    message: 'Address must be at least 5 characters.',
+  }),
+})
+
+export type UserProfileFormValues = z.infer<typeof UserProfileFormSchema>
+
+export const BusinessFormSchema = z.object({
+  businessName: z.string().min(2, {
+    message: 'Business name must be at least 2 characters long.',
+  }),
+  businessAddress: z.string().min(10, {
+    message: 'Business address must be at least 10 characters long.',
+  }),
+  rcNumber: z.string().min(2, {
+    message: 'Registration number must be at least 2 characters long.',
+  }),
+  businessDescription: z
+    .string()
+    .optional()
+    .transform((val) => val ?? ''),
+  industry: z.string(),
+})
+
+export type BusinessFormValues = z.infer<typeof BusinessFormSchema>

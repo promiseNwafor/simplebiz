@@ -24,6 +24,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 interface IBusinessDetailsContainer {
   control: Control<RegisterFormValues>
   isPending: boolean
+  isRegister?: boolean
 }
 
 const industryOptions = [
@@ -35,6 +36,7 @@ const industryOptions = [
 const BusinessDetailsContainer: React.FC<IBusinessDetailsContainer> = ({
   control,
   isPending,
+  isRegister = true,
 }) => {
   return (
     <>
@@ -119,30 +121,34 @@ const BusinessDetailsContainer: React.FC<IBusinessDetailsContainer> = ({
           </FormItem>
         )}
       />
-      <FormField
-        control={control}
-        name='acceptPolicy'
-        render={({ field: { value, onChange } }) => (
-          <FormItem className='flex flex-row items-start space-x-3 space-y-0'>
-            <FormControl>
-              <Checkbox checked={value} onCheckedChange={onChange} />
-            </FormControl>
-            <div className='space-y-1 leading-none'>
-              <FormLabel>
-                By signing up you accept our{' '}
-                <a href='#' target='_blank' rel='noreferrer'>
-                  Terms{' '}
-                </a>
-                and{' '}
-                <a href='#' target='_blank' rel='noreferrer'>
-                  Privacy policy
-                </a>
-                .
-              </FormLabel>
-            </div>
-          </FormItem>
-        )}
-      />
+      {isRegister && (
+        <>
+          <FormField
+            control={control}
+            name='acceptPolicy'
+            render={({ field: { value, onChange } }) => (
+              <FormItem className='flex flex-row items-start space-x-3 space-y-0'>
+                <FormControl>
+                  <Checkbox checked={value} onCheckedChange={onChange} />
+                </FormControl>
+                <div className='space-y-1 leading-none'>
+                  <FormLabel>
+                    By signing up you accept our{' '}
+                    <a href='#' target='_blank' rel='noreferrer'>
+                      Terms{' '}
+                    </a>
+                    and{' '}
+                    <a href='#' target='_blank' rel='noreferrer'>
+                      Privacy policy
+                    </a>
+                    .
+                  </FormLabel>
+                </div>
+              </FormItem>
+            )}
+          />
+        </>
+      )}
       <Button type='submit' size='full' disabled={isPending}>
         Submit
       </Button>

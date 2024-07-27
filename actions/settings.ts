@@ -5,11 +5,114 @@ import bcrypt from 'bcryptjs'
 
 import { update } from '@/auth'
 import { db } from '@/lib/db'
-import { SettingsSchema } from '@/schemas'
+import {
+  BusinessFormSchema,
+  BusinessFormValues,
+  SettingsSchema,
+  UserProfileFormSchema,
+  UserProfileFormValues,
+} from '@/schemas'
 import { getUserByEmail, getUserById } from '@/data/user'
 import { currentUser } from '@/lib/auth'
 import { generateVerificationToken } from '@/lib/tokens'
 import { sendVerificationEmail } from '@/lib/mail'
+
+export const updateUserProfile = async (values: UserProfileFormValues) => {
+  try {
+    const validatedFields = UserProfileFormSchema.safeParse(values)
+
+    if (!validatedFields.success) {
+      return { error: 'Invalid fields!' }
+    }
+
+    const userData = validatedFields.data
+    const user = await currentUser()
+
+    if (!user) {
+      return { error: 'Unauthorized' }
+    }
+
+    const dbUser = await getUserById(user.id)
+
+    if (!dbUser) {
+      return { error: 'Unauthorized' }
+    }
+
+    if (user.email !== userData.email) {
+      return { error: 'Sorry, you cannot change your email!' }
+    }
+
+    const updatedUser = await db.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        name: userData.name,
+        phone: userData.phoneNumber,
+        address: userData.address,
+      },
+    })
+
+    update({
+      user: {
+        name: updatedUser.name,
+        email: updatedUser.email,
+        isTwoFactorEnabled: updatedUser.isTwoFactorEnabled,
+        role: updatedUser.role,
+      },
+    })
+
+    return { success: 'Profile updated!' }
+  } catch (error) {
+    console.error(error)
+    return { error: 'Something went wrong!' }
+  }
+}
+
+export const updateBusiness = async (values: BusinessFormValues) => {
+  try {
+    const validatedFields = BusinessFormSchema.safeParse(values)
+
+    if (!validatedFields.success) {
+      return { error: 'Invalid fields!' }
+    }
+
+    const businessValues = validatedFields.data
+    const user = await currentUser()
+
+    if (!user) {
+      return { error: 'Unauthorized' }
+    }
+
+    const business = await db.business.findUnique({
+      where: {
+        userId: user.id,
+      },
+    })
+
+    if (!business) {
+      return { error: 'No business found!' }
+    }
+
+    await db.business.update({
+      where: {
+        id: business.id,
+      },
+      data: {
+        name: businessValues.businessName,
+        address: businessValues.businessAddress,
+        registrationNumber: businessValues.rcNumber,
+        description: businessValues.businessDescription,
+        industry: businessValues.industry,
+      },
+    })
+
+    return { success: 'Business updated!' }
+  } catch (error) {
+    console.error(error)
+    return { error: 'Something went wrong!' }
+  }
+}
 
 export const settings = async (values: z.infer<typeof SettingsSchema>) => {
   const user = await currentUser()

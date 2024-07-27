@@ -72,7 +72,7 @@ export const userDetailsTitles = [
 export const businessDetailsTitles = [
   {
     name: 'name',
-    label: 'Full name',
+    label: 'Business name',
   },
   {
     name: 'address',

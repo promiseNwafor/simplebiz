@@ -16,11 +16,13 @@ import { Input } from '@/components/ui/input'
 interface IUserDetailsContainer {
   control: Control<RegisterFormValues>
   onSubmit: () => void
+  isRegister?: boolean
 }
 
 const UserDetailsContainer: React.FC<IUserDetailsContainer> = ({
   control,
   onSubmit,
+  isRegister = true,
 }) => {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -53,7 +55,12 @@ const UserDetailsContainer: React.FC<IUserDetailsContainer> = ({
           <FormItem>
             <FormLabel>Email</FormLabel>
             <FormControl>
-              <Input placeholder='Email' type='email' {...field} />
+              <Input
+                placeholder='Email'
+                type='email'
+                disabled={!isRegister}
+                {...field}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -85,66 +92,70 @@ const UserDetailsContainer: React.FC<IUserDetailsContainer> = ({
           </FormItem>
         )}
       />
-      <FormField
-        control={control}
-        name='password'
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Password</FormLabel>
-            <FormControl>
-              <Input
-                placeholder='Password'
-                type={showPassword ? 'text' : 'password'}
-                {...field}
-              />
-            </FormControl>
-            <div className='relative'>
-              {showPassword ? (
-                <AiOutlineEye
-                  className='absolute right-4 -top-9'
-                  onClick={togglePasswordVisibility}
-                />
-              ) : (
-                <AiOutlineEyeInvisible
-                  className='absolute right-4 -top-9'
-                  onClick={togglePasswordVisibility}
-                />
-              )}
-            </div>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={control}
-        name='confirmPassword'
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Confirm Password</FormLabel>
-            <FormControl>
-              <Input
-                placeholder='Confirm Password'
-                type={showConfirmPassword ? 'text' : 'password'}
-                {...field}
-              />
-            </FormControl>
-            <div className='relative'>
-              {showConfirmPassword ? (
-                <AiOutlineEye
-                  className='absolute right-4 -top-9'
-                  onClick={toggleConfirmPasswordVisibility}
-                />
-              ) : (
-                <AiOutlineEyeInvisible
-                  className='absolute right-4 -top-9'
-                  onClick={toggleConfirmPasswordVisibility}
-                />
-              )}
-            </div>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      {isRegister && (
+        <>
+          <FormField
+            control={control}
+            name='password'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder='Password'
+                    type={showPassword ? 'text' : 'password'}
+                    {...field}
+                  />
+                </FormControl>
+                <div className='relative'>
+                  {showPassword ? (
+                    <AiOutlineEye
+                      className='absolute right-4 -top-9'
+                      onClick={togglePasswordVisibility}
+                    />
+                  ) : (
+                    <AiOutlineEyeInvisible
+                      className='absolute right-4 -top-9'
+                      onClick={togglePasswordVisibility}
+                    />
+                  )}
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name='confirmPassword'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Confirm Password</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder='Confirm Password'
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    {...field}
+                  />
+                </FormControl>
+                <div className='relative'>
+                  {showConfirmPassword ? (
+                    <AiOutlineEye
+                      className='absolute right-4 -top-9'
+                      onClick={toggleConfirmPasswordVisibility}
+                    />
+                  ) : (
+                    <AiOutlineEyeInvisible
+                      className='absolute right-4 -top-9'
+                      onClick={toggleConfirmPasswordVisibility}
+                    />
+                  )}
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </>
+      )}
       <Button type='button' size='full' onClick={onSubmit}>
         Continue
       </Button>

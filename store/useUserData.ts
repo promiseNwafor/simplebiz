@@ -1,6 +1,12 @@
 import { getSession } from 'next-auth/react'
-import { queryOptions } from '@tanstack/react-query'
+import {
+  queryOptions,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query'
 import { getBusiness } from './settings'
+import { BusinessFormValues, UserProfileFormValues } from '@/schemas'
+import { updateBusiness, updateUserProfile } from '@/actions/settings'
 
 export const dataQueryKeys = {
   getCurrentUser: 'getCurrentUser',
@@ -18,6 +24,20 @@ export const useGetCurrentUser = () => {
   })
 }
 
+export const useUpdateUserProfile = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (values: UserProfileFormValues) =>
+      await updateUserProfile(values),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [dataQueryKeys.getCurrentUser],
+      })
+    },
+  })
+}
+
 export const useGetBusiness = () => {
   return queryOptions({
     queryKey: [dataQueryKeys.getBusiness],
@@ -28,5 +48,19 @@ export const useGetBusiness = () => {
       return res
     },
     refetchOnWindowFocus: false,
+  })
+}
+
+export const useUpdateBusiness = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (values: BusinessFormValues) =>
+      await updateBusiness(values),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [dataQueryKeys.getBusiness],
+      })
+    },
   })
 }

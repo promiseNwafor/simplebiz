@@ -1,11 +1,24 @@
-import { SquarePen } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
-import { BeatLoader } from 'react-spinners'
-import { useGetBusiness, useGetCurrentUser } from '@/store/useUserData'
-import { businessDetailsTitles, userDetailsTitles } from '@/constants'
-import ActionIcon from '@/components/reusables/ActionIcons'
 import { useState } from 'react'
-import Modal from '../reusables/Modal'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { SquarePen } from 'lucide-react'
+import pick from 'lodash/pick'
+import { toast } from 'sonner'
+import { Business, User } from '@prisma/client'
+
+import {
+  RegisterFormValues,
+  RegisterFormSchema,
+  BusinessFormValues,
+  UserProfileFormValues,
+} from '@/schemas'
+import { businessDetailsTitles, userDetailsTitles } from '@/constants'
+import { useUpdateBusiness, useUpdateUserProfile } from '@/store/useUserData'
+import { Form } from '@/components/ui/form'
+import ActionIcon from '@/components/reusables/ActionIcons'
+import Modal from '@/components/reusables/Modal'
+import UserDetailsContainer from '@/components/auth/UserDetailsContainer'
+import BusinessDetailsContainer from '@/components/auth/BusinessDetailsContainer'
 
 enum ProfileModalScreen {
   USER = 'user',
@@ -13,29 +26,105 @@ enum ProfileModalScreen {
   INITIAL = 'initial',
 }
 
-const ProfileSettingsContainer = () => {
+type ProfileSettingsContainerProps = {
+  user: User
+  business: Business
+}
+
+const ProfileSettingsContainer: React.FC<ProfileSettingsContainerProps> = ({
+  user,
+  business,
+}) => {
   const [modalScreen, setModalScreen] = useState(ProfileModalScreen.INITIAL)
+
+  const { mutateAsync: updateProfile } = useUpdateUserProfile()
+  const { mutateAsync: updateBusiness } = useUpdateBusiness()
 
   const toggleModal = (screen = ProfileModalScreen.INITIAL) =>
     setModalScreen(screen)
 
-  const { data: userData, isPending: userIsPending } =
-    useQuery(useGetCurrentUser())
-  const { data: businessData } = useQuery(useGetBusiness())
+  const form = useForm<RegisterFormValues>({
+    resolver: zodResolver(RegisterFormSchema),
+    defaultValues: {
+      name: user?.name || undefined,
+      email: user?.email || undefined,
+      phoneNumber: user?.phone || undefined,
+      address: user?.address || undefined,
+      businessName: business?.name || undefined,
+      businessAddress: business?.address || undefined,
+      rcNumber: business?.registrationNumber || undefined,
+      businessDescription: business?.description || undefined,
+      industry: business?.industry || undefined,
+      password: 'UnderScore123',
+      confirmPassword: 'UnderScore123',
+      acceptPolicy: true,
+    },
+  })
 
-  const user = userData?.user
-  const business = businessData?.data
+  const { handleSubmit, control, getValues } = form
 
-  const userLoading = userIsPending || !user
+  const onSubmit = async (values: RegisterFormValues) => {
+    try {
+      const keys = [
+        'businessName',
+        'businessAddress',
+        'rcNumber',
+        'businessDescription',
+        'industry',
+      ]
+      const businessValues = pick(values, keys) as BusinessFormValues
+
+      const res = await updateBusiness(businessValues)
+
+      if (res.error) {
+        toast.error(res.error)
+      }
+      toggleModal()
+      return toast.success(res.success)
+    } catch (error) {
+      console.error(error)
+      toast.error('Something went wrong!')
+    }
+  }
+
+  const handleUserDetailsSubmit = async () => {
+    try {
+      const keys = ['name', 'email', 'address', 'phoneNumber']
+      const values = pick(getValues(), keys) as UserProfileFormValues
+
+      const res = await updateProfile(values)
+
+      if (res.error) {
+        toast.error(res.error)
+      }
+      toggleModal()
+      return toast.success(res.success)
+    } catch (error) {
+      console.error(error)
+      toast.error('Something went wrong!')
+    }
+  }
 
   const modalComponent = () => {
     switch (modalScreen) {
       case ProfileModalScreen.USER:
-        return <div>User</div>
+        return (
+          <UserDetailsContainer
+            control={control}
+            onSubmit={handleUserDetailsSubmit}
+            isRegister={false}
+          />
+        )
       case ProfileModalScreen.BUSINESS:
-        return <div>Business</div>
+        return (
+          <BusinessDetailsContainer
+            control={control}
+            isPending={false}
+            isRegister={false}
+          />
+        )
       default:
-        return
+        return null
     }
   }
 
@@ -44,62 +133,63 @@ const ProfileSettingsContainer = () => {
       <Modal
         open={modalScreen && modalScreen !== ProfileModalScreen.INITIAL}
         onClose={toggleModal}
-        content={modalComponent()}
+        content={
+          <Form {...form}>
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className='space-y-6'
+              autoComplete='off'
+            >
+              {modalComponent()}
+            </form>
+          </Form>
+        }
         title='Edit'
       />
-      {userLoading ? (
-        <BeatLoader color='#008678' className='text-center mt-6' />
-      ) : (
-        <div className='space-y-3 py-5'>
-          <p className='text-2xl font-semibold'>General</p>
-          <hr />
-          <div className='md:w-[650px] space-y-5'>
-            <div className='space-y-2.5'>
-              <div className='flex justify-between items-center'>
-                <p className='text-lg font-medium'>User details</p>
-                <ActionIcon
-                  icon={<SquarePen />}
-                  label='Edit'
-                  onClick={() => toggleModal(ProfileModalScreen.USER)}
-                />
-              </div>
-
-              {userDetailsTitles.map((title) => (
-                <div key={title.name} className='flex items-center gap-2 py-1'>
-                  <p className='text-sm font-medium opacity-45 w-40 text-right'>
-                    {`${title.label} - `}
-                  </p>
-                  <p className='text-sm'>{user[title.name]}</p>
-                </div>
-              ))}
+      <div className='space-y-3 py-5 w-full'>
+        <p className='text-2xl font-semibold'>General</p>
+        <hr />
+        <div className='md:w-[650px] space-y-5'>
+          <div className='space-y-2.5'>
+            <div className='flex justify-between items-center'>
+              <p className='text-lg font-medium'>User details</p>
+              <ActionIcon
+                icon={<SquarePen />}
+                label='Edit'
+                onClick={() => toggleModal(ProfileModalScreen.USER)}
+              />
             </div>
-            {business && !userLoading && (
-              <div className='space-y-2.5'>
-                <div className='flex justify-between items-center'>
-                  <p className='text-lg font-medium'>Business details</p>
-                  <ActionIcon
-                    icon={<SquarePen />}
-                    label='Edit'
-                    onClick={() => toggleModal(ProfileModalScreen.BUSINESS)}
-                  />
-                </div>
 
-                {businessDetailsTitles.map((title) => (
-                  <div
-                    key={title.name}
-                    className='flex items-center gap-2 py-1'
-                  >
-                    <p className='text-sm font-medium opacity-45 w-40 text-right'>
-                      {`${title.label} - `}
-                    </p>
-                    <p className='text-sm'>{(business as any)[title.name]}</p>
-                  </div>
-                ))}
+            {userDetailsTitles.map((title) => (
+              <div key={title.name} className='flex items-center gap-2 py-1'>
+                <p className='text-sm font-medium opacity-45 w-40 text-right'>
+                  {`${title.label} - `}
+                </p>
+                <p className='text-sm'>{(user as any)[title.name]}</p>
               </div>
-            )}
+            ))}
+          </div>
+          <div className='space-y-2.5'>
+            <div className='flex justify-between items-center'>
+              <p className='text-lg font-medium'>Business details</p>
+              <ActionIcon
+                icon={<SquarePen />}
+                label='Edit'
+                onClick={() => toggleModal(ProfileModalScreen.BUSINESS)}
+              />
+            </div>
+
+            {businessDetailsTitles.map((title) => (
+              <div key={title.name} className='flex items-center gap-2 py-1'>
+                <p className='text-sm font-medium opacity-45 w-40 text-right'>
+                  {`${title.label} - `}
+                </p>
+                <p className='text-sm'>{(business as any)[title.name]}</p>
+              </div>
+            ))}
           </div>
         </div>
-      )}
+      </div>
     </>
   )
 }
