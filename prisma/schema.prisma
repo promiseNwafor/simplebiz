@@ -50,6 +50,7 @@ model User {
   withdrawals    Withdrawal[]
   wallets        Wallet[]
   paymentDetails PaymentDetail[]
+  reminders      Reminder[]
 
   isTwoFactorEnabled    Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
@@ -265,4 +266,18 @@ model PaymentDetail {
 
   @@unique([userId])
   @@map("paymentDetails")
+}
+
+model Reminder {
+  id              String  @id @default(cuid())
+  enableReminders Boolean @default(false) @map("enable_reminders")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+  @@map("reminders")
 }

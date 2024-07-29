@@ -4,13 +4,22 @@ import {
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query'
-import { getBusiness } from './settings'
-import { BusinessFormValues, UserProfileFormValues } from '@/schemas'
-import { updateBusiness, updateUserProfile } from '@/actions/settings'
+import {
+  BusinessFormValues,
+  RemindersFormValues,
+  UserProfileFormValues,
+} from '@/schemas'
+import {
+  setReminders,
+  updateBusiness,
+  updateUserProfile,
+} from '@/actions/settings'
+import { getBusiness, getRemindersSettings } from './settings'
 
 export const dataQueryKeys = {
   getCurrentUser: 'getCurrentUser',
   getBusiness: 'getBusiness',
+  getRemindersSettings: 'getRemindersSettings',
 }
 
 export const useGetCurrentUser = () => {
@@ -61,6 +70,32 @@ export const useUpdateBusiness = () => {
       queryClient.invalidateQueries({
         queryKey: [dataQueryKeys.getBusiness],
       })
+    },
+  })
+}
+
+export const useSetReminders = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (values: RemindersFormValues) =>
+      await setReminders(values),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [dataQueryKeys.getRemindersSettings],
+      })
+    },
+  })
+}
+
+export const useGetRemindersSettings = () => {
+  return queryOptions({
+    queryKey: [dataQueryKeys.getRemindersSettings],
+    queryFn: async () => {
+      const res = await getRemindersSettings()
+      if (res.error) throw new Error(res.error)
+
+      return res
     },
   })
 }

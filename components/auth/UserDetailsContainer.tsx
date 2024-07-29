@@ -17,12 +17,14 @@ interface IUserDetailsContainer {
   control: Control<RegisterFormValues>
   onSubmit: () => void
   isRegister?: boolean
+  isPending?: boolean
 }
 
 const UserDetailsContainer: React.FC<IUserDetailsContainer> = ({
   control,
   onSubmit,
   isRegister = true,
+  isPending = false,
 }) => {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -156,7 +158,7 @@ const UserDetailsContainer: React.FC<IUserDetailsContainer> = ({
           />
         </>
       )}
-      <Button type='button' size='full' onClick={onSubmit}>
+      <Button type='button' size='full' onClick={onSubmit} disabled={isPending}>
         Continue
       </Button>
     </>

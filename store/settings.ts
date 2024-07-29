@@ -23,3 +23,20 @@ export const getBusiness = async () => {
     return { error: 'Error getting business details!', success: false }
   }
 }
+
+export const getRemindersSettings = async () => {
+  try {
+    const user = await currentUser()
+
+    const data = await db.reminder.findUnique({
+      where: {
+        userId: user.id,
+      },
+    })
+
+    return { data, success: true }
+  } catch (error) {
+    console.error(error)
+    return { error: 'Error getting reminders!', success: false }
+  }
+}

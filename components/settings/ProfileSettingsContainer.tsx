@@ -37,8 +37,10 @@ const ProfileSettingsContainer: React.FC<ProfileSettingsContainerProps> = ({
 }) => {
   const [modalScreen, setModalScreen] = useState(ProfileModalScreen.INITIAL)
 
-  const { mutateAsync: updateProfile } = useUpdateUserProfile()
-  const { mutateAsync: updateBusiness } = useUpdateBusiness()
+  const { mutateAsync: updateProfile, isPending: userIsPending } =
+    useUpdateUserProfile()
+  const { mutateAsync: updateBusiness, isPending: businessIsPending } =
+    useUpdateBusiness()
 
   const toggleModal = (screen = ProfileModalScreen.INITIAL) =>
     setModalScreen(screen)
@@ -77,7 +79,7 @@ const ProfileSettingsContainer: React.FC<ProfileSettingsContainerProps> = ({
       const res = await updateBusiness(businessValues)
 
       if (res.error) {
-        toast.error(res.error)
+        return toast.error(res.error)
       }
       toggleModal()
       return toast.success(res.success)
@@ -113,13 +115,14 @@ const ProfileSettingsContainer: React.FC<ProfileSettingsContainerProps> = ({
             control={control}
             onSubmit={handleUserDetailsSubmit}
             isRegister={false}
+            isPending={userIsPending}
           />
         )
       case ProfileModalScreen.BUSINESS:
         return (
           <BusinessDetailsContainer
             control={control}
-            isPending={false}
+            isPending={businessIsPending}
             isRegister={false}
           />
         )
@@ -162,10 +165,12 @@ const ProfileSettingsContainer: React.FC<ProfileSettingsContainerProps> = ({
 
             {userDetailsTitles.map((title) => (
               <div key={title.name} className='flex items-center gap-2 py-1'>
-                <p className='text-sm font-medium opacity-45 w-40 text-right'>
+                <p className='text-xs md:text-sm font-medium opacity-45 md:w-40 md:text-right'>
                   {`${title.label} - `}
                 </p>
-                <p className='text-sm'>{(user as any)[title.name]}</p>
+                <p className='text-xs md:text-sm'>
+                  {(user as any)[title.name]}
+                </p>
               </div>
             ))}
           </div>
@@ -181,10 +186,12 @@ const ProfileSettingsContainer: React.FC<ProfileSettingsContainerProps> = ({
 
             {businessDetailsTitles.map((title) => (
               <div key={title.name} className='flex items-center gap-2 py-1'>
-                <p className='text-sm font-medium opacity-45 w-40 text-right'>
+                <p className='text-xs md:text-sm font-medium opacity-45 text-nowrap md:w-40 md:text-right'>
                   {`${title.label} - `}
                 </p>
-                <p className='text-sm'>{(business as any)[title.name]}</p>
+                <p className='text-xs md:text-sm'>
+                  {(business as any)[title.name]}
+                </p>
               </div>
             ))}
           </div>

@@ -272,3 +272,9 @@ export const BusinessFormSchema = z.object({
 })
 
 export type BusinessFormValues = z.infer<typeof BusinessFormSchema>
+
+export const RemindersFormSchema = z.object({
+  enableReminders: z.boolean(),
+})
+
+export type RemindersFormValues = z.infer<typeof RemindersFormSchema>

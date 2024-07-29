@@ -8,6 +8,8 @@ import { db } from '@/lib/db'
 import {
   BusinessFormSchema,
   BusinessFormValues,
+  RemindersFormSchema,
+  RemindersFormValues,
   SettingsSchema,
   UserProfileFormSchema,
   UserProfileFormValues,
@@ -63,6 +65,38 @@ export const updateUserProfile = async (values: UserProfileFormValues) => {
     })
 
     return { success: 'Profile updated!' }
+  } catch (error) {
+    console.error(error)
+    return { error: 'Something went wrong!' }
+  }
+}
+
+export const setReminders = async (values: RemindersFormValues) => {
+  try {
+    const validatedFields = RemindersFormSchema.safeParse(values)
+
+    if (!validatedFields.success) {
+      return { error: 'Invalid fields!' }
+    }
+
+    const { enableReminders } = validatedFields.data
+
+    const user = await currentUser()
+
+    await db.reminder.upsert({
+      where: {
+        userId: user?.id,
+      },
+      create: {
+        userId: user?.id,
+        enableReminders,
+      },
+      update: {
+        enableReminders,
+      },
+    })
+
+    return { success: 'Reminders updated!' }
   } catch (error) {
     console.error(error)
     return { error: 'Something went wrong!' }
