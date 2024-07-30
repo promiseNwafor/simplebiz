@@ -28,7 +28,7 @@ const SettingsContainer = () => {
   const businessIsLoading = businessIsPending || !business
 
   return (
-    <div className='space-y-8 bg-white rounded-lg min-h-screen p-6 w-full'>
+    <div className='space-y-6 bg-white rounded-lg min-h-screen p-6 w-full'>
       <Tabs defaultValue='profile' className='w-full'>
         <TabsList>
           <TabsTrigger value='profile'>Profile</TabsTrigger>

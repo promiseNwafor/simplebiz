@@ -7,11 +7,11 @@ const DashboardLayout = ({
   children: React.ReactNode
 }>) => {
   return (
-    <div className='flex w-full relative'>
+    <div className='flex w-full relative font-sans'>
       <SidebarContainer />
       <div className='flex-1 lg:absolute left-60 right-0'>
         <NavbarContainer />
-        <main className='p-4 max-w-[2000px] mx-auto'>{children}</main>
+        <main className='p-6 max-w-[2000px] mx-auto'>{children}</main>
       </div>
     </div>
   )
