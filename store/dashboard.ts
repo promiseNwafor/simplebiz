@@ -115,6 +115,28 @@ export const getDashboardData = async (range: SalesDataRange) => {
       },
     })
 
+    let formattedData = salesData
+    if (range === 'all-time') {
+      // Group data by month and year
+      const groupedData = salesData.reduce((acc, { paymentDate, amount }) => {
+        const date = new Date(paymentDate)
+        const month = date.getMonth() + 1
+        const year = date.getFullYear()
+        const key = `${month}/${year}`
+
+        if (!acc[key]) {
+          acc[key] = { paymentDate: key, amount: 0 }
+        }
+        acc[key].amount += amount
+
+        return acc
+      }, {})
+
+      formattedData = Object.values(groupedData)
+
+      // return { data: formattedData, success: true }
+    }
+
     const data = {
       clientsNo,
       productsNo,
@@ -123,9 +145,9 @@ export const getDashboardData = async (range: SalesDataRange) => {
       totalEarnings: totalEarnings._sum.amount,
       paymentsNo,
       walletBalance: walletBalance._sum.balance,
-      salesData: salesData.map((item) => ({
+      salesData: formattedData.map((item) => ({
         ...item,
-        paymentDate: formatDate(item.paymentDate),
+        paymentDate: item.paymentDate,
       })),
     }
 
