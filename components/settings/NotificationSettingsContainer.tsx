@@ -30,9 +30,11 @@ const NotificationSettingsContainer: React.FC<
     defaultValues: { enableReminders: enableReminders || undefined },
   })
 
-  const { handleSubmit, control, formState } = form
-
-  const { isDirty } = formState
+  const {
+    handleSubmit,
+    control,
+    formState: { isDirty },
+  } = form
 
   const onSubmit = async (values: RemindersFormValues) => {
     try {

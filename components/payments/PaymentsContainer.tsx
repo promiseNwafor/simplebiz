@@ -33,7 +33,7 @@ const PaymentsContainer = () => {
   }
 
   return (
-    <div className='space-y-8'>
+    <div className='space-y-6'>
       <PaymentDetails />
 
       <div className='bg-white rounded-lg py-5 overflow-x-scroll'>

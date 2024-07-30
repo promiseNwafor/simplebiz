@@ -16,7 +16,6 @@ export const getDashboardData = async (range: SalesDataRange) => {
       case 'last-7-days':
         startDate = new Date(now)
         startDate.setDate(now.getDate() - 7)
-
         break
       case 'last-month':
         startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
@@ -115,28 +114,6 @@ export const getDashboardData = async (range: SalesDataRange) => {
       },
     })
 
-    let formattedData = salesData
-    if (range === 'all-time') {
-      // Group data by month and year
-      const groupedData = salesData.reduce((acc, { paymentDate, amount }) => {
-        const date = new Date(paymentDate)
-        const month = date.getMonth() + 1
-        const year = date.getFullYear()
-        const key = `${month}/${year}`
-
-        if (!acc[key]) {
-          acc[key] = { paymentDate: key, amount: 0 }
-        }
-        acc[key].amount += amount
-
-        return acc
-      }, {})
-
-      formattedData = Object.values(groupedData)
-
-      // return { data: formattedData, success: true }
-    }
-
     const data = {
       clientsNo,
       productsNo,
@@ -145,9 +122,9 @@ export const getDashboardData = async (range: SalesDataRange) => {
       totalEarnings: totalEarnings._sum.amount,
       paymentsNo,
       walletBalance: walletBalance._sum.balance,
-      salesData: formattedData.map((item) => ({
+      salesData: salesData.map((item) => ({
         ...item,
-        paymentDate: item.paymentDate,
+        paymentDate: formatDate(item.paymentDate),
       })),
     }
 

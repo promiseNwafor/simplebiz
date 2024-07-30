@@ -36,7 +36,7 @@ const ClientContainer: React.FC<IClientContainer> = ({ id }) => {
   }
 
   return (
-    <div className='space-y-8'>
+    <div className='space-y-6'>
       <Modal
         open={!!modalAction}
         onClose={() => setModalAction(null)}

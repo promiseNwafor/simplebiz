@@ -42,7 +42,7 @@ const CatalogueContainer: React.FC = () => {
   }
 
   return (
-    <div className='space-y-4 lg:space-y-8'>
+    <div className='space-y-4 lg:space-y-6'>
       <Modal
         open={modalOpen}
         onClose={toggleModal}
