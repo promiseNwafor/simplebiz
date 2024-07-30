@@ -32,8 +32,11 @@ import {
   getPendingWithdrawals,
   getWalletDetails,
 } from './payments'
+import { getDashboardData } from './dashboard'
+import { SalesDataRange } from '@/components/dashboard/ChartContainer'
 
 export const storeQueryKeys = {
+  getDashboardData: 'getDashboardData',
   getProducts: 'getProducts',
   getProduct: 'getProduct',
   getClients: 'getClients',
@@ -45,6 +48,18 @@ export const storeQueryKeys = {
   getWalletDetails: 'getWalletDetails',
   getPaymentDetails: 'getPaymentDetails',
   getPendingWithdrawals: 'getPendingWithdrawals',
+}
+
+/** =============== Dashboard ============== */
+
+export const useGetDashboardData = (range: SalesDataRange) => {
+  return queryOptions({
+    queryKey: [storeQueryKeys.getDashboardData],
+    queryFn: async () => {
+      return await getDashboardData(range)
+    },
+    refetchOnWindowFocus: false,
+  })
 }
 
 /** =============== Clients ============== */
