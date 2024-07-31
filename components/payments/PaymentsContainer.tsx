@@ -52,7 +52,6 @@ const PaymentsContainer = () => {
                   <div className='col-span-2'>Amount</div>
                   <div className='col-span-2'>Invoice Ref</div>
                   <div className='col-span-2'>Billed to</div>
-                  <div></div>
                 </div>
 
                 <PaymentsTable

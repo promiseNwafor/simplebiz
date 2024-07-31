@@ -1,7 +1,6 @@
 import { Payment } from '@prisma/client'
 import usePaymentMenu from '@/hooks/usePaymentMenu'
 import { formatDate, ngnFormatter } from '@/lib'
-import ActionsDropdown from '@/components/reusables/ActionsDropdown'
 import Modal from '@/components/reusables/Modal'
 import { Checkbox } from '@/components/ui/checkbox'
 
@@ -44,10 +43,7 @@ const PaymentsRow: React.FC<PaymentsRowProps> = ({
             {ngnFormatter.format(payment.amount)}
           </div>
           <div className='col-span-2'>{payment.invoiceRef}</div>
-          <div className='col-span-2'>{payment.clientName}</div>
-          <div className='flex justify-end'>
-            <ActionsDropdown menuItems={actionMenus} />
-          </div>
+          <div className='col-span-3'>{payment.clientName}</div>
         </>
       )}
     </div>

@@ -1,11 +1,12 @@
 import capitalize from 'lodash/capitalize'
 import { Download } from 'lucide-react'
+import { toast } from 'sonner'
 import { Invoice } from '@/types'
 import { formatDate, ngnFormatter } from '@/lib'
+import { useDownloadInvoice } from '@/store/useStoreData'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { downloadInvoice } from '@/actions/invoices'
 
 const statusColor = {
   UNPAID: '#FFC107',
@@ -30,23 +31,29 @@ const InvoicesRow: React.FC<InvoicesRowProps> = ({
   quantity,
   isDetailPage = false,
 }) => {
+  const { mutateAsync: downloadInvoice, isPending: isDownloadPending } =
+    useDownloadInvoice()
+
   const colorStatus = statusColor[invoice.status]
   const bgColorStatus = statusBgColor[invoice.status]
 
   const handleDownload = async () => {
     try {
-      const { content, fileName } = await downloadInvoice(invoice.id)
-      const blob = new Blob([content], { type: 'text/plain' })
-      const url = window.URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.style.display = 'none'
-      a.href = url
-      a.download = fileName
-      document.body.appendChild(a)
-      a.click()
-      window.URL.revokeObjectURL(url)
+      const res = await downloadInvoice(invoice.id)
+      if (res.error || !res.data) {
+        return toast.error(res.error || 'Something went wrong!')
+      }
+
+      const { pdfBase64, fileName } = res.data
+
+      const link = document.createElement('a')
+      link.href = `data:application/pdf;base64,${pdfBase64}`
+      link.download = fileName
+
+      link.click()
     } catch (error) {
-      console.error('Failed to download invoice', error)
+      console.error(error)
+      return toast.error('Something went wrong!')
     }
   }
 
@@ -76,7 +83,11 @@ const InvoicesRow: React.FC<InvoicesRowProps> = ({
         <div className='flex justify-center'>{quantity}</div>
       ) : (
         <div className='flex justify-end'>
-          <Button variant='ghost' onClick={handleDownload}>
+          <Button
+            variant='ghost'
+            onClick={handleDownload}
+            disabled={isDownloadPending}
+          >
             <Download size={16} opacity={0.5} />
           </Button>
         </div>

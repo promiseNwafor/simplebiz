@@ -22,7 +22,7 @@ import {
   requestWithdrawal,
   updateWithdrawalStatus,
 } from '@/actions/payments'
-import { sendInvoice } from '@/actions/invoices'
+import { downloadInvoice, sendInvoice } from '@/actions/invoices'
 import { SalesDataRange } from '@/constants'
 import {
   getClientDetails,
@@ -287,6 +287,28 @@ export const useSendInvoice = () => {
   return useMutation({
     mutationFn: async (values: InvoiceSchemaValues) => {
       const res = await sendInvoice(values)
+
+      if (res.error) throw new Error(res.error)
+
+      return res
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [storeQueryKeys.getInvoices, 1],
+      })
+      queryClient.invalidateQueries({
+        queryKey: [storeQueryKeys.getDashboardData],
+      })
+    },
+  })
+}
+
+export const useDownloadInvoice = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const res = await downloadInvoice(id)
 
       if (res.error) throw new Error(res.error)
 

@@ -3,11 +3,13 @@
 import fs from 'fs/promises'
 import { InvoiceSchema, InvoiceSchemaValues } from '@/schemas'
 import { getClient } from '@/store/clients'
-import { sendInvoiceEmail } from '@/lib/mail'
+import { sendInvoiceEmail, sendInvoiceReminderEmail } from '@/lib/mail'
 import { generateInvoice, generateInvoiceReference } from '@/lib'
 import { db } from '@/lib/db'
 import { generatePaymentToken } from '@/lib/tokens'
 import { currentUser } from '@/lib/auth'
+import { getRemindersSettings } from '@/store/settings'
+import { InvoiceStatus } from '@prisma/client'
 
 export const readImageFile = async (filePath: string) => {
   const data = await fs.readFile(filePath)
@@ -114,16 +116,12 @@ export const sendInvoice = async (values: InvoiceSchemaValues) => {
   }
 }
 
-export const downloadInvoice = async (invoiceId: string) => {
+export const downloadInvoice = async (id: string) => {
   try {
     const user = await currentUser()
 
-    if (!user) {
-      throw new Error('User not authenticated')
-    }
-
     const invoice = await db.invoice.findUnique({
-      where: { id: invoiceId },
+      where: { id, userId: user.id },
       include: {
         client: true,
         user: true,
@@ -136,28 +134,71 @@ export const downloadInvoice = async (invoiceId: string) => {
     })
 
     if (!invoice) {
-      throw new Error('Invoice not found')
+      return { error: 'Invoice not found', success: false }
     }
 
-    // Generate the invoice content
-    const invoiceContent = `
-      Invoice No: ${invoice.invoiceNo}
-      Issued To: ${invoice.issuedTo}
-      Amount: ${invoice.amount}
-      Status: ${invoice.status}
+    const products = invoice.products.map((p) => ({
+      id: p.product.id,
+      name: p.product.name,
+      quantity: p.quantity,
+      price: p.product.price,
+      total: p.quantity * p.product.price,
+    }))
 
-      Products:
-      ${invoice.products.map((p) => `${p.product.name} - Quantity: ${p.quantity}`).join('\n')}
-    `
+    const pdfBase64 = await generateInvoice({
+      client: invoice.client,
+      products,
+      totalAmount: invoice.amount,
+      date: {
+        issued: new Date(invoice.issueDate).toISOString(),
+        due: new Date(invoice.dueDate).toISOString(),
+      },
+      ref: invoice.invoiceRef,
+      status: invoice.status,
+    })
 
-    // Here you should convert the invoiceContent to a downloadable format (e.g., PDF)
-    // For simplicity, let's return it as a plain text
     return {
-      content: invoiceContent,
-      fileName: `Invoice-${invoice.invoiceNo}.txt`,
+      data: { pdfBase64, fileName: `Invoice-${invoice.invoiceRef}.pdf` },
+      success: 'Invoice generated successfully',
     }
   } catch (error) {
     console.error(error)
-    throw new Error('Error generating invoice')
+    return { error: `${error || 'Error generating invoice'}`, success: false }
+  }
+}
+
+export const sendInvoiceReminders = async () => {
+  try {
+    const user = await currentUser()
+
+    // check that the user has enabled reminders
+    const remindersSettings = await getRemindersSettings()
+
+    if (!remindersSettings.data?.enableReminders) {
+      return
+    }
+
+    // get all unpaid invoices
+    const unpaidInvoiceDetails = await db.invoice.findMany({
+      where: {
+        userId: user.id,
+        status: InvoiceStatus.UNPAID,
+      },
+      include: {
+        client: true,
+      },
+    })
+
+    if (remindersSettings.data.enableReminders) {
+      // send invoice reminders to all involved clients
+      for (const unpaidInvoice of unpaidInvoiceDetails) {
+        await sendInvoiceReminderEmail(
+          unpaidInvoice.id,
+          unpaidInvoice.client.email
+        )
+      }
+    }
+  } catch (error) {
+    console.error('Error sending invoice reminders:', error)
   }
 }

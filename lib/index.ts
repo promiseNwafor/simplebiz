@@ -1,6 +1,7 @@
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib'
+import capitalize from 'lodash/capitalize'
 import path from 'path'
-import { Client } from '@prisma/client'
+import { Client, InvoiceStatus } from '@prisma/client'
 import { SelectedProducts } from '@/components/invoices/InvoiceForm'
 import { getBusinessDetail } from '@/data/account'
 import { readImageFile } from '@/actions/invoices'
@@ -39,11 +40,19 @@ type GenerateInvoice = {
     issued: string
   }
   ref: string
+  status?: InvoiceStatus
 }
 
 export const generateInvoice: (
   props: GenerateInvoice
-) => Promise<string> = async ({ client, products, totalAmount, date, ref }) => {
+) => Promise<string> = async ({
+  client,
+  products,
+  totalAmount,
+  date,
+  ref,
+  status,
+}) => {
   const pdfDoc = await PDFDocument.create()
   const page = pdfDoc.addPage([595.28, 841.89])
 
@@ -83,7 +92,7 @@ export const generateInvoice: (
   const size = 10
   const color = rgb(0, 0, 0)
 
-  page.drawText('Invoice', {
+  page.drawText(`Invoice ${status ? `- ${capitalize(status)}` : ''}`, {
     x,
     y: height - 50,
     size: 25,
