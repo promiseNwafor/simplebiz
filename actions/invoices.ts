@@ -189,15 +189,15 @@ export const sendInvoiceReminders = async () => {
       },
     })
 
-    if (remindersSettings.data.enableReminders) {
-      // send invoice reminders to all involved clients
-      for (const unpaidInvoice of unpaidInvoiceDetails) {
-        await sendInvoiceReminderEmail(
-          unpaidInvoice.id,
-          unpaidInvoice.client.email
-        )
-      }
+    // send invoice reminders to all involved clients
+    for (const unpaidInvoice of unpaidInvoiceDetails) {
+      await sendInvoiceReminderEmail(
+        unpaidInvoice.id,
+        unpaidInvoice.client.email
+      )
     }
+
+    console.log('Invoice reminders sent successfully')
   } catch (error) {
     console.error('Error sending invoice reminders:', error)
   }

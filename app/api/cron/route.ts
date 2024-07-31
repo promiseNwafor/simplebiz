@@ -1,12 +1,11 @@
-import { NextApiRequest, NextApiResponse } from 'next'
 import { sendInvoiceReminders } from '@/actions/invoices'
 
-export async function GET(_req: NextApiRequest, res: NextApiResponse) {
+export async function GET(_req: Request, _res: Response) {
   try {
     await sendInvoiceReminders()
 
-    res.status(200).json({ success: true })
+    return Response.json({ success: true, status: 200 })
   } catch (error) {
-    res.status(500).json({ success: false, error: error })
+    return Response.json({ success: false, status: 500 })
   }
 }
