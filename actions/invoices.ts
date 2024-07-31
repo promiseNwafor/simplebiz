@@ -7,6 +7,7 @@ import { sendInvoiceEmail } from '@/lib/mail'
 import { generateInvoice, generateInvoiceReference } from '@/lib'
 import { db } from '@/lib/db'
 import { generatePaymentToken } from '@/lib/tokens'
+import { currentUser } from '@/lib/auth'
 
 export const readImageFile = async (filePath: string) => {
   const data = await fs.readFile(filePath)
@@ -110,5 +111,53 @@ export const sendInvoice = async (values: InvoiceSchemaValues) => {
   } catch (error) {
     console.error(error)
     return { error: 'Something went wrong!' }
+  }
+}
+
+export const downloadInvoice = async (invoiceId: string) => {
+  try {
+    const user = await currentUser()
+
+    if (!user) {
+      throw new Error('User not authenticated')
+    }
+
+    const invoice = await db.invoice.findUnique({
+      where: { id: invoiceId },
+      include: {
+        client: true,
+        user: true,
+        products: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    })
+
+    if (!invoice) {
+      throw new Error('Invoice not found')
+    }
+
+    // Generate the invoice content
+    const invoiceContent = `
+      Invoice No: ${invoice.invoiceNo}
+      Issued To: ${invoice.issuedTo}
+      Amount: ${invoice.amount}
+      Status: ${invoice.status}
+
+      Products:
+      ${invoice.products.map((p) => `${p.product.name} - Quantity: ${p.quantity}`).join('\n')}
+    `
+
+    // Here you should convert the invoiceContent to a downloadable format (e.g., PDF)
+    // For simplicity, let's return it as a plain text
+    return {
+      content: invoiceContent,
+      fileName: `Invoice-${invoice.invoiceNo}.txt`,
+    }
+  } catch (error) {
+    console.error(error)
+    throw new Error('Error generating invoice')
   }
 }

@@ -10,13 +10,17 @@ import {
 
 type ActionsDropdownProps = {
   menuItems: ActionMenuProps
+  icon?: JSX.Element
 }
 
-const ActionsDropdown: React.FC<ActionsDropdownProps> = ({ menuItems }) => {
+const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
+  menuItems,
+  icon,
+}) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className='flex items-center justify-between outline-none'>
-        <Ellipsis />
+        {icon ? icon : <Ellipsis />}
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end'>
         <>

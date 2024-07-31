@@ -1,11 +1,11 @@
 import capitalize from 'lodash/capitalize'
-import useInvoiceMenus from '@/hooks/useInvoiceMenus'
+import { Download } from 'lucide-react'
 import { Invoice } from '@/types'
 import { formatDate, ngnFormatter } from '@/lib'
-import ActionsDropdown from '@/components/reusables/ActionsDropdown'
-import Modal from '@/components/reusables/Modal'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { downloadInvoice } from '@/actions/invoices'
 
 const statusColor = {
   UNPAID: '#FFC107',
@@ -30,20 +30,28 @@ const InvoicesRow: React.FC<InvoicesRowProps> = ({
   quantity,
   isDetailPage = false,
 }) => {
-  const { modalAction, setModalAction, actionMenus } = useInvoiceMenus(
-    invoice as any
-  )
   const colorStatus = statusColor[invoice.status]
   const bgColorStatus = statusBgColor[invoice.status]
 
+  const handleDownload = async () => {
+    try {
+      const { content, fileName } = await downloadInvoice(invoice.id)
+      const blob = new Blob([content], { type: 'text/plain' })
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.style.display = 'none'
+      a.href = url
+      a.download = fileName
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Failed to download invoice', error)
+    }
+  }
+
   return (
     <div className='grid grid-cols-12 text-xs font-medium p-4 border-b border-gray-200 items-center'>
-      <Modal
-        open={!!modalAction}
-        onClose={() => setModalAction(null)}
-        content={modalAction && actionMenus[modalAction]?.Content}
-        title={(modalAction && actionMenus[modalAction]?.title) || ''}
-      />
       <div>
         <Checkbox id={invoice.id} />
       </div>
@@ -68,7 +76,9 @@ const InvoicesRow: React.FC<InvoicesRowProps> = ({
         <div className='flex justify-center'>{quantity}</div>
       ) : (
         <div className='flex justify-end'>
-          <ActionsDropdown menuItems={actionMenus} />
+          <Button variant='ghost' onClick={handleDownload}>
+            <Download size={16} opacity={0.5} />
+          </Button>
         </div>
       )}
     </div>
