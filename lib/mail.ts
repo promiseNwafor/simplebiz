@@ -60,7 +60,7 @@ export const sendInvoiceEmail = async (
 export const sendInvoiceReminderEmail = async (id: string, email: string) => {
   const emailOptions = {
     from: 'onboarding@resend.dev',
-    to: email,
+    to: 'promisenwafor955@gmail.com',
     subject: 'Invoice Payment Reminder',
     html: `<p>Hello, this is a gentle reminder to make payment for your invoice. Click <a href="${domain}/invoice/${id}">here</a> to make payment</p>`,
   }
