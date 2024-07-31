@@ -55,27 +55,33 @@ const InvoicesContainer = () => {
       <div className='flex items-center justify-end'>
         <AddButton onClick={toggleModal}>Generate Invoice</AddButton>
       </div>
-      <div className='bg-white rounded-lg py-5 overflow-x-scroll'>
+      <div className='bg-white rounded-lg py-5'>
         <div className='p-5 pt-0'>
           <h4>Invoice</h4>
         </div>
-        <div className='min-w-[900px]'>
-          <div className='bg-secondary grid grid-cols-12 text-xs font-semibold p-4 border-b border-gray-200'>
-            <div></div>
-            <div className='col-span-2'>Issued Date</div>
-            <div className='col-span-2'>Due Date</div>
-            <div>Invoice No.</div>
-            <div className='col-span-2'>Issued to</div>
-            <div className='col-span-2'>Amount</div>
-            <div>Status</div>
-            <div></div>
-          </div>
+        <div>
+          <div className='overflow-x-scroll'>
+            <div className='w-[360px] min-w-full'>
+              <div className='min-w-[900px]'>
+                <div className='bg-secondary grid grid-cols-12 text-xs font-semibold p-4 border-b border-gray-200'>
+                  <div></div>
+                  <div className='col-span-2'>Issued Date</div>
+                  <div className='col-span-2'>Due Date</div>
+                  <div>Invoice No.</div>
+                  <div className='col-span-2'>Issued to</div>
+                  <div className='col-span-2'>Amount</div>
+                  <div>Status</div>
+                  <div></div>
+                </div>
 
-          <InvoiceTable
-            data={data as GetResponse<Invoice[]>}
-            isPending={isPending}
-            invoices={invoices as Invoice[]}
-          />
+                <InvoiceTable
+                  data={data as GetResponse<Invoice[]>}
+                  isPending={isPending}
+                  invoices={invoices as Invoice[]}
+                />
+              </div>
+            </div>
+          </div>
           <div className='p-5 pb-0 centered gap-1'>
             <ReactPaginate
               pageCount={Math.ceil(count / INVOICES_PER_PAGE)}

@@ -31,7 +31,7 @@ export const displayDetails = (accountDetails: PaymentDetail) => {
       {Object.keys(accountInfoTitles).map((key) => (
         <div key={key}>
           <small className='opacity-50'>{accountInfoTitles[key]}</small>
-          <p>{(accountDetails as any)[key]}</p>
+          <p className='text-sm lg:text-base'>{(accountDetails as any)[key]}</p>
         </div>
       ))}
     </div>
@@ -91,13 +91,13 @@ const PaymentDetails = () => {
             {pendingAmount && <p className='font-medium'>Pending amount</p>}
           </div>
           <div className='flex justify-between'>
-            <p className='text-3xl font-semibold'>
+            <p className='text-xl md:text-3xl font-semibold'>
               {ngnFormatter.format(
                 (wallet?.balance || 0) - (pendingAmount || 0)
               )}
             </p>
             {pendingAmount && (
-              <p className='text-xl font-semibold opacity-60'>
+              <p className='md:text-xl font-semibold opacity-60'>
                 {`+ ${ngnFormatter.format(pendingAmount)}`}
               </p>
             )}

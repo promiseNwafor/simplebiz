@@ -22,9 +22,9 @@ import InvoicesRow from '@/components/invoices/InvoicesRow'
 import { bgColor } from './ProductCard'
 
 const orders = [
-  { label: 'All Transactions', key: 'allCount' },
-  { label: 'Open Transactions', key: 'pendingCount' },
-  { label: 'Expired Transactions', key: 'expiredCount' },
+  { label: 'All Invoices', key: 'allCount' },
+  { label: 'Open Invoices', key: 'pendingCount' },
+  { label: 'Expired Invoices', key: 'expiredCount' },
 ]
 
 interface IProductContainer {
@@ -84,7 +84,7 @@ const ProductContainer: React.FC<IProductContainer> = ({ id }) => {
             style={
               product?.imageURL
                 ? {
-                    background: `url(${product?.imageURL}) no-repeat center center/cover`,
+                    background: `url(${product?.imageURL}) no-repeat center center/contain`,
                   }
                 : {}
             }
@@ -130,46 +130,52 @@ const ProductContainer: React.FC<IProductContainer> = ({ id }) => {
         })}
       </div>
 
-      <div className='bg-white rounded-lg py-5 overflow-scroll'>
+      <div className='bg-white rounded-lg py-5'>
         <div className='p-5 pt-0'>
           <h4>Invoice History</h4>
         </div>
-        <div className='bg-secondary grid grid-cols-12 text-xs font-semibold p-4 border-b border-gray-200'>
-          <div></div>
-          <div className='col-span-2'>Issued Date</div>
-          <div className='col-span-2'>Due Date</div>
-          <div>Invoice No.</div>
-          <div className='col-span-2'>Issued to</div>
-          <div className='col-span-2'>Amount</div>
-          <div>Status</div>
-          <div className='flex justify-center'>Quantity</div>
-        </div>
+        <div className='overflow-x-scroll'>
+          <div className='w-[360px] min-w-full'>
+            <div className='min-w-[900px]'>
+              <div className='bg-secondary grid grid-cols-12 text-xs font-semibold p-4 border-b border-gray-200'>
+                <div></div>
+                <div className='col-span-2'>Issued Date</div>
+                <div className='col-span-2'>Due Date</div>
+                <div>Invoice No.</div>
+                <div className='col-span-2'>Issued to</div>
+                <div className='col-span-2'>Amount</div>
+                <div>Status</div>
+                <div className='flex justify-center'>Quantity</div>
+              </div>
 
-        <div className='min-h-[280px]'>
-          {isInvoicePending ? (
-            <BeatLoader color='#008678' className='text-center mt-6' />
-          ) : (
-            <>
-              {invoiceData?.error || !invoices || !invoices.length ? (
-                <div className='bg-white w-full h-[280px] py-5 centered border-t border-gray-200'>
-                  <p>No invoice available</p>
-                </div>
-              ) : (
-                <>
-                  {invoices.map((item) => {
-                    return (
-                      <InvoicesRow
-                        key={item.invoiceId}
-                        invoice={item.invoice as any}
-                        quantity={item.quantity}
-                        isDetailPage
-                      />
-                    )
-                  })}
-                </>
-              )}
-            </>
-          )}
+              <div className='min-h-[280px]'>
+                {isInvoicePending ? (
+                  <BeatLoader color='#008678' className='text-center mt-6' />
+                ) : (
+                  <>
+                    {invoiceData?.error || !invoices || !invoices.length ? (
+                      <div className='bg-white w-full h-[280px] py-5 centered border-t border-gray-200'>
+                        <p>{invoiceData?.error || 'No invoice available'}</p>
+                      </div>
+                    ) : (
+                      <>
+                        {invoices.map((item) => {
+                          return (
+                            <InvoicesRow
+                              key={item.invoiceId}
+                              invoice={item.invoice as any}
+                              quantity={item.quantity}
+                              isDetailPage
+                            />
+                          )
+                        })}
+                      </>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

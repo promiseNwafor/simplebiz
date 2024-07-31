@@ -41,22 +41,28 @@ const PaymentsContainer = () => {
         <div className='p-5 pt-0'>
           <h4>Payments</h4>
         </div>
-        <div className='min-w-[900px]'>
-          <div className='bg-secondary grid grid-cols-12 text-xs font-semibold p-4 border-b border-gray-200'>
-            <div></div>
-            <div className='col-span-2'>Transaction No</div>
-            <div className='col-span-2'>Payment Date</div>
-            <div className='col-span-2'>Amount</div>
-            <div className='col-span-2'>Invoice Ref</div>
-            <div className='col-span-2'>Billed to</div>
-            <div></div>
-          </div>
+        <div>
+          <div className='overflow-x-scroll'>
+            <div className='w-[360px] min-w-full'>
+              <div className='min-w-[900px]'>
+                <div className='bg-secondary grid grid-cols-12 text-xs font-semibold p-4 border-b border-gray-200'>
+                  <div></div>
+                  <div className='col-span-2'>Transaction No</div>
+                  <div className='col-span-2'>Payment Date</div>
+                  <div className='col-span-2'>Amount</div>
+                  <div className='col-span-2'>Invoice Ref</div>
+                  <div className='col-span-2'>Billed to</div>
+                  <div></div>
+                </div>
 
-          <PaymentsTable
-            data={data as GetResponse<Payment[]>}
-            isPending={isPending}
-            payments={payments as Payment[]}
-          />
+                <PaymentsTable
+                  data={data as GetResponse<Payment[]>}
+                  isPending={isPending}
+                  payments={payments as Payment[]}
+                />
+              </div>
+            </div>
+          </div>
 
           <div className='p-5 pb-0 centered gap-1'>
             <ReactPaginate

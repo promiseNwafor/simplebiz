@@ -1,17 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { BeatLoader } from 'react-spinners'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { storeQueryKeys, useGetDashboardData } from '@/store/useStoreData'
+import {
+  storeQueryKeys,
+  useGetDashboardData,
+  useGetSalesTrendData,
+} from '@/store/useStoreData'
 import { ngnFormatter } from '@/lib'
 import { Pages } from '@/routes'
 import { SalesDataRange } from '@/constants'
 import AddButton from '@/components/reusables/AddButton'
 import GoToButton from '@/components/reusables/GoToButton'
 import OverviewCard from '@/components/reusables/OverviewCard'
-import DashboardChartContainer from './DashboardChartContainer'
+import DashboardChartContainer, { SalesData } from './DashboardChartContainer'
 import Modal from '@/components/reusables/Modal'
 import InvoiceForm from '@/components/invoices/InvoiceForm'
 
@@ -32,8 +36,10 @@ const DashboardContainer = () => {
   const [modalOpen, setModalOpen] = useState(false)
 
   const { data: dashboardData, isPending: dashboardIsPending } = useQuery(
-    useGetDashboardData(range)
+    useGetDashboardData()
   )
+  const { data: salesTrendData } = useQuery(useGetSalesTrendData(range))
+
   const queryClient = useQueryClient()
   const router = useRouter()
 
@@ -48,11 +54,12 @@ const DashboardContainer = () => {
     router.push(`?${params.toString()}`)
     setRange(range)
     await queryClient.invalidateQueries({
-      queryKey: [storeQueryKeys.getDashboardData],
+      queryKey: [storeQueryKeys.getSalesTrendData],
     })
   }
 
   const dashboard = dashboardData?.data
+  const salesData = salesTrendData?.data
 
   return (
     <div className='space-y-6'>
@@ -89,11 +96,13 @@ const DashboardContainer = () => {
 
               {/* Trend */}
               <div className='w-full grid lg:grid-cols-3 gap-6'>
-                <DashboardChartContainer
-                  salesData={dashboard.salesData}
-                  handleRangeSelect={handleRangeSelect}
-                  range={range}
-                />
+                <Suspense fallback={<BeatLoader color='#008678' />}>
+                  <DashboardChartContainer
+                    salesData={salesData as SalesData}
+                    handleRangeSelect={handleRangeSelect}
+                    range={range}
+                  />
+                </Suspense>
                 <div className='bg-white p-6 rounded-lg h-full flex flex-col justify-between gap-4'>
                   <div className='grid md:grid-cols-2 lg:grid-cols-1 gap-6'>
                     <OverviewCard

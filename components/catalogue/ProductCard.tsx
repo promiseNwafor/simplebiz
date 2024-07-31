@@ -40,7 +40,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           style={
             product.imageURL
               ? {
-                  background: `url(${product.imageURL}) no-repeat center center/cover`,
+                  background: `url(${product.imageURL}) no-repeat center center/contain`,
                 }
               : {}
           }

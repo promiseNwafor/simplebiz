@@ -6,36 +6,8 @@ import { db } from '@/lib/db'
 import { formatDate } from '@/lib'
 import { SalesDataRange } from '@/constants'
 
-export const getDashboardData = async (range: SalesDataRange) => {
+export const getDashboardData = async () => {
   try {
-    const now = new Date()
-    let startDate
-    let endDate = now
-
-    switch (range) {
-      case 'last-7-days':
-        startDate = new Date(now)
-        startDate.setDate(now.getDate() - 7)
-        break
-      case 'last-month':
-        startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-        endDate = new Date(now.getFullYear(), now.getMonth(), 0)
-        break
-      case 'this-month':
-        startDate = new Date(now.getFullYear(), now.getMonth(), 1)
-        break
-      case 'this-year':
-        startDate = new Date(now.getFullYear(), 0, 1)
-        break
-      case 'last-year':
-        startDate = new Date(now.getFullYear() - 1, 0, 1)
-        endDate = new Date(now.getFullYear() - 0, 1)
-        break
-      default:
-        startDate = new Date(0)
-        endDate = now
-    }
-
     const user = await currentUser()
 
     // get No of clients for the user
@@ -96,6 +68,55 @@ export const getDashboardData = async (range: SalesDataRange) => {
       },
     })
 
+    const data = {
+      clientsNo,
+      productsNo,
+      pendingInvoicesNo,
+      expiredInvoicesNo,
+      totalEarnings: totalEarnings._sum.amount,
+      paymentsNo,
+      walletBalance: walletBalance._sum.balance,
+    }
+
+    return { data, success: true }
+  } catch (error) {
+    console.error(error)
+    return { error: 'Error getting dashboard data', success: false }
+  }
+}
+
+export const getSalesTrendData = async (range: SalesDataRange) => {
+  try {
+    const now = new Date()
+    let startDate
+    let endDate = now
+
+    switch (range) {
+      case 'last-7-days':
+        startDate = new Date(now)
+        startDate.setDate(now.getDate() - 7)
+        break
+      case 'last-month':
+        startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+        endDate = new Date(now.getFullYear(), now.getMonth(), 0)
+        break
+      case 'this-month':
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+        break
+      case 'this-year':
+        startDate = new Date(now.getFullYear(), 0, 1)
+        break
+      case 'last-year':
+        startDate = new Date(now.getFullYear() - 1, 0, 1)
+        endDate = new Date(now.getFullYear() - 0, 1)
+        break
+      default:
+        startDate = new Date(0)
+        endDate = now
+    }
+
+    const user = await currentUser()
+
     // get data for plotting sales trends by date
     const salesData = await db.payment.findMany({
       where: {
@@ -114,23 +135,14 @@ export const getDashboardData = async (range: SalesDataRange) => {
       },
     })
 
-    const data = {
-      clientsNo,
-      productsNo,
-      pendingInvoicesNo,
-      expiredInvoicesNo,
-      totalEarnings: totalEarnings._sum.amount,
-      paymentsNo,
-      walletBalance: walletBalance._sum.balance,
-      salesData: salesData.map((item) => ({
-        ...item,
-        paymentDate: formatDate(item.paymentDate),
-      })),
-    }
+    const data = salesData.map((item) => ({
+      ...item,
+      paymentDate: formatDate(item.paymentDate),
+    }))
 
     return { data, success: true }
   } catch (error) {
     console.error(error)
-    return { error: 'Error getting dashboard data', success: false }
+    return { error: `${error} `, success: false }
   }
 }

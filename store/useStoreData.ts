@@ -43,10 +43,11 @@ import {
   getPendingWithdrawals,
   getWalletDetails,
 } from './payments'
-import { getDashboardData } from './dashboard'
+import { getDashboardData, getSalesTrendData } from './dashboard'
 
 export const storeQueryKeys = {
   getDashboardData: 'getDashboardData',
+  getSalesTrendData: 'getSalesTrendData',
   getProducts: 'getProducts',
   getProduct: 'getProduct',
   getClients: 'getClients',
@@ -65,13 +66,22 @@ export const storeQueryKeys = {
 
 /** =============== Dashboard ============== */
 
-export const useGetDashboardData = (range: SalesDataRange) => {
+export const useGetDashboardData = () => {
   return queryOptions({
     queryKey: [storeQueryKeys.getDashboardData],
     queryFn: async () => {
-      return await getDashboardData(range)
+      return await getDashboardData()
     },
     refetchOnWindowFocus: false,
+  })
+}
+
+export const useGetSalesTrendData = (range: SalesDataRange) => {
+  return queryOptions({
+    queryKey: [storeQueryKeys.getSalesTrendData],
+    queryFn: async () => {
+      return await getSalesTrendData(range)
+    },
   })
 }
 

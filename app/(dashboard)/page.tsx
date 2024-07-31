@@ -4,7 +4,7 @@ import {
   QueryClient,
 } from '@tanstack/react-query'
 import { SalesDataRange } from '@/constants'
-import { useGetDashboardData } from '@/store/useStoreData'
+import { useGetDashboardData, useGetSalesTrendData } from '@/store/useStoreData'
 import DashboardContainer from '@/components/dashboard/DashboardContainer'
 
 export default async function DashboardPage({
@@ -16,7 +16,8 @@ export default async function DashboardPage({
 
   const queryClient = new QueryClient()
 
-  await queryClient.prefetchQuery(useGetDashboardData(range))
+  await queryClient.prefetchQuery(useGetDashboardData())
+  await queryClient.prefetchQuery(useGetSalesTrendData(range))
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

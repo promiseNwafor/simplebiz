@@ -65,12 +65,20 @@ const ClientContainer: React.FC<IClientContainer> = ({ id }) => {
         </Button>
       </div>
       <div className='bg-white rounded-lg p-5 flex flex-col md:flex-row gap-4 lg:gap-8 md:h-auto'>
-        <div className='flex flex-col gap-4 justify-between h-full'>
+        <div className='flex flex-col lg:flex-row gap-4 justify-between w-full h-full'>
           <div className='space-y-1'>
             <h2>{client?.name}</h2>
-            <p className='text-base font-medium flex flex-col md:flex-row md:gap-5 w-full'>
+            <p className='text-base font-medium flex gap-5 w-full'>
               <span>{client?.email}</span>
               <span>{client?.phone}</span>
+            </p>
+            <p className='text-base font-medium flex gap-5 w-full'>
+              <span>Business name:</span>
+              <span>{client?.businessName}</span>
+            </p>
+            <p className='text-base font-medium flex gap-5 w-full'>
+              <span>Business address:</span>
+              <span>{client?.billingAddress}</span>
             </p>
           </div>
           <div className='sm:w-[300px]'>
@@ -97,22 +105,28 @@ const ClientContainer: React.FC<IClientContainer> = ({ id }) => {
         })}
       </div>
 
-      <div className='bg-white rounded-lg py-5 overflow-scroll'>
+      <div className='bg-white rounded-lg py-5'>
         <div className='p-5 pt-0'>
           <h4>Payment History</h4>
         </div>
-        <div className='bg-secondary grid grid-cols-12 text-xs font-semibold p-4 border-b border-gray-200'>
-          <div className='col-span-3'>Transaction Number</div>
-          <div className='col-span-3'>Payment Date</div>
-          <div className='col-span-3'>Amount</div>
-          <div className='col-span-3'>Invoice Ref</div>
+        <div className='overflow-x-scroll'>
+          <div className='w-[360px] min-w-full'>
+            <div className='min-w-[600px]'>
+              <div className='bg-secondary grid grid-cols-12 text-xs font-semibold p-4 border-b border-gray-200'>
+                <div className='col-span-3'>Transaction Number</div>
+                <div className='col-span-3'>Payment Date</div>
+                <div className='col-span-3'>Amount</div>
+                <div className='col-span-3'>Invoice Ref</div>
+              </div>
+              <PaymentsTable
+                data={paymentsData as GetResponse<Payment[]>}
+                isPending={isPendingPayments}
+                payments={payments as Payment[]}
+                isDetailPage
+              />
+            </div>
+          </div>
         </div>
-        <PaymentsTable
-          data={paymentsData as GetResponse<Payment[]>}
-          isPending={isPendingPayments}
-          payments={payments as Payment[]}
-          isDetailPage
-        />
       </div>
     </div>
   )

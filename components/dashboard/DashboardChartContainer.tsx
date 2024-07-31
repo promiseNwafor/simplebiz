@@ -78,28 +78,34 @@ const DashboardChartContainer: React.FC<ChartContainerProps> = ({
         </NavigationMenu>
       </div>
       <div className='h-[350px] min-w-[567px]'>
-        <ChartContainer config={chartConfig} className='h-full w-full'>
-          <AreaChart
-            data={salesData}
-            margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
-          >
-            <defs>
-              <linearGradient id='colorUv' x1='0' y1='0' x2='0' y2='1'>
-                <stop offset='5%' stopColor='#19C98A' stopOpacity={0.9} />
-                <stop offset='95%' stopColor='#19C98A' stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <XAxis dataKey='paymentDate' />
-            <ChartTooltip content={<ChartTooltipContent />} />
-            <Area
-              type='monotone'
-              dataKey='amount'
-              stroke='#fff'
-              fill='url(#colorUv)'
-              fillOpacity={1}
-            />
-          </AreaChart>
-        </ChartContainer>
+        {!salesData || !salesData.length ? (
+          <div className='h-full w-full centered'>
+            <p className='text-center'>No data available</p>
+          </div>
+        ) : (
+          <ChartContainer config={chartConfig} className='h-full w-full'>
+            <AreaChart
+              data={salesData}
+              margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+            >
+              <defs>
+                <linearGradient id='colorUv' x1='0' y1='0' x2='0' y2='1'>
+                  <stop offset='5%' stopColor='#19C98A' stopOpacity={0.9} />
+                  <stop offset='95%' stopColor='#19C98A' stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <XAxis dataKey='paymentDate' />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Area
+                type='monotone'
+                dataKey='amount'
+                stroke='#fff'
+                fill='url(#colorUv)'
+                fillOpacity={1}
+              />
+            </AreaChart>
+          </ChartContainer>
+        )}
       </div>
     </div>
   )
