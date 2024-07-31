@@ -21,9 +21,15 @@ const statusBgColor = {
 
 type InvoicesRowProps = {
   invoice: Invoice
+  quantity?: number
+  isDetailPage?: boolean
 }
 
-const InvoicesRow: React.FC<InvoicesRowProps> = ({ invoice }) => {
+const InvoicesRow: React.FC<InvoicesRowProps> = ({
+  invoice,
+  quantity,
+  isDetailPage = false,
+}) => {
   const { modalAction, setModalAction, actionMenus } = useInvoiceMenus(
     invoice as any
   )
@@ -58,9 +64,13 @@ const InvoicesRow: React.FC<InvoicesRowProps> = ({ invoice }) => {
           {capitalize(invoice.status)}
         </Badge>
       </div>
-      <div className='flex justify-end'>
-        <ActionsDropdown menuItems={actionMenus} />
-      </div>
+      {isDetailPage ? (
+        <div className='flex justify-center'>{quantity}</div>
+      ) : (
+        <div className='flex justify-end'>
+          <ActionsDropdown menuItems={actionMenus} />
+        </div>
+      )}
     </div>
   )
 }

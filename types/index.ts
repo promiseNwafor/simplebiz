@@ -45,6 +45,18 @@ export type GetResponse<T = unknown> =
       error?: never
     }
 
+export type GetSingleRes<T = unknown> =
+  | {
+      data?: never
+      success: boolean
+      error: string
+    }
+  | {
+      success: boolean
+      data: T
+      error?: never
+    }
+
 export type Invoice = {
   id: string
   issueDate: Date
@@ -76,6 +88,7 @@ export type Payment = {
   amount: number
   invoiceRef: string
   clientName: string
+  clientId: string
   token: string
 }
 

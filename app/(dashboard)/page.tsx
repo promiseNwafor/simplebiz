@@ -3,9 +3,9 @@ import {
   HydrationBoundary,
   QueryClient,
 } from '@tanstack/react-query'
+import { SalesDataRange } from '@/constants'
 import { useGetDashboardData } from '@/store/useStoreData'
 import DashboardContainer from '@/components/dashboard/DashboardContainer'
-import { SalesDataRange } from '@/components/dashboard/ChartContainer'
 
 export default async function DashboardPage({
   searchParams,

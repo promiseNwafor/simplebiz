@@ -57,7 +57,7 @@ export const generateInvoice: (
   ]
 
   const invoiceCol2 = [
-    'Bill to',
+    'Billed to',
     client.businessName || client.name,
     client.billingAddress,
     client.email,

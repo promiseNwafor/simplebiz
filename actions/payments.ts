@@ -15,13 +15,14 @@ import { sendWithdrawalEmail } from '@/lib/mail'
 
 export const addPayment = async (values: Payment) => {
   try {
-    const { id, amount, clientName, invoiceRef, token } = values
+    const { id, amount, clientName, invoiceRef, token, clientId } = values
 
     await db.payment.create({
       data: {
         userId: id,
         amount,
         clientName,
+        clientId,
         invoiceRef,
       },
     })

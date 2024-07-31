@@ -3,8 +3,8 @@
 import { InvoiceStatus } from '@prisma/client'
 import { currentUser } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { SalesDataRange } from '@/components/dashboard/ChartContainer'
 import { formatDate } from '@/lib'
+import { SalesDataRange } from '@/constants'
 
 export const getDashboardData = async (range: SalesDataRange) => {
   try {

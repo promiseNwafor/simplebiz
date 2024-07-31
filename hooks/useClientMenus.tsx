@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Client } from '@prisma/client'
 import { Pages } from '@/routes'
 
 import { ActionMenuProps, ClientProps } from '@/types'
 import { ClientSchemaValues } from '@/schemas'
+import { useDeleteClient, useEditClient } from '@/store/useStoreData'
+import { GetClientDetailsReturn } from '@/store/clients'
 import ClientForm from '@/components/clients/ClientForm'
 import DeleteActionContainer from '@/components/reusables/DeleteActionContainer'
-import { useDeleteClient, useEditClient } from '@/store/useStoreData'
 
 export enum ClientMenuActions {
   VIEW = 'view',
@@ -15,7 +15,7 @@ export enum ClientMenuActions {
   DELETE = 'delete',
 }
 
-const useClientMenus = (client: ClientProps | Client) => {
+const useClientMenus = (client: ClientProps | GetClientDetailsReturn) => {
   const [modalAction, setModalAction] = useState<ClientMenuActions | null>(null)
   const router = useRouter()
 

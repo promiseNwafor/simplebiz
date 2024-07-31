@@ -1,22 +1,26 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
-import { BeatLoader } from 'react-spinners'
 import ReactPaginate from 'react-paginate'
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react'
+import { Invoice } from '@prisma/client'
 
+import { GetResponse } from '@/types'
 import { useGetInvoices } from '@/store/useStoreData'
 import { INVOICES_PER_PAGE } from '@/constants'
 import AddButton from '@/components/reusables/AddButton'
 import Modal from '@/components/reusables/Modal'
-import InvoicesRow from './InvoicesRow'
 import InvoiceForm from './InvoiceForm'
+import InvoiceTable from './InvoiceTable'
 
 const InvoicesContainer = () => {
+  const searchParams = useSearchParams()
+  const defaultPage = parseInt(searchParams.get('page')?.toString() || '1')
+
   const [modalOpen, setModalOpen] = useState(false)
-  const [page, setPage] = useState(1)
+  const [page, setPage] = useState(defaultPage)
   const { data, isPlaceholderData, isPending } = useQuery(useGetInvoices(page))
 
   const router = useRouter()
@@ -67,30 +71,11 @@ const InvoicesContainer = () => {
             <div></div>
           </div>
 
-          <div className='min-h-[280px]'>
-            {isPending ? (
-              <BeatLoader color='#008678' className='text-center mt-6' />
-            ) : (
-              <>
-                {data?.error || !invoices || !invoices.length ? (
-                  <div className='bg-white w-full h-[280px] py-5 centered border-t border-gray-200'>
-                    <p>No invoice available</p>
-                  </div>
-                ) : (
-                  <>
-                    {invoices.map((invoice) => {
-                      return (
-                        <InvoicesRow
-                          key={invoice.id}
-                          invoice={invoice as any}
-                        />
-                      )
-                    })}
-                  </>
-                )}
-              </>
-            )}
-          </div>
+          <InvoiceTable
+            data={data as GetResponse<Invoice[]>}
+            isPending={isPending}
+            invoices={invoices as Invoice[]}
+          />
           <div className='p-5 pb-0 centered gap-1'>
             <ReactPaginate
               pageCount={Math.ceil(count / INVOICES_PER_PAGE)}

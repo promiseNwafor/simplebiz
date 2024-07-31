@@ -4,6 +4,7 @@ import { PRODUCTS_PER_PAGE } from '@/constants'
 import { currentUser } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { GetResponse, Product } from '@/types'
+import { InvoiceStatus } from '@prisma/client'
 
 type GetProducts = (page: number) => Promise<GetResponse<Product[]>>
 
@@ -82,5 +83,99 @@ export const getProduct = async (id: string): Promise<GetResponse<Product>> => {
   } catch (error) {
     console.error(error)
     return { error: 'Error getting product', success: false }
+  }
+}
+
+export type GetProductDetailReturn = Product & {
+  totalPayments: number
+  allInvoiceCount: number
+  completedInvoiceCount: number
+  pendingInvoiceCount: number
+}
+
+export const getProductDetail = async (productId: string) => {
+  try {
+    const allCount = await db.invoiceProduct.aggregate({
+      _sum: {
+        quantity: true,
+      },
+      where: {
+        productId,
+      },
+    })
+
+    const pendingCount = await db.invoiceProduct.aggregate({
+      _sum: {
+        quantity: true,
+      },
+      where: {
+        productId,
+        invoice: {
+          status: InvoiceStatus.UNPAID,
+        },
+      },
+    })
+
+    const expiredCount = await db.invoiceProduct.aggregate({
+      _sum: {
+        quantity: true,
+      },
+      where: {
+        productId,
+        invoice: {
+          status: InvoiceStatus.OVERDUE,
+        },
+      },
+    })
+
+    const totalEarning = await db.invoiceProduct.aggregate({
+      _sum: {
+        amount: true,
+      },
+      where: {
+        productId,
+        invoice: {
+          status: InvoiceStatus.PAID,
+        },
+      },
+    })
+
+    const data = {
+      allCount: allCount._sum.quantity || 0,
+      pendingCount: pendingCount._sum.quantity || 0,
+      expiredCount: expiredCount._sum.quantity || 0,
+      totalEarning: totalEarning._sum.amount || 0,
+    }
+
+    return { data, success: true }
+  } catch (error) {
+    console.error(error)
+    return {
+      error: `${error || 'Error getting client details'}`,
+      success: false,
+    }
+  }
+}
+
+export const getProductInvoices = async (productId: string) => {
+  try {
+    const invoiceProducts = await db.invoiceProduct.findMany({
+      where: {
+        productId: productId,
+      },
+      include: {
+        invoice: true,
+      },
+    })
+
+    return {
+      data: invoiceProducts,
+    }
+  } catch (error) {
+    console.error(error)
+    return {
+      error: `${error || 'Error getting client details'}`,
+      success: false,
+    }
   }
 }

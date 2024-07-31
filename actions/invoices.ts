@@ -59,6 +59,20 @@ export const sendInvoice = async (values: InvoiceSchemaValues) => {
         amount: totalAmount,
         issueDate,
         invoiceRef: ref,
+        products: {
+          create: selectedProducts.map((product) => ({
+            productId: product.id,
+            quantity: product.quantity,
+            amount: product.total,
+          })),
+        },
+      },
+      include: {
+        products: {
+          include: {
+            product: true,
+          },
+        },
       },
     })
 

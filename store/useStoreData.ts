@@ -23,9 +23,20 @@ import {
   updateWithdrawalStatus,
 } from '@/actions/payments'
 import { sendInvoice } from '@/actions/invoices'
-import { getClient, getClients, getClientsNameAndBiz } from './clients'
+import { SalesDataRange } from '@/constants'
+import {
+  getClientDetails,
+  getClientPayments,
+  getClients,
+  getClientsNameAndBiz,
+} from './clients'
 import { getInvoiceById, getInvoices } from './invoices'
-import { getProduct, getProducts } from './products'
+import {
+  getProduct,
+  getProductDetail,
+  getProductInvoices,
+  getProducts,
+} from './products'
 import {
   getPaymentDetails,
   getPayments,
@@ -33,14 +44,13 @@ import {
   getWalletDetails,
 } from './payments'
 import { getDashboardData } from './dashboard'
-import { SalesDataRange } from '@/components/dashboard/ChartContainer'
 
 export const storeQueryKeys = {
   getDashboardData: 'getDashboardData',
   getProducts: 'getProducts',
   getProduct: 'getProduct',
   getClients: 'getClients',
-  getClient: 'getClient',
+  getClientPayments: 'getClientPayments',
   getClientsNameAndBiz: 'getClientsNameAndBiz',
   getInvoices: 'getInvoices',
   getInvoice: 'getInvoice',
@@ -48,6 +58,9 @@ export const storeQueryKeys = {
   getWalletDetails: 'getWalletDetails',
   getPaymentDetails: 'getPaymentDetails',
   getPendingWithdrawals: 'getPendingWithdrawals',
+  getClientDetails: 'getClientDetails',
+  getProductDetail: 'getProductDetail',
+  getProductInvoices: 'getProductInvoices',
 }
 
 /** =============== Dashboard ============== */
@@ -85,11 +98,20 @@ export const useGetClientsNameAndBiz = () => {
   })
 }
 
-export const useGetClient = (id: string) => {
+export const useGetClientPayments = (id: string) => {
   return queryOptions({
-    queryKey: [storeQueryKeys.getClient, id],
+    queryKey: [storeQueryKeys.getClientPayments, id],
     queryFn: async () => {
-      return await getClient(id)
+      return await getClientPayments(id)
+    },
+  })
+}
+
+export const useGetClientDetails = (id: string) => {
+  return queryOptions({
+    queryKey: [storeQueryKeys.getClientDetails, id],
+    queryFn: async () => {
+      return await getClientDetails(id)
     },
   })
 }
@@ -101,6 +123,9 @@ export const useAddClient = () => {
     mutationFn: async (values: ClientSchemaValues) => await addClient(values),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [storeQueryKeys.getClients] })
+      queryClient.invalidateQueries({
+        queryKey: [storeQueryKeys.getDashboardData],
+      })
     },
   })
 }
@@ -116,9 +141,9 @@ export const useEditClient = () => {
       id: string
       values: ClientSchemaValues
     }) => await editClient(id, values),
-    onSuccess: () => {
+    onSuccess: (_data, { id }) => {
       queryClient.invalidateQueries({
-        queryKey: [storeQueryKeys.getClient],
+        queryKey: [storeQueryKeys.getClientDetails, id],
       })
       queryClient.invalidateQueries({
         queryKey: [storeQueryKeys.getClients],
@@ -134,10 +159,13 @@ export const useDeleteClient = () => {
     mutationFn: async (id: string) => await deleteClient(id),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [storeQueryKeys.getClient],
+        queryKey: [storeQueryKeys.getClientDetails],
       })
       queryClient.invalidateQueries({
         queryKey: [storeQueryKeys.getClients],
+      })
+      queryClient.invalidateQueries({
+        queryKey: [storeQueryKeys.getDashboardData],
       })
     },
   })
@@ -168,6 +196,24 @@ export const useGetProduct = (id: string) => {
   })
 }
 
+export const useGetProductDetail = (id: string) => {
+  return queryOptions({
+    queryKey: [storeQueryKeys.getProductDetail, id],
+    queryFn: async () => {
+      return await getProductDetail(id)
+    },
+  })
+}
+
+export const useGetProductInvoices = (id: string) => {
+  return queryOptions({
+    queryKey: [storeQueryKeys.getProductInvoices, id],
+    queryFn: async () => {
+      return await getProductInvoices(id)
+    },
+  })
+}
+
 export const useAddProduct = () => {
   const queryClient = useQueryClient()
 
@@ -175,6 +221,9 @@ export const useAddProduct = () => {
     mutationFn: async (values: ProductSchemaValues) => await addProduct(values),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [storeQueryKeys.getProducts] })
+      queryClient.invalidateQueries({
+        queryKey: [storeQueryKeys.getDashboardData],
+      })
     },
   })
 }
@@ -213,6 +262,9 @@ export const useDeleteProduct = () => {
       queryClient.invalidateQueries({
         queryKey: [storeQueryKeys.getProducts],
       })
+      queryClient.invalidateQueries({
+        queryKey: [storeQueryKeys.getDashboardData],
+      })
     },
   })
 }
@@ -233,6 +285,9 @@ export const useSendInvoice = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [storeQueryKeys.getInvoices, 1],
+      })
+      queryClient.invalidateQueries({
+        queryKey: [storeQueryKeys.getDashboardData],
       })
     },
   })
@@ -278,6 +333,9 @@ export const useAddPayment = () => {
       })
       queryClient.invalidateQueries({
         queryKey: [storeQueryKeys.getWalletDetails],
+      })
+      queryClient.invalidateQueries({
+        queryKey: [storeQueryKeys.getDashboardData],
       })
     },
   })
@@ -398,6 +456,9 @@ export const useUpdateWithdrawalStatus = () => {
       })
       queryClient.invalidateQueries({
         queryKey: [storeQueryKeys.getWalletDetails],
+      })
+      queryClient.invalidateQueries({
+        queryKey: [storeQueryKeys.getDashboardData],
       })
     },
   })

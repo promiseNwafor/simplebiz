@@ -4,21 +4,27 @@ import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useQuery } from '@tanstack/react-query'
 import capitalize from 'lodash/capitalize'
+import { BeatLoader } from 'react-spinners'
 
 import useProductMenus, { ProductMenuActions } from '@/hooks/useProductMenus'
 import { ngnFormatter } from '@/lib'
 import { cn } from '@/lib/utils'
 import { Product } from '@/types'
-import { useGetProduct } from '@/store/useStoreData'
+import {
+  useGetProduct,
+  useGetProductDetail,
+  useGetProductInvoices,
+} from '@/store/useStoreData'
 import { Button } from '@/components/ui/button'
 import OverviewCard from '@/components/reusables/OverviewCard'
 import Modal from '@/components/reusables/Modal'
+import InvoicesRow from '@/components/invoices/InvoicesRow'
 import { bgColor } from './ProductCard'
 
 const orders = [
-  { label: 'All Orders', title: '158' },
-  { label: 'Open Orders', title: '27' },
-  { label: 'In Stock', title: '98' },
+  { label: 'All Transactions', key: 'allCount' },
+  { label: 'Open Transactions', key: 'pendingCount' },
+  { label: 'Expired Transactions', key: 'expiredCount' },
 ]
 
 interface IProductContainer {
@@ -27,7 +33,14 @@ interface IProductContainer {
 
 const ProductContainer: React.FC<IProductContainer> = ({ id }) => {
   const { data: productData, error } = useQuery(useGetProduct(id))
+  const { data: invoiceData, isPending: isInvoicePending } = useQuery(
+    useGetProductInvoices(id)
+  )
+  const { data: productDetailData } = useQuery(useGetProductDetail(id))
+
   const product = productData?.data?.data
+  const invoices = invoiceData?.data
+  const productDetail = productDetailData?.data
 
   const { modalAction, setModalAction, actionMenus } = useProductMenus(
     product as Product
@@ -96,7 +109,7 @@ const ProductContainer: React.FC<IProductContainer> = ({ id }) => {
           <div className='sm:w-[300px]'>
             <OverviewCard
               label='Total Earnings'
-              title='₦248,054'
+              title={ngnFormatter.format(productDetail?.totalEarning || 0)}
               className='bg-primary-light pl-4 h-[120px]'
               labelClassName='text-black'
             />
@@ -106,9 +119,58 @@ const ProductContainer: React.FC<IProductContainer> = ({ id }) => {
 
       <div className='grid sm:grid-cols-3 gap-4 lg:gap-8'>
         {orders.map((order) => {
-          const { label, title } = order
-          return <OverviewCard key={label} label={label} title={title} />
+          const { label, key } = order
+          return (
+            <OverviewCard
+              key={label}
+              label={label}
+              title={(productDetail as any)[key]}
+            />
+          )
         })}
+      </div>
+
+      <div className='bg-white rounded-lg py-5 overflow-scroll'>
+        <div className='p-5 pt-0'>
+          <h4>Invoice History</h4>
+        </div>
+        <div className='bg-secondary grid grid-cols-12 text-xs font-semibold p-4 border-b border-gray-200'>
+          <div></div>
+          <div className='col-span-2'>Issued Date</div>
+          <div className='col-span-2'>Due Date</div>
+          <div>Invoice No.</div>
+          <div className='col-span-2'>Issued to</div>
+          <div className='col-span-2'>Amount</div>
+          <div>Status</div>
+          <div className='flex justify-center'>Quantity</div>
+        </div>
+
+        <div className='min-h-[280px]'>
+          {isInvoicePending ? (
+            <BeatLoader color='#008678' className='text-center mt-6' />
+          ) : (
+            <>
+              {invoiceData?.error || !invoices || !invoices.length ? (
+                <div className='bg-white w-full h-[280px] py-5 centered border-t border-gray-200'>
+                  <p>No invoice available</p>
+                </div>
+              ) : (
+                <>
+                  {invoices.map((item) => {
+                    return (
+                      <InvoicesRow
+                        key={item.invoiceId}
+                        invoice={item.invoice as any}
+                        quantity={item.quantity}
+                        isDetailPage
+                      />
+                    )
+                  })}
+                </>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   )

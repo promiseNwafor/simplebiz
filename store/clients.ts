@@ -3,8 +3,13 @@
 import { CLIENTS_PER_PAGE } from '@/constants'
 import { currentUser } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { ClientNameAndBiz, ClientProps, GetResponse } from '@/types'
-import { Client } from '@prisma/client'
+import {
+  ClientNameAndBiz,
+  ClientProps,
+  GetResponse,
+  GetSingleRes,
+} from '@/types'
+import { Client, InvoiceStatus, Payment } from '@prisma/client'
 
 type GetClients = (page: number) => Promise<GetResponse<ClientProps[]>>
 
@@ -104,5 +109,111 @@ export const getClient = async (id: string): Promise<GetResponse<Client>> => {
   } catch (error) {
     console.error(error)
     return { error: 'Error getting client', success: false }
+  }
+}
+
+export type GetClientDetailsReturn = Client & {
+  totalPayments: number
+  allInvoiceCount: number
+  completedInvoiceCount: number
+  pendingInvoiceCount: number
+}
+
+type GetClientDetails = (
+  clientId: string
+) => Promise<GetSingleRes<GetClientDetailsReturn>>
+
+export const getClientDetails: GetClientDetails = async (clientId: string) => {
+  try {
+    const user = await currentUser()
+    const userId = user?.id
+
+    const clientDetails = await db.client.findFirst({
+      where: {
+        id: clientId,
+        userId,
+      },
+    })
+
+    // get total amount of payment completed by the client and number of completed transactions
+    const payments = await db.payment.aggregate({
+      _sum: {
+        amount: true,
+      },
+      where: {
+        userId,
+        clientId,
+      },
+    })
+
+    const allInvoiceCount = await db.invoice.count({
+      where: {
+        userId,
+        clientId,
+      },
+    })
+
+    const completedInvoiceCount = await db.invoice.count({
+      where: {
+        userId,
+        clientId,
+        status: InvoiceStatus.PAID,
+      },
+    })
+
+    const pendingInvoiceCount = await db.invoice.count({
+      where: {
+        userId,
+        clientId,
+        status: InvoiceStatus.UNPAID,
+      },
+    })
+
+    const data = {
+      ...clientDetails,
+      totalPayments: payments._sum.amount || 0,
+      allInvoiceCount,
+      completedInvoiceCount,
+      pendingInvoiceCount,
+    } as GetClientDetailsReturn
+
+    return { data, success: true }
+  } catch (error) {
+    console.error(error)
+    return {
+      error: `${error || 'Error getting client details'}`,
+      success: false,
+    }
+  }
+}
+
+export const getClientPayments = async (
+  clientId: string
+): Promise<GetResponse<Payment[]>> => {
+  try {
+    const user = await currentUser()
+    const userId = user?.id
+
+    const count = await db.payment.count({
+      where: {
+        userId,
+        clientId,
+      },
+    })
+
+    const data = await db.payment.findMany({
+      where: {
+        userId,
+        clientId,
+      },
+    })
+
+    return { data: { data, count }, success: true }
+  } catch (error) {
+    console.error(error)
+    return {
+      error: `${error || 'Error getting client details'}`,
+      success: false,
+    }
   }
 }

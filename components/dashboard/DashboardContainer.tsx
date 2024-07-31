@@ -7,10 +7,13 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { storeQueryKeys, useGetDashboardData } from '@/store/useStoreData'
 import { ngnFormatter } from '@/lib'
 import { Pages } from '@/routes'
+import { SalesDataRange } from '@/constants'
 import AddButton from '@/components/reusables/AddButton'
 import GoToButton from '@/components/reusables/GoToButton'
 import OverviewCard from '@/components/reusables/OverviewCard'
-import ChartContainer, { SalesDataRange } from './ChartContainer'
+import DashboardChartContainer from './DashboardChartContainer'
+import Modal from '@/components/reusables/Modal'
+import InvoiceForm from '@/components/invoices/InvoiceForm'
 
 export const dashboardFeaturedItems = [
   { label: 'No. of Clients', key: 'clientsNo' },
@@ -26,12 +29,17 @@ const DashboardContainer = () => {
     SalesDataRange.ALL_TIME
 
   const [range, setRange] = useState(defaultRange)
+  const [modalOpen, setModalOpen] = useState(false)
 
   const { data: dashboardData, isPending: dashboardIsPending } = useQuery(
     useGetDashboardData(range)
   )
   const queryClient = useQueryClient()
   const router = useRouter()
+
+  const toggleModal = () => {
+    setModalOpen((prevState) => !prevState)
+  }
 
   const handleRangeSelect = async (range: SalesDataRange) => {
     const params = new URLSearchParams()
@@ -48,8 +56,14 @@ const DashboardContainer = () => {
 
   return (
     <div className='space-y-6'>
+      <Modal
+        open={modalOpen}
+        onClose={toggleModal}
+        content={<InvoiceForm toggleModal={toggleModal} />}
+        title='Generate Invoice'
+      />
       <div className='flex items-center justify-end'>
-        <AddButton>Generate Invoice</AddButton>
+        <AddButton onClick={toggleModal}>Generate Invoice</AddButton>
       </div>
 
       {dashboardData?.error ? (
@@ -75,7 +89,7 @@ const DashboardContainer = () => {
 
               {/* Trend */}
               <div className='w-full grid lg:grid-cols-3 gap-6'>
-                <ChartContainer
+                <DashboardChartContainer
                   salesData={dashboard.salesData}
                   handleRangeSelect={handleRangeSelect}
                   range={range}

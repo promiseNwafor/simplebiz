@@ -2,14 +2,15 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { BeatLoader } from 'react-spinners'
 import ReactPaginate from 'react-paginate'
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
+import { Payment } from '@prisma/client'
+import { GetResponse } from '@/types'
 import { useGetPayments } from '@/store/useStoreData'
 import { PAYMENT_PER_PAGE } from '@/constants'
-import PaymentsRow from './PaymentsRow'
 import PaymentDetails from './PaymentDetails'
+import PaymentsTable from './PaymentsTable'
 
 const PaymentsContainer = () => {
   const [page, setPage] = useState(1)
@@ -51,25 +52,12 @@ const PaymentsContainer = () => {
             <div></div>
           </div>
 
-          <div className='min-h-[280px]'>
-            {isPending ? (
-              <BeatLoader color='#008678' className='text-center mt-6' />
-            ) : (
-              <>
-                {data?.error || !payments || !payments.length ? (
-                  <div className='bg-white w-full h-[280px] py-5 centered border-t border-gray-200'>
-                    <p>No payment available</p>
-                  </div>
-                ) : (
-                  <>
-                    {payments.map((payment) => {
-                      return <PaymentsRow key={payment.id} payment={payment} />
-                    })}
-                  </>
-                )}
-              </>
-            )}
-          </div>
+          <PaymentsTable
+            data={data as GetResponse<Payment[]>}
+            isPending={isPending}
+            payments={payments as Payment[]}
+          />
+
           <div className='p-5 pb-0 centered gap-1'>
             <ReactPaginate
               pageCount={Math.ceil(count / PAYMENT_PER_PAGE)}

@@ -37,6 +37,7 @@ const InvoicePaymentContainer: React.FC<InvoicePaymentContainerProps> = ({
         id: client.userId,
         amount: invoice.amount,
         clientName: client.name,
+        clientId: client.id,
         invoiceRef: invoice.invoiceRef,
         token: id,
       }).then((response) => {

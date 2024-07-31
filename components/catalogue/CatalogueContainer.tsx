@@ -21,8 +21,7 @@ const CatalogueContainer: React.FC = () => {
   const { data, error, isPlaceholderData } = useQuery(useGetProducts(page))
   const { mutateAsync: addProduct } = useAddProduct()
 
-  console.log('++++++++++++++', { data, error })
-
+  const products = data?.data?.data
   const count = data?.data?.count as number
 
   const toggleModal = () => {
@@ -67,13 +66,13 @@ const CatalogueContainer: React.FC = () => {
         </div>
       ) : (
         <div className='min-h-[400px]'>
-          {!data?.data?.data.length ? (
+          {!products || !products.length ? (
             <div className='bg-white w-full h-[400px] py-5 centered border-t border-gray-200'>
               <p>No available products</p>
             </div>
           ) : (
             <div className='grid sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 xl:gap-8'>
-              {data?.data?.data.map((product) => (
+              {products.map((product) => (
                 <ProductCard product={product as Product} key={product.id} />
               ))}
             </div>

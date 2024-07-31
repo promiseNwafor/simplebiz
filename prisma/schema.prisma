@@ -150,14 +150,15 @@ model Client {
 }
 
 model Invoice {
-  id         String        @id @default(cuid())
-  issueDate  DateTime      @map("issue_date")
-  dueDate    DateTime      @map("due_date")
-  issuedTo   String        @map("issued_to")
+  id         String           @id @default(cuid())
+  issueDate  DateTime         @map("issue_date")
+  dueDate    DateTime         @map("due_date")
+  issuedTo   String           @map("issued_to")
   amount     Float
-  invoiceNo  Int           @default(autoincrement()) @map("invoice_no")
-  status     InvoiceStatus @default(UNPAID)
-  invoiceRef String        @unique
+  invoiceNo  Int              @default(autoincrement()) @map("invoice_no")
+  status     InvoiceStatus    @default(UNPAID)
+  invoiceRef String           @unique
+  products   InvoiceProduct[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -172,14 +173,15 @@ model Invoice {
 }
 
 model Product {
-  id          String      @id @default(cuid())
+  id          String           @id @default(cuid())
   name        String
-  description String      @db.Text
+  description String           @db.Text
   price       Float
   type        ProductType
-  available   Boolean     @default(true)
-  imageURL    String      @map("image_url")
+  available   Boolean          @default(true)
+  imageURL    String           @map("image_url")
   quantity    Int
+  invoices    InvoiceProduct[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -188,6 +190,20 @@ model Product {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("products")
+}
+
+model InvoiceProduct {
+  invoiceId String  @map("invoice_id")
+  invoice   Invoice @relation(fields: [invoiceId], references: [id])
+
+  productId String  @map("product_id")
+  product   Product @relation(fields: [productId], references: [id])
+
+  amount   Float @default(0)
+  quantity Int
+
+  @@id([invoiceId, productId])
+  @@map("invoice_products")
 }
 
 model PaymentToken {
@@ -206,6 +222,7 @@ model Payment {
   paymentDate   DateTime @default(now()) @map("payment_date")
   invoiceRef    String   @map("invoice_ref")
   clientName    String   @map("client_name")
+  clientId      String   @map("client_id")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

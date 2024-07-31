@@ -1,6 +1,8 @@
 'use client'
 
-import { AreaChart, Area, ResponsiveContainer, XAxis, Tooltip } from 'recharts'
+import { AreaChart, Area, XAxis } from 'recharts'
+import { BadgeDollarSign, CalendarDays } from 'lucide-react'
+import { SalesDataRange } from '@/constants'
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -10,15 +12,25 @@ import {
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu'
 import { Button } from '@/components/ui/button'
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart'
 
-export enum SalesDataRange {
-  ALL_TIME = 'all-time',
-  LAST_7_DAYS = 'last-7-days',
-  LAST_MONTH = 'last-month',
-  THIS_MONTH = 'this-month',
-  THIS_YEAR = 'this-year',
-  LAST_YEAR = 'last-year',
-}
+const chartConfig = {
+  amount: {
+    label: 'Amount ₦',
+    color: '#008678',
+    icon: BadgeDollarSign,
+  },
+  paymentDate: {
+    label: 'PaymentDate',
+    color: '#008678',
+    icon: CalendarDays,
+  },
+} satisfies ChartConfig
 
 export type SalesData = { amount: number; paymentDate: string }[]
 
@@ -28,7 +40,7 @@ type ChartContainerProps = {
   range: SalesDataRange
 }
 
-const ChartContainer: React.FC<ChartContainerProps> = ({
+const DashboardChartContainer: React.FC<ChartContainerProps> = ({
   salesData,
   handleRangeSelect,
   range,
@@ -65,8 +77,8 @@ const ChartContainer: React.FC<ChartContainerProps> = ({
           </NavigationMenuList>
         </NavigationMenu>
       </div>
-      <div className='h-[334px] min-w-[567px]'>
-        <ResponsiveContainer width='100%' height='100%'>
+      <div className='h-[350px] min-w-[567px]'>
+        <ChartContainer config={chartConfig} className='h-full w-full'>
           <AreaChart
             data={salesData}
             margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
@@ -78,7 +90,7 @@ const ChartContainer: React.FC<ChartContainerProps> = ({
               </linearGradient>
             </defs>
             <XAxis dataKey='paymentDate' />
-            <Tooltip />
+            <ChartTooltip content={<ChartTooltipContent />} />
             <Area
               type='monotone'
               dataKey='amount'
@@ -87,10 +99,10 @@ const ChartContainer: React.FC<ChartContainerProps> = ({
               fillOpacity={1}
             />
           </AreaChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </div>
     </div>
   )
 }
 
-export default ChartContainer
+export default DashboardChartContainer
