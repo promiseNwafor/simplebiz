@@ -1,11 +1,11 @@
 import { sendInvoiceReminders } from '@/actions/invoices'
 
-export async function GET(_req: Request, _res: Response) {
+export async function GET() {
   try {
     await sendInvoiceReminders()
 
-    return Response.json({ success: true, status: 200 })
+    return Response.json({ success: true })
   } catch (error) {
-    return Response.json({ success: false, status: 500 })
+    return Response.json({ success: false })
   }
 }
