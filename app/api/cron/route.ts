@@ -1,8 +1,8 @@
-// import { sendInvoiceReminders } from '@/actions/invoices'
+import { sendInvoiceReminders } from '@/actions/invoices'
 
 export async function GET() {
   try {
-    // await sendInvoiceReminders()
+    await sendInvoiceReminders()
 
     return Response.json({ success: true })
   } catch (error) {

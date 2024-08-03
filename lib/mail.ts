@@ -1,7 +1,8 @@
 import { Resend } from 'resend'
 import { ngnFormatter } from '.'
 
-const resend = new Resend(process.env.NEXT_PUBLIC_RESEND_API_KEY)
+// const resend = new Resend(process.env.RESEND_API_KEY)
+const resend = new Resend('test_key')
 
 const domain = process.env.NEXT_PUBLIC_APP_URL
 
