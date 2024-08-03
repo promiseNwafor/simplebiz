@@ -6,6 +6,11 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
+# Define environment variables
+ARG RESEND_API_KEY
+
+ENV RESEND_API_KEY=${RESEND_API_KEY}
+
 # Copy prisma schema and package files
 COPY prisma ./prisma/
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
