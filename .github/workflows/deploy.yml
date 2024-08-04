@@ -30,6 +30,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          passphrase: ${{ secrets.VPS_SSH_KEY_PASSPHRASE }} # Add this if your SSH key has a passphrase
           script: |
             docker pull ghcr.io/promisenwafor/simplebiz:latest
             docker stop simplebiz || true
