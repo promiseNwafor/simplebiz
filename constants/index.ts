@@ -6,6 +6,11 @@ import { LuWallet } from 'react-icons/lu'
 import { IoSettingsOutline } from 'react-icons/io5'
 import { IconType } from 'react-icons/lib'
 
+export const domain =
+  process.env.NODE_ENV === 'production'
+    ? process.env.NEXT_PUBLIC_PRODUCTION_URL
+    : process.env.NEXT_PUBLIC_LOCAL_URL
+
 export const CLIENTS_PER_PAGE = 5
 export const PRODUCTS_PER_PAGE = 4
 export const INVOICES_PER_PAGE = 5

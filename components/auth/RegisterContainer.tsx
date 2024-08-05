@@ -1,19 +1,19 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import Link from 'next/link'
 
 import { RegisterFormValues, RegisterFormSchema } from '@/schemas'
+import { register } from '@/actions/register'
 import { Form } from '@/components/ui/form'
 import { Slider } from '@/components/ui/slider'
 import UserDetailsContainer from './UserDetailsContainer'
 import BusinessDetailsContainer from './BusinessDetailsContainer'
 import AuthWrapper from './AuthWrapper'
-import Link from 'next/link'
 import { AuthError } from './AuthError'
 import { AuthSuccess } from './AuthSuccess'
-import { register } from '@/actions/register'
 
 const RegisterContainer = () => {
   const [screen, setScreen] = useState(1)
@@ -23,9 +23,29 @@ const RegisterContainer = () => {
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(RegisterFormSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      phoneNumber: '',
+      address: '',
+      password: '',
+      confirmPassword: '',
+      businessName: '',
+      businessAddress: '',
+      businessDescription: '',
+      industry: '',
+      rcNumber: '',
+      acceptPolicy: false,
+    },
   })
 
-  const { handleSubmit, control, trigger, reset } = form
+  const {
+    handleSubmit,
+    control,
+    trigger,
+    reset,
+    formState: { isSubmitSuccessful },
+  } = form
 
   const onSubmit = (values: RegisterFormValues) => {
     setError('')
@@ -37,7 +57,6 @@ const RegisterContainer = () => {
         setSuccess(res?.success)
       })
     })
-    reset()
   }
 
   const handleUserDetailsSubmit = async () => {
@@ -53,6 +72,11 @@ const RegisterContainer = () => {
 
     setScreen(2)
   }
+
+  useEffect(() => {
+    reset()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSubmitSuccessful])
 
   return (
     <AuthWrapper

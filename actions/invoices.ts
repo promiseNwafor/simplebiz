@@ -92,7 +92,7 @@ export const sendInvoice = async (values: InvoiceSchemaValues) => {
     // Send email
     const emailRes = await sendInvoiceEmail(
       paymentToken.token,
-      'promisenwafor955@gmail.com',
+      selectedClient.email,
       invoiceContent
     )
 

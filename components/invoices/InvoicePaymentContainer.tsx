@@ -27,7 +27,7 @@ const InvoicePaymentContainer: React.FC<InvoicePaymentContainerProps> = ({
   const router = useRouter()
 
   const componentProps = {
-    email: 'promisenwafor955@gmail.com',
+    email: client.email,
     amount: invoice.amount * 100, // amount from kobo to naira
     publicKey: process.env.NEXT_PUBLIC_PAYSTACK_KEY || '',
     text: 'Pay Now',

@@ -187,7 +187,7 @@ export const requestWithdrawal = async (
 
     await sendWithdrawalEmail({
       withdrawalId: withdrawalRes.id,
-      email: 'promisenwafor955@gmail.com',
+      email: process.env.NEXT_PUBLIC_SIMPLEBIZ_EMAIL as string,
       name: user.name,
       amount,
       accountName: paymentDetail.accountName,

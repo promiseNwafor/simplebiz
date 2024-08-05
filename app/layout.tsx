@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Poppins } from 'next/font/google'
 import { SessionProvider } from 'next-auth/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { auth } from '@/auth'
 import { cn } from '@/lib/utils'
 import { Toaster } from '@/components/ui/sonner'
@@ -40,6 +41,7 @@ export default async function RootLayout({
             <Toaster />
             {children}
           </ProvidersContainer>
+          <SpeedInsights />
         </body>
       </html>
     </SessionProvider>

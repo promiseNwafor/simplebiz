@@ -60,7 +60,6 @@ export const LoginFormSchema = z.object({
     message: 'Password is required',
   }),
   code: z.optional(z.string()),
-  rememberLogin: z.boolean().optional(),
 })
 
 export type LoginFormValues = z.infer<typeof LoginFormSchema>

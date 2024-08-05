@@ -3,11 +3,12 @@
 import { useState, useTransition } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { Checkbox } from '@radix-ui/react-checkbox'
 import Link from 'next/link'
 import { AiOutlineEyeInvisible, AiOutlineEye } from 'react-icons/ai'
+import { useSearchParams } from 'next/navigation'
 
 import { LoginFormValues, LoginFormSchema } from '@/schemas'
+import { login } from '@/actions/login'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -22,8 +23,6 @@ import { Input } from '@/components/ui/input'
 import SocialsContainer from './SocialsContainer'
 import { AuthError } from './AuthError'
 import { AuthSuccess } from './AuthSuccess'
-import { login } from '@/actions/login'
-import { useSearchParams } from 'next/navigation'
 import OTPInputContainer from './OTPInputContainer'
 
 const LoginContainer = () => {
@@ -139,24 +138,7 @@ const LoginContainer = () => {
                     </FormItem>
                   )}
                 />
-                <div className='flex items-center justify-between '>
-                  <FormField
-                    control={control}
-                    name='rememberLogin'
-                    render={({ field: { value, onChange } }) => (
-                      <FormItem className='flex flex-row items-start space-x-3 space-y-0'>
-                        <FormControl>
-                          <Checkbox
-                            checked={value}
-                            onCheckedChange={onChange}
-                          />
-                        </FormControl>
-                        <div className='space-y-1 leading-none'>
-                          <FormLabel>Remember me</FormLabel>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
+                <div className='flex items-center justify-end'>
                   <div>
                     <Link href='/auth/reset' className='text-sm'>
                       Forgot password?
