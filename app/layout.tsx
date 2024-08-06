@@ -21,6 +21,11 @@ export const metadata: Metadata = {
     'Enabling small businesses to manage their payments efficiently.',
 }
 
+export const viewport = {
+  viewport:
+    'width=device-width, initial-scale=1, maximum-scale=1 user-scalable=yes',
+}
+
 export default async function RootLayout({
   children,
 }: Readonly<{

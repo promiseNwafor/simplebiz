@@ -11,7 +11,7 @@ import {
 } from '@/schemas'
 import { currentUser } from '@/lib/auth'
 import { generateWithdrawalReference } from '@/lib'
-import { sendWithdrawalEmail } from '@/lib/mail'
+import { sendWithdrawalCompleteEmail, sendWithdrawalEmail } from '@/lib/mail'
 
 export const addPayment = async (values: Payment) => {
   try {
@@ -234,6 +234,13 @@ export const updateWithdrawalStatus = async (id: string) => {
           decrement: withdrawalRes.amount,
         },
       },
+    })
+
+    await sendWithdrawalCompleteEmail({
+      withdrawalRef: withdrawalRes.withdrawalRef,
+      email: user.email,
+      name: user.name,
+      amount: withdrawalRes.amount,
     })
 
     return { success: 'Status updated!' }

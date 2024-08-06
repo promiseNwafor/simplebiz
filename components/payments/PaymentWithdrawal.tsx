@@ -116,7 +116,7 @@ const PaymentWithdrawal: React.FC<PaymentAccountProps> = ({
         />
 
         <Button type='submit' disabled={isPending || !!inputError}>
-          Save
+          Request
         </Button>
       </form>
     </Form>

@@ -104,3 +104,24 @@ export const sendWithdrawalEmail = async (data: {
 
   return resend.emails.send(options)
 }
+
+export const sendWithdrawalCompleteEmail = async (data: {
+  withdrawalRef: string
+  email: string
+  name: string
+  amount: number
+}) => {
+  const { withdrawalRef, email, name, amount } = data
+  const options = {
+    from: noreplyEmail,
+    to: email,
+    subject: 'Your account has been credited by Simplebiz',
+    html: `<div>
+    <p>Hi ${name},</p>
+    <p>your account has been credited with an amount of ${ngnFormatter.format(amount)} per your withdrawal request of ${withdrawalRef}</p>
+    <p>Thank you</p>
+    </div>`,
+  }
+
+  return resend.emails.send(options)
+}

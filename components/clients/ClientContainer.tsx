@@ -73,8 +73,12 @@ const ClientContainer: React.FC<IClientContainer> = ({ id }) => {
               <span>{client?.phone}</span>
             </p>
             <p className='text-base font-medium flex gap-5 w-full'>
-              <span>Business name:</span>
-              <span>{client?.businessName}</span>
+              {client?.businessName && (
+                <>
+                  <span>Business name:</span>
+                  <span>{client?.businessName}</span>
+                </>
+              )}
             </p>
             <p className='text-base font-medium flex gap-5 w-full'>
               <span>Business address:</span>
