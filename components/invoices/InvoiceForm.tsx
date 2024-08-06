@@ -84,11 +84,10 @@ const InvoiceForm: React.FC<InvoiceFormProps> = () => {
     <div className='w-full'>
       {pdfData ? (
         <div className='mt-6'>
-          <embed
+          <iframe
             src={`data:application/pdf;base64,${pdfData}`}
-            type='application/pdf'
-            width='100%'
-            height='600px'
+            className='w-full h-[600px]'
+            style={{ border: 'none' }}
           />
         </div>
       ) : (

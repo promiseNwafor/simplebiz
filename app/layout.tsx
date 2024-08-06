@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 
 export const viewport = {
   viewport:
-    'width=device-width, initial-scale=1, maximum-scale=1 user-scalable=yes',
+    'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
 }
 
 export default async function RootLayout({
@@ -38,7 +38,7 @@ export default async function RootLayout({
       <html lang='en'>
         <body
           className={cn(
-            'min-h-screen bg-secondary font-sans antialiased',
+            'min-h-screen bg-secondary font-sans antialiased max-w-screen',
             inter.variable
           )}
         >
