@@ -30,6 +30,8 @@ export const updateUserProfile = async (values: UserProfileFormValues) => {
     const userData = validatedFields.data
     const user = await currentUser()
 
+    console.log('++++++++++++++', userData)
+
     if (!user) {
       return { error: 'Unauthorized' }
     }
@@ -52,6 +54,7 @@ export const updateUserProfile = async (values: UserProfileFormValues) => {
         name: userData.name,
         phone: userData.phoneNumber,
         address: userData.address,
+        isTwoFactorEnabled: userData.isTwoFactorEnabled,
       },
     })
 

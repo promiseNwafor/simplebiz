@@ -60,10 +60,16 @@ const ProfileSettingsContainer: React.FC<ProfileSettingsContainerProps> = ({
       password: 'UnderScore123',
       confirmPassword: 'UnderScore123',
       acceptPolicy: true,
+      isTwoFactorEnabled: user?.isTwoFactorEnabled || false,
     },
   })
 
-  const { handleSubmit, control, getValues } = form
+  const {
+    handleSubmit,
+    control,
+    getValues,
+    formState: { isDirty },
+  } = form
 
   const onSubmit = async (values: RegisterFormValues) => {
     try {
@@ -91,7 +97,13 @@ const ProfileSettingsContainer: React.FC<ProfileSettingsContainerProps> = ({
 
   const handleUserDetailsSubmit = async () => {
     try {
-      const keys = ['name', 'email', 'address', 'phoneNumber']
+      const keys = [
+        'name',
+        'email',
+        'address',
+        'phoneNumber',
+        'isTwoFactorEnabled',
+      ]
       const values = pick(getValues(), keys) as UserProfileFormValues
 
       const res = await updateProfile(values)
@@ -116,6 +128,7 @@ const ProfileSettingsContainer: React.FC<ProfileSettingsContainerProps> = ({
             onSubmit={handleUserDetailsSubmit}
             isRegister={false}
             isPending={userIsPending}
+            isDirty={isDirty}
           />
         )
       case ProfileModalScreen.BUSINESS:
@@ -168,8 +181,8 @@ const ProfileSettingsContainer: React.FC<ProfileSettingsContainerProps> = ({
                 <p className='text-xs md:text-sm font-medium opacity-45 md:w-40 md:text-right'>
                   {`${title.label} - `}
                 </p>
-                <p className='text-xs md:text-sm'>
-                  {(user as any)[title.name]}
+                <p className='text-xs md:text-sm capitalize'>
+                  {(user as any)[title.name].toString()}
                 </p>
               </div>
             ))}

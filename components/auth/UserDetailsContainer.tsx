@@ -12,12 +12,14 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Switch } from '../ui/switch'
 
 interface IUserDetailsContainer {
   control: Control<RegisterFormValues>
   onSubmit: () => void
   isRegister?: boolean
   isPending?: boolean
+  isDirty?: boolean
 }
 
 const UserDetailsContainer: React.FC<IUserDetailsContainer> = ({
@@ -25,6 +27,7 @@ const UserDetailsContainer: React.FC<IUserDetailsContainer> = ({
   onSubmit,
   isRegister = true,
   isPending = false,
+  isDirty = true,
 }) => {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -158,7 +161,30 @@ const UserDetailsContainer: React.FC<IUserDetailsContainer> = ({
           />
         </>
       )}
-      <Button type='button' size='full' onClick={onSubmit} disabled={isPending}>
+      {!isRegister && (
+        <FormField
+          control={control}
+          name='isTwoFactorEnabled'
+          render={({ field }) => (
+            <FormItem className='flex flex-row items-center justify-between'>
+              <FormLabel>Two Factor Authentication</FormLabel>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
+      <Button
+        type='button'
+        size='full'
+        onClick={onSubmit}
+        disabled={isPending || (!isRegister && !isDirty)}
+      >
         Continue
       </Button>
     </>

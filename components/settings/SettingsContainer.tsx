@@ -12,20 +12,27 @@ import ProfileSettingsContainer from './ProfileSettingsContainer'
 import NotificationSettingsContainer from './NotificationSettingsContainer'
 
 const SettingsContainer = () => {
-  const { data: userData, isPending: userIsPending } =
-    useQuery(useGetCurrentUser())
+  const {
+    data: userData,
+    isPending: userIsPending,
+    error: userError,
+  } = useQuery(useGetCurrentUser())
   const { data: businessData, isPending: businessIsPending } =
     useQuery(useGetBusiness())
-  const { data: remindersData, isPending: remindersIsPending } = useQuery(
-    useGetRemindersSettings()
-  )
+  const {
+    data: remindersData,
+    isPending: remindersIsPending,
+    error: remindersError,
+  } = useQuery(useGetRemindersSettings())
 
   const user = userData?.user
   const business = businessData?.data
   const reminder = remindersData?.data
 
-  const userIsLoading = userIsPending || !user
-  const businessIsLoading = businessIsPending || !business
+  const userIsLoading = userIsPending
+  const dataIsError = !user || userError || !business || businessData.error
+  const businessIsLoading = businessIsPending
+  const remindersIsError = remindersData?.error || remindersError
 
   return (
     <div className='space-y-6 bg-white rounded-lg min-h-screen p-6 w-full'>
@@ -38,14 +45,30 @@ const SettingsContainer = () => {
           {userIsLoading || businessIsLoading ? (
             <BeatLoader color='#008678' className='text-center mt-6' />
           ) : (
-            <ProfileSettingsContainer user={user} business={business} />
+            <>
+              {dataIsError ? (
+                <div className='bg-white w-full h-[280px] py-5 centered'>
+                  <p>Error fetching data!</p>
+                </div>
+              ) : (
+                <ProfileSettingsContainer user={user} business={business} />
+              )}
+            </>
           )}
         </TabsContent>
         <TabsContent value='notification'>
-          {remindersIsPending || !reminder ? (
+          {remindersIsPending ? (
             <BeatLoader color='#008678' className='text-center mt-6' />
           ) : (
-            <NotificationSettingsContainer reminder={reminder} />
+            <>
+              {remindersIsError ? (
+                <div className='bg-white w-full h-[280px] py-5 centered'>
+                  <p>{remindersError?.message || 'Error fetching data'}</p>
+                </div>
+              ) : (
+                <NotificationSettingsContainer reminder={reminder} />
+              )}
+            </>
           )}
         </TabsContent>
       </Tabs>

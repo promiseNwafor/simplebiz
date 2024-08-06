@@ -81,6 +81,10 @@ export const userDetailsTitles = [
     name: 'address',
     label: 'Address',
   },
+  {
+    name: 'isTwoFactorEnabled',
+    label: '2FA enabled',
+  },
 ]
 
 export const businessDetailsTitles = [

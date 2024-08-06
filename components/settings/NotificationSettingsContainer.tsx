@@ -15,7 +15,7 @@ import {
 import { Button } from '@/components/ui/button'
 
 type NotificationSettingsContainerProps = {
-  reminder: Reminder
+  reminder: Reminder | null | undefined
 }
 
 const NotificationSettingsContainer: React.FC<
@@ -23,7 +23,7 @@ const NotificationSettingsContainer: React.FC<
 > = ({ reminder }) => {
   const { mutateAsync: setReminders, isPending } = useSetReminders()
 
-  const enableReminders = reminder.enableReminders
+  const enableReminders = reminder?.enableReminders
 
   const form = useForm<RemindersFormValues>({
     resolver: zodResolver(RemindersFormSchema),

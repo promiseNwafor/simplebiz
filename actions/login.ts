@@ -106,3 +106,12 @@ export const login = async (
     throw error
   }
 }
+
+export const resend2FA = async (email: string) => {
+  try {
+    const twoFactorToken = await generateTwoFactorToken(email)
+    await sendTwoFactorTokenEmail(twoFactorToken.email, twoFactorToken.token)
+  } catch (error) {
+    throw error
+  }
+}

@@ -44,6 +44,7 @@ export const RegisterFormSchema = z
     acceptPolicy: z.boolean().refine((val) => val === true, {
       message: 'You must accept the terms and conditions to continue.',
     }),
+    isTwoFactorEnabled: z.optional(z.boolean()),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match.",
@@ -249,6 +250,7 @@ export const UserProfileFormSchema = z.object({
   address: z.string().min(5, {
     message: 'Address must be at least 5 characters.',
   }),
+  isTwoFactorEnabled: z.optional(z.boolean()),
 })
 
 export type UserProfileFormValues = z.infer<typeof UserProfileFormSchema>

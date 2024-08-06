@@ -71,31 +71,37 @@ const CatalogueContainer: React.FC = () => {
               <p>No available products</p>
             </div>
           ) : (
-            <div className='grid sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 xl:gap-8'>
-              {products.map((product) => (
-                <ProductCard product={product as Product} key={product.id} />
-              ))}
-            </div>
+            <>
+              <div className='grid sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 xl:gap-8'>
+                {products.map((product) => (
+                  <ProductCard product={product as Product} key={product.id} />
+                ))}
+              </div>
+              <div className='p-5 centered gap-1 border-t bg-white rounded-b-lg mt-6'>
+                <ReactPaginate
+                  pageCount={Math.ceil(count / PRODUCTS_PER_PAGE)}
+                  pageRangeDisplayed={2}
+                  marginPagesDisplayed={1}
+                  previousLabel={
+                    <ChevronLeft size={20} className='text-black/70' />
+                  }
+                  nextLabel={
+                    <ChevronRight size={20} className='text-black/70' />
+                  }
+                  breakLabel={<MoreHorizontal className='h-4 w-4' />}
+                  breakClassName='break-me'
+                  onPageChange={handlePageClick}
+                  containerClassName='pagination-container'
+                  activeClassName='active'
+                  previousClassName='action-button'
+                  nextClassName='action-button'
+                  disabledClassName='disabled-page-button'
+                />
+              </div>
+            </>
           )}
         </div>
       )}
-      <div className='p-5 centered gap-1 border-t bg-white rounded-b-lg'>
-        <ReactPaginate
-          pageCount={Math.ceil(count / PRODUCTS_PER_PAGE)}
-          pageRangeDisplayed={2}
-          marginPagesDisplayed={1}
-          previousLabel={<ChevronLeft size={20} className='text-black/70' />}
-          nextLabel={<ChevronRight size={20} className='text-black/70' />}
-          breakLabel={<MoreHorizontal className='h-4 w-4' />}
-          breakClassName='break-me'
-          onPageChange={handlePageClick}
-          containerClassName='pagination-container'
-          activeClassName='active'
-          previousClassName='action-button'
-          nextClassName='action-button'
-          disabledClassName='disabled-page-button'
-        />
-      </div>
     </div>
   )
 }

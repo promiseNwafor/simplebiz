@@ -20,7 +20,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import SocialsContainer from './SocialsContainer'
 import { AuthError } from './AuthError'
 import { AuthSuccess } from './AuthSuccess'
 import OTPInputContainer from './OTPInputContainer'
@@ -46,7 +45,9 @@ const LoginContainer = () => {
     resolver: zodResolver(LoginFormSchema),
   })
 
-  const { handleSubmit, control, reset } = form
+  const { handleSubmit, control, reset, getValues, watch } = form
+
+  const code = getValues('code') as string
 
   const onSubmit = (values: LoginFormValues) => {
     setError('')
@@ -56,7 +57,6 @@ const LoginContainer = () => {
       login(values, callbackUrl)
         .then((data) => {
           if (data?.error) {
-            //  reset()
             setError(data.error)
           }
 
@@ -85,7 +85,12 @@ const LoginContainer = () => {
         <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
           <div className='space-y-4'>
             {showTwoFactor && (
-              <OTPInputContainer control={control} isPending={isPending} />
+              <OTPInputContainer
+                control={control}
+                watch={watch}
+                email={getValues('email')}
+                setError={setError}
+              />
             )}
             {!showTwoFactor && (
               <>
@@ -150,12 +155,15 @@ const LoginContainer = () => {
           </div>
           {errorMessage && <AuthError message={errorMessage} />}
           {success && <AuthSuccess message={success} />}
-          <Button type='submit' size='full' disabled={isPending}>
+          <Button
+            type='submit'
+            size='full'
+            disabled={isPending || (showTwoFactor && code?.length < 6)}
+          >
             Continue
           </Button>
         </form>
       </Form>
-      <SocialsContainer />
       <div className='text-center'>
         Don’t have an account?
         <Link href='/auth/register' className='text-md ml-1'>

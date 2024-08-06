@@ -1,7 +1,6 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { IoNotificationsOutline } from 'react-icons/io5'
 import { FaUser } from 'react-icons/fa'
 import { RxExit } from 'react-icons/rx'
 import capitalize from 'lodash/capitalize'
@@ -26,7 +25,7 @@ const NavbarContainer = () => {
         {pathName === '/' ? 'Dashboard' : capitalize(pathName.split('/')[1])}
       </p>
       <div className='flex items-center gap-5'>
-        <IoNotificationsOutline size={25} />
+        {/* <IoNotificationsOutline size={25} /> */}
         <DropdownMenu>
           <DropdownMenuTrigger className='flex items-center gap-2 outline-none'>
             <>
