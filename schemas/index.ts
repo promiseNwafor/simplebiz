@@ -138,19 +138,6 @@ export const ClientSchema = z.object({
 
 export type ClientSchemaValues = z.infer<typeof ClientSchema>
 
-// const fileSchema = z.instanceof(File, { message: 'Upload a valid file' })
-// const imageSchema = fileSchema.refine(
-//   (file) => file.size === 0 || file.type.startsWith('image/')
-// )
-
-// const MAX_FILE_SIZE = 1024 * 1024 * 5 // 5MB
-// const ACCEPTED_IMAGE_MIME_TYPES = [
-//   'image/jpeg',
-//   'image/jpg',
-//   'image/png',
-//   'image/webp',
-// ]
-
 export const ProductSchema = z.object({
   name: z.string().min(2, {
     message: 'Product name must be at least 2 characters.',
@@ -159,28 +146,14 @@ export const ProductSchema = z.object({
     message: 'Description must be at least 2 characters.',
   }),
   price: z.coerce.number().multipleOf(0.01).nonnegative(),
+  purchasePrice: z.coerce.number().multipleOf(0.01).nonnegative(),
   type: z.enum([
     ProductType.PHYSICAL,
     ProductType.SERVICE,
     ProductType.DIGITAL,
     ProductType.OTHER,
   ]),
-  // imageURL: fileSchema.refine((file) => file.size > 0, 'Required'),
   imageURL: z.any(),
-  // .refine((files) => {
-  //   return files?.[0]?.size <= MAX_FILE_SIZE
-  // }, `Max image size is 5MB.`),
-  // .refine((files) => {
-  //   return {
-  //     type: files?.[0]?.type,
-  //     size: files?.[0]?.size,
-  //     name: files?.[0]?.name,
-  //   }
-  // }),
-  // .refine(
-  //   (files) => ACCEPTED_IMAGE_MIME_TYPES.includes(files?.[0]?.type),
-  //   'Only .jpg, .jpeg, .png and .webp formats are supported.'
-  // ),
   quantity: z.number().int().nonnegative(),
 })
 

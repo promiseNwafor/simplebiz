@@ -17,8 +17,15 @@ export const addProduct = async (
       return { error: 'Invalid fields!' }
     }
 
-    const { name, description, price, imageURL, type, quantity } =
-      validatedFields.data
+    const {
+      name,
+      description,
+      price,
+      purchasePrice,
+      imageURL,
+      type,
+      quantity,
+    } = validatedFields.data
 
     const user = await currentUser()
 
@@ -47,6 +54,7 @@ export const addProduct = async (
         description,
         price,
         imageURL,
+        purchasePrice,
         type: type as ProductType,
         quantity,
       },
@@ -72,8 +80,15 @@ export const editProduct = async (
       return { error: 'Invalid fields!' }
     }
 
-    const { name, description, price, imageURL, type, quantity } =
-      validatedFields.data
+    const {
+      name,
+      description,
+      price,
+      purchasePrice,
+      imageURL,
+      type,
+      quantity,
+    } = validatedFields.data
 
     const product = await db.product.findUnique({
       where: {
@@ -107,6 +122,7 @@ export const editProduct = async (
         description,
         price,
         imageURL,
+        purchasePrice,
         type: type as ProductType,
         quantity,
       },

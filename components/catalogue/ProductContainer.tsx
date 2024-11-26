@@ -23,7 +23,7 @@ import { bgColor } from './ProductCard'
 
 const orders = [
   { label: 'All Invoices', key: 'allCount' },
-  { label: 'Open Invoices', key: 'pendingCount' },
+  { label: 'Profit Made', key: 'totalProfit' },
   { label: 'Expired Invoices', key: 'expiredCount' },
 ]
 

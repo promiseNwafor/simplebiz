@@ -1,6 +1,7 @@
 'use server'
 
 import { PRODUCTS_PER_PAGE } from '@/constants'
+import { ngnFormatter } from '@/lib'
 import { currentUser } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { GetResponse, Product } from '@/types'
@@ -104,17 +105,17 @@ export const getProductDetail = async (productId: string) => {
       },
     })
 
-    const pendingCount = await db.invoiceProduct.aggregate({
-      _sum: {
-        quantity: true,
-      },
-      where: {
-        productId,
-        invoice: {
-          status: InvoiceStatus.UNPAID,
-        },
-      },
-    })
+    // const pendingCount = await db.invoiceProduct.aggregate({
+    //   _sum: {
+    //     quantity: true,
+    //   },
+    //   where: {
+    //     productId,
+    //     invoice: {
+    //       status: InvoiceStatus.UNPAID,
+    //     },
+    //   },
+    // })
 
     const expiredCount = await db.invoiceProduct.aggregate({
       _sum: {
@@ -125,6 +126,28 @@ export const getProductDetail = async (productId: string) => {
         invoice: {
           status: InvoiceStatus.OVERDUE,
         },
+      },
+    })
+
+    // get the total quantity of the product sold
+    const totalQuantity = await db.invoiceProduct.aggregate({
+      _sum: {
+        quantity: true,
+      },
+      where: {
+        productId,
+        invoice: {
+          status: InvoiceStatus.PAID,
+        },
+      },
+    })
+
+    const product = await db.product.findFirst({
+      where: {
+        id: productId,
+      },
+      select: {
+        purchasePrice: true,
       },
     })
 
@@ -140,18 +163,23 @@ export const getProductDetail = async (productId: string) => {
       },
     })
 
+    const pPrice = product?.purchasePrice || 0
+    const soldPrice = pPrice * (totalQuantity._sum.quantity || 0)
+    const totalProfit = (totalEarning._sum.amount || 0) - soldPrice
+
     const data = {
       allCount: allCount._sum.quantity || 0,
-      pendingCount: pendingCount._sum.quantity || 0,
+      // pendingCount: pendingCount._sum.quantity || 0,
       expiredCount: expiredCount._sum.quantity || 0,
       totalEarning: totalEarning._sum.amount || 0,
+      totalProfit: ngnFormatter.format(totalProfit || 0),
     }
 
     return { data, success: true }
   } catch (error) {
     console.error(error)
     return {
-      error: `${error || 'Error getting client details'}`,
+      error: `${error || 'Error getting product details'}`,
       success: false,
     }
   }
@@ -174,7 +202,7 @@ export const getProductInvoices = async (productId: string) => {
   } catch (error) {
     console.error(error)
     return {
-      error: `${error || 'Error getting client details'}`,
+      error: `${error || 'Error getting product details'}`,
       success: false,
     }
   }

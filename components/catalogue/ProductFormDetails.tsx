@@ -92,7 +92,26 @@ const ProductFormDetails: React.FC<ProductFormDetailsProps> = ({
         name='price'
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Price</FormLabel>
+            <FormLabel>Selling Price</FormLabel>
+            <FormControl>
+              <Input
+                placeholder='0'
+                type='number'
+                min={0}
+                id={field.name}
+                {...field}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={control}
+        name='purchasePrice'
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Purchase Price</FormLabel>
             <FormControl>
               <Input
                 placeholder='0'
