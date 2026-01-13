@@ -1,13 +1,37 @@
 import { Resend } from 'resend'
 import { ngnFormatter } from '.'
 
-const domain = process.env.NEXT_PUBLIC_PRODUCTION_URL
-const noreplyEmail = process.env.NEXT_PUBLIC_NO_REPLY_EMAIL as string
+// Get environment variables with fallbacks
+const domain =
+  process.env.NEXT_PUBLIC_APP_URL ||
+  process.env.NEXT_PUBLIC_PRODUCTION_URL ||
+  'http://localhost:3000'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const noreplyEmail =
+  process.env.NEXT_PUBLIC_NO_REPLY_EMAIL ||
+  'onboarding@resend.dev' // Resend default domain for testing
+
+const resendApiKey = process.env.RESEND_API_KEY
+
+if (!resendApiKey) {
+  console.warn('RESEND_API_KEY is not set. Email functionality will not work.')
+}
+
+if (!noreplyEmail || noreplyEmail === 'onboarding@resend.dev') {
+  console.warn(
+    'Using default Resend email. Please set NEXT_PUBLIC_NO_REPLY_EMAIL or RESEND_FROM_EMAIL environment variable.'
+  )
+}
+
+const resend = resendApiKey ? new Resend(resendApiKey) : null
 
 export const sendTwoFactorTokenEmail = async (email: string, token: string) => {
-  await resend.emails.send({
+  if (!resend) {
+    console.error('Resend is not configured')
+    return { error: 'Email service not configured' }
+  }
+
+  return await resend.emails.send({
     from: noreplyEmail,
     to: email,
     subject: '2FA Code',
@@ -16,9 +40,14 @@ export const sendTwoFactorTokenEmail = async (email: string, token: string) => {
 }
 
 export const sendPasswordResetEmail = async (email: string, token: string) => {
+  if (!resend) {
+    console.error('Resend is not configured')
+    return { error: 'Email service not configured' }
+  }
+
   const resetLink = `${domain}/auth/new-password?token=${token}`
 
-  await resend.emails.send({
+  return await resend.emails.send({
     from: noreplyEmail,
     to: email,
     subject: 'Reset your password',
@@ -27,9 +56,14 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
 }
 
 export const sendVerificationEmail = async (email: string, token: string) => {
+  if (!resend) {
+    console.error('Resend is not configured')
+    return { error: 'Email service not configured' }
+  }
+
   const confirmLink = `${domain}/auth/new-verification?token=${token}`
 
-  await resend.emails.send({
+  return await resend.emails.send({
     from: noreplyEmail,
     to: email,
     subject: 'Confirm your email',
@@ -42,6 +76,11 @@ export const sendInvoiceEmail = async (
   email: string,
   attachment: string
 ) => {
+  if (!resend) {
+    console.error('Resend is not configured')
+    return { error: 'Email service not configured' }
+  }
+
   const emailOptions = {
     attachments: [
       {
@@ -59,6 +98,11 @@ export const sendInvoiceEmail = async (
 }
 
 export const sendInvoiceReminderEmail = async (id: string, email: string) => {
+  if (!resend) {
+    console.error('Resend is not configured')
+    return { error: 'Email service not configured' }
+  }
+
   const emailOptions = {
     from: noreplyEmail,
     to: email,
@@ -78,6 +122,11 @@ export const sendWithdrawalEmail = async (data: {
   accountNumber: string
   bankName: string
 }) => {
+  if (!resend) {
+    console.error('Resend is not configured')
+    return { error: 'Email service not configured' }
+  }
+
   const {
     withdrawalId,
     email,
@@ -111,6 +160,11 @@ export const sendWithdrawalCompleteEmail = async (data: {
   name: string
   amount: number
 }) => {
+  if (!resend) {
+    console.error('Resend is not configured')
+    return { error: 'Email service not configured' }
+  }
+
   const { withdrawalRef, email, name, amount } = data
   const options = {
     from: noreplyEmail,
@@ -124,4 +178,74 @@ export const sendWithdrawalCompleteEmail = async (data: {
   }
 
   return resend.emails.send(options)
+}
+
+export const sendReceiptEmail = async (
+  email: string,
+  receiptPdf: string,
+  transactionNo: number,
+  invoiceRef: string
+) => {
+  if (!resend) {
+    console.error('Resend is not configured')
+    return { error: 'Email service not configured' }
+  }
+
+  const emailOptions = {
+    attachments: [
+      {
+        filename: `Receipt-${transactionNo}-${invoiceRef}.pdf`,
+        content: receiptPdf,
+      },
+    ],
+    from: noreplyEmail,
+    to: email,
+    subject: `Payment Receipt - Transaction #${transactionNo}`,
+    html: `<div>
+    <p>Thank you for your payment!</p>
+    <p>Please find your payment receipt attached.</p>
+    <p>Transaction Number: #${transactionNo}</p>
+    <p>Invoice Reference: ${invoiceRef}</p>
+    <p>If you have any questions, please don't hesitate to contact us.</p>
+    <p>Best regards,<br/>SimpleBiz Team</p>
+    </div>`,
+  }
+
+  return resend.emails.send(emailOptions)
+}
+
+export const sendLowStockAlertEmail = async (
+  email: string,
+  name: string,
+  products: Array<{ name: string; quantity: number; lowStockThreshold: number | null }>
+) => {
+  if (!resend) {
+    console.error('Resend is not configured')
+    return { error: 'Email service not configured' }
+  }
+
+  const productsList = products
+    .map(
+      (product) =>
+        `<li><strong>${product.name}</strong> - Current stock: ${product.quantity} (Threshold: ${product.lowStockThreshold ?? 10})</li>`
+    )
+    .join('')
+
+  const emailOptions = {
+    from: noreplyEmail,
+    to: email,
+    subject: `Low Stock Alert - ${products.length} Product(s) Need Attention`,
+    html: `<div>
+    <p>Hi ${name},</p>
+    <p>You have <strong>${products.length}</strong> product(s) that are running low on stock:</p>
+    <ul>
+      ${productsList}
+    </ul>
+    <p>Please consider restocking these items to avoid running out of inventory.</p>
+    <p>You can manage your products and update stock levels in your SimpleBiz dashboard.</p>
+    <p>Best regards,<br/>SimpleBiz Team</p>
+    </div>`,
+  }
+
+  return resend.emails.send(emailOptions)
 }

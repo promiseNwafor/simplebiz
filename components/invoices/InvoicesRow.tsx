@@ -1,6 +1,7 @@
 import capitalize from 'lodash/capitalize'
-import { Download } from 'lucide-react'
+import { Download, Eye } from 'lucide-react'
 import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 import { Invoice } from '@/types'
 import { formatDate, ngnFormatter } from '@/lib'
 import { useDownloadInvoice } from '@/store/useStoreData'
@@ -12,12 +13,14 @@ const statusColor = {
   UNPAID: '#FFC107',
   PAID: '#19C98A',
   OVERDUE: '#F44336',
+  PARTIALLY_PAID: '#FF9800',
 }
 
 const statusBgColor = {
   UNPAID: '#FFF6DA',
   PAID: '#DCF7ED',
   OVERDUE: '#FDE3E1',
+  PARTIALLY_PAID: '#FFF3E0',
 }
 
 type InvoicesRowProps = {
@@ -31,6 +34,7 @@ const InvoicesRow: React.FC<InvoicesRowProps> = ({
   quantity,
   isDetailPage = false,
 }) => {
+  const router = useRouter()
   const { mutateAsync: downloadInvoice, isPending: isDownloadPending } =
     useDownloadInvoice()
 
@@ -66,7 +70,14 @@ const InvoicesRow: React.FC<InvoicesRowProps> = ({
       <div className='col-span-2'>{formatDate(invoice.dueDate)}</div>
       <div>{invoice.invoiceNo}</div>
       <div className='col-span-2'>{invoice.issuedTo}</div>
-      <div className='col-span-2'>{ngnFormatter.format(invoice.amount)}</div>
+      <div className='col-span-2'>
+        {ngnFormatter.format(invoice.amount)}
+        {invoice.status === 'PARTIALLY_PAID' && invoice.paidAmount && (
+          <div className='text-xs text-muted-foreground mt-1'>
+            Paid: {ngnFormatter.format(invoice.paidAmount)}
+          </div>
+        )}
+      </div>
       <div>
         <Badge
           variant='outline'
@@ -76,17 +87,27 @@ const InvoicesRow: React.FC<InvoicesRowProps> = ({
             backgroundColor: bgColorStatus,
           }}
         >
-          {capitalize(invoice.status)}
+          {capitalize(invoice.status.replace('_', ' '))}
         </Badge>
       </div>
       {isDetailPage ? (
         <div className='flex justify-center'>{quantity}</div>
       ) : (
-        <div className='flex justify-end'>
+        <div className='flex justify-end gap-2'>
           <Button
             variant='ghost'
+            size='icon'
+            onClick={() => router.push(`/invoices/${invoice.id}`)}
+            title='View Details'
+          >
+            <Eye size={16} opacity={0.5} />
+          </Button>
+          <Button
+            variant='ghost'
+            size='icon'
             onClick={handleDownload}
             disabled={isDownloadPending}
+            title='Download Invoice'
           >
             <Download size={16} opacity={0.5} />
           </Button>

@@ -68,6 +68,23 @@ export const getDashboardData = async () => {
       },
     })
 
+    // get low stock products count
+    const allProducts = await db.product.findMany({
+      where: {
+        userId: user?.id,
+        available: true,
+      },
+      select: {
+        quantity: true,
+        lowStockThreshold: true,
+      },
+    })
+
+    const lowStockCount = allProducts.filter((product) => {
+      const threshold = product.lowStockThreshold ?? 10 // Default threshold is 10
+      return product.quantity <= threshold
+    }).length
+
     const data = {
       clientsNo,
       productsNo,
@@ -76,6 +93,7 @@ export const getDashboardData = async () => {
       totalEarnings: totalEarnings._sum.amount,
       paymentsNo,
       walletBalance: walletBalance._sum.balance,
+      lowStockCount,
     }
 
     return { data, success: true }

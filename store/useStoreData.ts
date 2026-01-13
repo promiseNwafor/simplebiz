@@ -44,6 +44,7 @@ import {
   getWalletDetails,
 } from './payments'
 import { getDashboardData, getSalesTrendData } from './dashboard'
+import { getLowStockProducts } from './inventory'
 
 export const storeQueryKeys = {
   getDashboardData: 'getDashboardData',
@@ -62,6 +63,7 @@ export const storeQueryKeys = {
   getClientDetails: 'getClientDetails',
   getProductDetail: 'getProductDetail',
   getProductInvoices: 'getProductInvoices',
+  getLowStockProducts: 'getLowStockProducts',
 }
 
 /** =============== Dashboard ============== */
@@ -493,5 +495,17 @@ export const useUpdateWithdrawalStatus = () => {
         queryKey: [storeQueryKeys.getDashboardData],
       })
     },
+  })
+}
+
+/** =============== Inventory ============== */
+
+export const useGetLowStockProducts = () => {
+  return queryOptions({
+    queryKey: [storeQueryKeys.getLowStockProducts],
+    queryFn: async () => {
+      return await getLowStockProducts()
+    },
+    refetchOnWindowFocus: false,
   })
 }

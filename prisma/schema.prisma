@@ -17,6 +17,7 @@ enum InvoiceStatus {
   PAID
   UNPAID
   OVERDUE
+  PARTIALLY_PAID
 }
 
 enum ProductType {
@@ -150,16 +151,19 @@ model Client {
 }
 
 model Invoice {
-  id         String           @id @default(cuid())
-  issueDate  DateTime         @map("issue_date")
-  dueDate    DateTime         @map("due_date")
-  issuedTo   String           @map("issued_to")
-  amount     Float
-  profit     Float            @default(0)
-  invoiceNo  Int              @default(autoincrement()) @map("invoice_no")
-  status     InvoiceStatus    @default(UNPAID)
-  invoiceRef String           @unique
-  products   InvoiceProduct[]
+  id                String           @id @default(cuid())
+  issueDate         DateTime         @map("issue_date")
+  dueDate           DateTime         @map("due_date")
+  issuedTo          String           @map("issued_to")
+  amount            Float
+  paidAmount        Float            @default(0) @map("paid_amount")
+  outstandingBalance Float?          @map("outstanding_balance")
+  profit            Float            @default(0)
+  invoiceNo         Int              @default(autoincrement()) @map("invoice_no")
+  status            InvoiceStatus    @default(UNPAID)
+  invoiceRef        String           @unique
+  products          InvoiceProduct[]
+  paymentRecords    PaymentRecord[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -174,16 +178,17 @@ model Invoice {
 }
 
 model Product {
-  id            String           @id @default(cuid())
-  name          String
-  description   String           @db.Text
-  price         Float
-  purchasePrice Float?           @map("purchase_price")
-  type          ProductType
-  available     Boolean          @default(true)
-  imageURL      String           @map("image_url")
-  quantity      Int
-  invoices      InvoiceProduct[]
+  id                String           @id @default(cuid())
+  name              String
+  description       String           @db.Text
+  price             Float
+  purchasePrice     Float?           @map("purchase_price")
+  type              ProductType
+  available         Boolean          @default(true)
+  imageURL          String           @map("image_url")
+  quantity          Int
+  lowStockThreshold Int?            @map("low_stock_threshold")
+  invoices         InvoiceProduct[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -218,13 +223,14 @@ model PaymentToken {
 }
 
 model Payment {
-  id            String   @id @default(cuid())
+  id            String          @id @default(cuid())
   amount        Float
-  transactionNo Int      @default(autoincrement()) @map("transaction_no")
-  paymentDate   DateTime @default(now()) @map("payment_date")
-  invoiceRef    String   @map("invoice_ref")
-  clientName    String   @map("client_name")
-  clientId      String   @map("client_id")
+  transactionNo Int             @default(autoincrement()) @map("transaction_no")
+  paymentDate   DateTime        @default(now()) @map("payment_date")
+  invoiceRef    String          @map("invoice_ref")
+  clientName    String          @map("client_name")
+  clientId      String          @map("client_id")
+  paymentRecords PaymentRecord[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -233,6 +239,24 @@ model Payment {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("payments")
+}
+
+model PaymentRecord {
+  id            String   @id @default(cuid())
+  invoiceId    String   @map("invoice_id")
+  invoice      Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  paymentId    String   @map("payment_id")
+  payment      Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  amount       Float
+  paymentMethod String? @map("payment_method")
+  notes        String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([invoiceId])
+  @@index([paymentId])
+  @@map("payment_records")
 }
 
 model Withdrawal {

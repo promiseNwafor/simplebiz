@@ -25,6 +25,7 @@ export const addProduct = async (
       imageURL,
       type,
       quantity,
+      lowStockThreshold,
     } = validatedFields.data
 
     const user = await currentUser()
@@ -57,6 +58,7 @@ export const addProduct = async (
         purchasePrice,
         type: type as ProductType,
         quantity,
+        lowStockThreshold: lowStockThreshold ?? null,
       },
     })
 
@@ -88,6 +90,7 @@ export const editProduct = async (
       imageURL,
       type,
       quantity,
+      lowStockThreshold,
     } = validatedFields.data
 
     const product = await db.product.findUnique({
@@ -125,6 +128,7 @@ export const editProduct = async (
         purchasePrice,
         type: type as ProductType,
         quantity,
+        lowStockThreshold: lowStockThreshold ?? null,
       },
     })
 

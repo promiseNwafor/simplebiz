@@ -155,6 +155,7 @@ export const ProductSchema = z.object({
   ]),
   imageURL: z.any(),
   quantity: z.number().int().nonnegative(),
+  lowStockThreshold: z.coerce.number().int().nonnegative().optional(),
 })
 
 export type ProductSchemaValues = z.infer<typeof ProductSchema>
@@ -252,3 +253,11 @@ export const RemindersFormSchema = z.object({
 })
 
 export type RemindersFormValues = z.infer<typeof RemindersFormSchema>
+
+// Export partial payment schemas
+export {
+  PartialPaymentSchema,
+  DepositPaymentSchema,
+  type PartialPaymentSchemaValues,
+  type DepositPaymentSchemaValues,
+} from './partial-payment'
