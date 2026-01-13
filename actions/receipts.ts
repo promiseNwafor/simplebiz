@@ -59,7 +59,7 @@ export const downloadReceipt = async (paymentId: string) => {
       invoiceRef: payment.invoiceRef,
       invoiceAmount: invoice.amount,
       paidAmount: invoice.paidAmount || payment.amount,
-      outstandingBalance: invoice.outstandingBalance,
+      outstandingBalance: invoice.outstandingBalance ?? undefined,
       paymentMethod: paymentRecord?.paymentMethod || 'ONLINE',
     })
 
@@ -130,7 +130,7 @@ export const sendReceipt = async (paymentId: string, email?: string) => {
       invoiceRef: payment.invoiceRef,
       invoiceAmount: invoice.amount,
       paidAmount: invoice.paidAmount || payment.amount,
-      outstandingBalance: invoice.outstandingBalance,
+      outstandingBalance: invoice.outstandingBalance ?? undefined,
       paymentMethod: paymentRecord?.paymentMethod || 'ONLINE',
     })
 

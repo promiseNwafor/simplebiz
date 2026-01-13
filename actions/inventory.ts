@@ -36,11 +36,18 @@ export const sendLowStockAlerts = async () => {
       return { error: 'User email not found' }
     }
 
+    // Map products to the format expected by sendLowStockAlertEmail
+    const productsForEmail = lowStockProducts.map((product) => ({
+      name: product.name,
+      quantity: product.quantity,
+      lowStockThreshold: product.lowStockThreshold,
+    }))
+
     // Send email with low stock products list
     const emailResult = await sendLowStockAlertEmail(
       userEmail,
       user.name || 'User',
-      lowStockProducts
+      productsForEmail
     )
 
     if (emailResult?.error) {

@@ -497,3 +497,15 @@ export const useUpdateWithdrawalStatus = () => {
     },
   })
 }
+
+/** =============== Inventory ============== */
+
+export const useGetLowStockProducts = () => {
+  return queryOptions({
+    queryKey: [storeQueryKeys.getLowStockProducts],
+    queryFn: async () => {
+      return await getLowStockProducts()
+    },
+    refetchOnWindowFocus: false,
+  })
+}

@@ -65,7 +65,7 @@ export default function InvoiceDetailContainer({
     return (
       <div className='text-center py-12'>
         <p className='text-destructive'>
-          {error || 'Invoice not found'}
+          {typeof error === 'string' ? error : error?.message || 'Invoice not found'}
         </p>
         <Button
           variant='outline'
@@ -153,7 +153,7 @@ export default function InvoiceDetailContainer({
                 <div className='flex justify-between border-t pt-2'>
                   <span className='text-muted-foreground'>Outstanding Balance:</span>
                   <span className='font-semibold text-lg text-orange-600'>
-                    {ngnFormatter.format(outstandingBalance)}
+                    {ngnFormatter.format(outstandingBalance ?? 0)}
                   </span>
                 </div>
               </>
@@ -191,9 +191,9 @@ export default function InvoiceDetailContainer({
         </TabsList>
         <TabsContent value='products' className='bg-white rounded-lg p-6'>
           <InvoiceTable
-            data={{ data: { data: [invoice], count: 1 }, success: true }}
+            data={{ data: { data: [invoice as any], count: 1 }, success: true }}
             isPending={false}
-            invoices={[invoice]}
+            invoices={[invoice as any]}
           />
         </TabsContent>
         <TabsContent value='payments' className='bg-white rounded-lg p-6'>

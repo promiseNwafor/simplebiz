@@ -19,11 +19,11 @@ type PaymentRecord = {
   amount: number
   paymentMethod: string | null
   notes: string | null
-  createdAt: string
+  createdAt: Date
   payment: {
     id: string
     amount: number
-    paymentDate: string
+    paymentDate: Date
     transactionNo: number
   }
 }

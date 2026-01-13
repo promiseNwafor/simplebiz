@@ -70,6 +70,9 @@ export type Invoice = {
   updatedAt: Date
   userId: string
   clientId: string
+  paidAmount: number
+  outstandingBalance: number | null
+  profit: number
 }
 
 export type Product = {
@@ -81,6 +84,7 @@ export type Product = {
   available: boolean
   imageURL: string
   quantity: number
+  lowStockThreshold: number | null
 }
 
 export type Payment = {
