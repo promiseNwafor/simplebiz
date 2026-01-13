@@ -179,3 +179,37 @@ export const sendWithdrawalCompleteEmail = async (data: {
 
   return resend.emails.send(options)
 }
+
+export const sendReceiptEmail = async (
+  email: string,
+  receiptPdf: string,
+  transactionNo: number,
+  invoiceRef: string
+) => {
+  if (!resend) {
+    console.error('Resend is not configured')
+    return { error: 'Email service not configured' }
+  }
+
+  const emailOptions = {
+    attachments: [
+      {
+        filename: `Receipt-${transactionNo}-${invoiceRef}.pdf`,
+        content: receiptPdf,
+      },
+    ],
+    from: noreplyEmail,
+    to: email,
+    subject: `Payment Receipt - Transaction #${transactionNo}`,
+    html: `<div>
+    <p>Thank you for your payment!</p>
+    <p>Please find your payment receipt attached.</p>
+    <p>Transaction Number: #${transactionNo}</p>
+    <p>Invoice Reference: ${invoiceRef}</p>
+    <p>If you have any questions, please don't hesitate to contact us.</p>
+    <p>Best regards,<br/>SimpleBiz Team</p>
+    </div>`,
+  }
+
+  return resend.emails.send(emailOptions)
+}

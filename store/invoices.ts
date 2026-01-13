@@ -61,6 +61,13 @@ export const getInvoiceById = async (
       where: {
         id,
       },
+      include: {
+        client: {
+          select: {
+            email: true,
+          },
+        },
+      },
     })
 
     if (!data) {

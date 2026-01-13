@@ -41,7 +41,7 @@ export default function InvoiceDetailContainer({
   const router = useRouter()
   const { data, isPending, error } = useQuery(useGetInvoice(invoiceId))
 
-  const invoice = data?.data?.data as Invoice
+  const invoice = data?.data?.data as Invoice & { client?: { email: string } }
 
   const toggleModal = () => {
     setModalOpen((prev) => !prev)
@@ -197,7 +197,10 @@ export default function InvoiceDetailContainer({
           />
         </TabsContent>
         <TabsContent value='payments' className='bg-white rounded-lg p-6'>
-          <PaymentHistory invoiceId={invoice.id} />
+          <PaymentHistory
+            invoiceId={invoice.id}
+            clientEmail={invoice.client?.email}
+          />
         </TabsContent>
       </Tabs>
 

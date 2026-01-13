@@ -12,10 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-
-type PaymentHistoryProps = {
-  invoiceId: string
-}
+import ReceiptDownloadButton from './ReceiptDownloadButton'
 
 type PaymentRecord = {
   id: string
@@ -31,7 +28,15 @@ type PaymentRecord = {
   }
 }
 
-export default function PaymentHistory({ invoiceId }: PaymentHistoryProps) {
+type PaymentHistoryProps = {
+  invoiceId: string
+  clientEmail?: string
+}
+
+export default function PaymentHistory({
+  invoiceId,
+  clientEmail,
+}: PaymentHistoryProps) {
   const [paymentHistory, setPaymentHistory] = useState<PaymentRecord[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -94,6 +99,7 @@ export default function PaymentHistory({ invoiceId }: PaymentHistoryProps) {
               <TableHead>Method</TableHead>
               <TableHead>Transaction No.</TableHead>
               <TableHead>Notes</TableHead>
+              <TableHead>Receipt</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -111,6 +117,12 @@ export default function PaymentHistory({ invoiceId }: PaymentHistoryProps) {
                 <TableCell>#{record.payment.transactionNo}</TableCell>
                 <TableCell className='text-muted-foreground'>
                   {record.notes || '-'}
+                </TableCell>
+                <TableCell>
+                  <ReceiptDownloadButton
+                    paymentId={record.payment.id}
+                    clientEmail={clientEmail}
+                  />
                 </TableCell>
               </TableRow>
             ))}
