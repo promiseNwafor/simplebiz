@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils'
 import { ngnFormatter } from '@/lib'
 import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
+import { AlertTriangle } from 'lucide-react'
 import useProductMenus from '@/hooks/useProductMenus'
 import Modal from '@/components/reusables/Modal'
 import ActionsDropdown from '@/components/reusables/ActionsDropdown'
@@ -20,6 +21,11 @@ export const bgColor = {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { modalAction, setModalAction, actionMenus } = useProductMenus(product)
+
+  // Check if product is low in stock
+  const threshold = product.lowStockThreshold ?? 10
+  const isLowStock = product.quantity <= threshold
+  const isOutOfStock = product.quantity === 0
 
   return (
     <div className='flex flex-col justify-between p-4 bg-white rounded-sm text-sm h-[230px]'>
@@ -57,16 +63,33 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <p className='w-[88%]'>{product.name}</p>
         <ActionsDropdown menuItems={actionMenus} />
       </div>
-      <div className='flex items-center justify-between'>
-        <div className='flex items-center gap-2'>
-          <Switch checked={product.available} />
-          <Badge variant='outline' className='text-gray-500'>
-            {capitalize(product.type)}
-          </Badge>
+      <div className='space-y-2'>
+        <div className='flex items-center justify-between'>
+          <div className='flex items-center gap-2'>
+            <Switch checked={product.available} />
+            <Badge variant='outline' className='text-gray-500'>
+              {capitalize(product.type)}
+            </Badge>
+            {isLowStock && (
+              <Badge
+                variant={isOutOfStock ? 'destructive' : 'outline'}
+                className='text-xs flex items-center gap-1'
+              >
+                <AlertTriangle className='h-3 w-3' />
+                {isOutOfStock ? 'Out of Stock' : 'Low Stock'}
+              </Badge>
+            )}
+          </div>
+          <p className='font-semibold max-w-[46%] break-all'>
+            {ngnFormatter.format(product.price)}
+          </p>
         </div>
-        <p className='font-semibold max-w-[46%] break-all'>
-          {ngnFormatter.format(product.price)}
-        </p>
+        <div className='flex items-center justify-between text-xs text-muted-foreground'>
+          <span>Stock: {product.quantity}</span>
+          {product.lowStockThreshold !== null && (
+            <span>Threshold: {product.lowStockThreshold}</span>
+          )}
+        </div>
       </div>
     </div>
   )

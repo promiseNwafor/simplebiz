@@ -146,6 +146,34 @@ const ProductFormDetails: React.FC<ProductFormDetailsProps> = ({
           </FormItem>
         )}
       />
+      <FormField
+        control={control}
+        name='lowStockThreshold'
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Low Stock Threshold (Optional)</FormLabel>
+            <FormControl>
+              <Input
+                placeholder='10'
+                type='number'
+                id={field.name}
+                min={0}
+                {...field}
+                value={field.value ?? ''}
+                onChange={(e) =>
+                  field.onChange(
+                    e.target.value ? parseInt(e.target.value) : undefined
+                  )
+                }
+              />
+            </FormControl>
+            <FormMessage />
+            <p className='text-xs text-muted-foreground'>
+              Alert will trigger when stock falls to or below this number. Defaults to 10 if not set.
+            </p>
+          </FormItem>
+        )}
+      />
       <Button type='button' onClick={onSubmit} size='full'>
         Save
       </Button>

@@ -27,7 +27,8 @@ const ProductForm: React.FC<ProductFormProps> = ({
   const [isPending, startTransition] = useTransition()
   const [screen, setScreen] = useState(1)
 
-  const { name, price, type, imageURL, quantity, description } = product || {}
+  const { name, price, type, imageURL, quantity, description, lowStockThreshold } =
+    product || {}
 
   const form = useForm<ProductSchemaValues>({
     resolver: zodResolver(ProductSchema),
@@ -38,6 +39,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
       description: description || undefined,
       imageURL: imageURL || undefined,
       quantity: quantity || undefined,
+      lowStockThreshold: lowStockThreshold ?? undefined,
     },
   })
 

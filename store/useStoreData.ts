@@ -44,6 +44,7 @@ import {
   getWalletDetails,
 } from './payments'
 import { getDashboardData, getSalesTrendData } from './dashboard'
+import { getLowStockProducts } from './inventory'
 
 export const storeQueryKeys = {
   getDashboardData: 'getDashboardData',
@@ -62,6 +63,7 @@ export const storeQueryKeys = {
   getClientDetails: 'getClientDetails',
   getProductDetail: 'getProductDetail',
   getProductInvoices: 'getProductInvoices',
+  getLowStockProducts: 'getLowStockProducts',
 }
 
 /** =============== Dashboard ============== */

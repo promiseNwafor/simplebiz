@@ -18,12 +18,14 @@ import OverviewCard from '@/components/reusables/OverviewCard'
 import DashboardChartContainer, { SalesData } from './DashboardChartContainer'
 import Modal from '@/components/reusables/Modal'
 import InvoiceForm from '@/components/invoices/InvoiceForm'
+import LowStockWidget from './LowStockWidget'
 
 export const dashboardFeaturedItems = [
   { label: 'No. of Clients', key: 'clientsNo' },
   { label: 'Catalogue Size', key: 'productsNo' },
   { label: 'Pending Invoices', key: 'pendingInvoicesNo' },
   { label: ' Expired Invoices', key: 'expiredInvoicesNo' },
+  { label: 'Low Stock Items', key: 'lowStockCount' },
 ]
 
 const DashboardContainer = () => {
@@ -81,7 +83,7 @@ const DashboardContainer = () => {
             <BeatLoader color='#008678' className='text-center mt-6' />
           ) : (
             <>
-              <div className='grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6'>
+              <div className='grid grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6'>
                 {dashboardFeaturedItems.map((item) => {
                   const { label, key } = item
                   return (
@@ -135,6 +137,7 @@ const DashboardContainer = () => {
                     </GoToButton>
                   </div>
                 </div>
+                <LowStockWidget />
               </div>
             </>
           )}

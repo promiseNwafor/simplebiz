@@ -213,3 +213,39 @@ export const sendReceiptEmail = async (
 
   return resend.emails.send(emailOptions)
 }
+
+export const sendLowStockAlertEmail = async (
+  email: string,
+  name: string,
+  products: Array<{ name: string; quantity: number; lowStockThreshold: number | null }>
+) => {
+  if (!resend) {
+    console.error('Resend is not configured')
+    return { error: 'Email service not configured' }
+  }
+
+  const productsList = products
+    .map(
+      (product) =>
+        `<li><strong>${product.name}</strong> - Current stock: ${product.quantity} (Threshold: ${product.lowStockThreshold ?? 10})</li>`
+    )
+    .join('')
+
+  const emailOptions = {
+    from: noreplyEmail,
+    to: email,
+    subject: `Low Stock Alert - ${products.length} Product(s) Need Attention`,
+    html: `<div>
+    <p>Hi ${name},</p>
+    <p>You have <strong>${products.length}</strong> product(s) that are running low on stock:</p>
+    <ul>
+      ${productsList}
+    </ul>
+    <p>Please consider restocking these items to avoid running out of inventory.</p>
+    <p>You can manage your products and update stock levels in your SimpleBiz dashboard.</p>
+    <p>Best regards,<br/>SimpleBiz Team</p>
+    </div>`,
+  }
+
+  return resend.emails.send(emailOptions)
+}

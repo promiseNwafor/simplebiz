@@ -155,6 +155,7 @@ export const ProductSchema = z.object({
   ]),
   imageURL: z.any(),
   quantity: z.number().int().nonnegative(),
+  lowStockThreshold: z.coerce.number().int().nonnegative().optional(),
 })
 
 export type ProductSchemaValues = z.infer<typeof ProductSchema>

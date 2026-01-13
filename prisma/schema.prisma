@@ -178,16 +178,17 @@ model Invoice {
 }
 
 model Product {
-  id            String           @id @default(cuid())
-  name          String
-  description   String           @db.Text
-  price         Float
-  purchasePrice Float?           @map("purchase_price")
-  type          ProductType
-  available     Boolean          @default(true)
-  imageURL      String           @map("image_url")
-  quantity      Int
-  invoices      InvoiceProduct[]
+  id                String           @id @default(cuid())
+  name              String
+  description       String           @db.Text
+  price             Float
+  purchasePrice     Float?           @map("purchase_price")
+  type              ProductType
+  available         Boolean          @default(true)
+  imageURL          String           @map("image_url")
+  quantity          Int
+  lowStockThreshold Int?            @map("low_stock_threshold")
+  invoices         InvoiceProduct[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
