@@ -36,5 +36,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# custom testing
-/invoices
+# prisma
+/prisma/dev.db
+/prisma/dev.db-journal
+
+# vitest
+/coverage
