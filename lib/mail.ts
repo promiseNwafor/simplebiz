@@ -1,13 +1,37 @@
 import { Resend } from 'resend'
 import { ngnFormatter } from '.'
 
-const domain = process.env.NEXT_PUBLIC_PRODUCTION_URL
-const noreplyEmail = process.env.NEXT_PUBLIC_NO_REPLY_EMAIL as string
+// Get environment variables with fallbacks
+const domain =
+  process.env.NEXT_PUBLIC_APP_URL ||
+  process.env.NEXT_PUBLIC_PRODUCTION_URL ||
+  'http://localhost:3000'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const noreplyEmail =
+  process.env.NEXT_PUBLIC_NO_REPLY_EMAIL ||
+  'onboarding@resend.dev' // Resend default domain for testing
+
+const resendApiKey = process.env.RESEND_API_KEY
+
+if (!resendApiKey) {
+  console.warn('RESEND_API_KEY is not set. Email functionality will not work.')
+}
+
+if (!noreplyEmail || noreplyEmail === 'onboarding@resend.dev') {
+  console.warn(
+    'Using default Resend email. Please set NEXT_PUBLIC_NO_REPLY_EMAIL or RESEND_FROM_EMAIL environment variable.'
+  )
+}
+
+const resend = resendApiKey ? new Resend(resendApiKey) : null
 
 export const sendTwoFactorTokenEmail = async (email: string, token: string) => {
-  await resend.emails.send({
+  if (!resend) {
+    console.error('Resend is not configured')
+    return { error: 'Email service not configured' }
+  }
+
+  return await resend.emails.send({
     from: noreplyEmail,
     to: email,
     subject: '2FA Code',
@@ -16,9 +40,14 @@ export const sendTwoFactorTokenEmail = async (email: string, token: string) => {
 }
 
 export const sendPasswordResetEmail = async (email: string, token: string) => {
+  if (!resend) {
+    console.error('Resend is not configured')
+    return { error: 'Email service not configured' }
+  }
+
   const resetLink = `${domain}/auth/new-password?token=${token}`
 
-  await resend.emails.send({
+  return await resend.emails.send({
     from: noreplyEmail,
     to: email,
     subject: 'Reset your password',
@@ -27,9 +56,14 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
 }
 
 export const sendVerificationEmail = async (email: string, token: string) => {
+  if (!resend) {
+    console.error('Resend is not configured')
+    return { error: 'Email service not configured' }
+  }
+
   const confirmLink = `${domain}/auth/new-verification?token=${token}`
 
-  await resend.emails.send({
+  return await resend.emails.send({
     from: noreplyEmail,
     to: email,
     subject: 'Confirm your email',
@@ -42,6 +76,11 @@ export const sendInvoiceEmail = async (
   email: string,
   attachment: string
 ) => {
+  if (!resend) {
+    console.error('Resend is not configured')
+    return { error: 'Email service not configured' }
+  }
+
   const emailOptions = {
     attachments: [
       {
@@ -59,6 +98,11 @@ export const sendInvoiceEmail = async (
 }
 
 export const sendInvoiceReminderEmail = async (id: string, email: string) => {
+  if (!resend) {
+    console.error('Resend is not configured')
+    return { error: 'Email service not configured' }
+  }
+
   const emailOptions = {
     from: noreplyEmail,
     to: email,
@@ -78,6 +122,11 @@ export const sendWithdrawalEmail = async (data: {
   accountNumber: string
   bankName: string
 }) => {
+  if (!resend) {
+    console.error('Resend is not configured')
+    return { error: 'Email service not configured' }
+  }
+
   const {
     withdrawalId,
     email,
@@ -111,6 +160,11 @@ export const sendWithdrawalCompleteEmail = async (data: {
   name: string
   amount: number
 }) => {
+  if (!resend) {
+    console.error('Resend is not configured')
+    return { error: 'Email service not configured' }
+  }
+
   const { withdrawalRef, email, name, amount } = data
   const options = {
     from: noreplyEmail,

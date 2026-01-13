@@ -17,7 +17,17 @@ export const addPayment = async (values: Payment) => {
   try {
     const { id, amount, clientName, invoiceRef, token, clientId } = values
 
-    await db.payment.create({
+    // Get the invoice to check current payment status
+    const invoice = await db.invoice.findUnique({
+      where: { invoiceRef },
+    })
+
+    if (!invoice) {
+      return { error: 'Invoice not found' }
+    }
+
+    // Create payment record
+    const payment = await db.payment.create({
       data: {
         userId: id,
         amount,
@@ -27,10 +37,43 @@ export const addPayment = async (values: Payment) => {
       },
     })
 
-    // update invoice status
+    // Calculate new paid amount and outstanding balance
+    const currentPaidAmount = invoice.paidAmount || 0
+    const newPaidAmount = currentPaidAmount + amount
+    const outstandingBalance = invoice.amount - newPaidAmount
+
+    // Create payment record link for tracking
+    try {
+      await db.paymentRecord.create({
+        data: {
+          invoiceId: invoice.id,
+          paymentId: payment.id,
+          amount,
+          paymentMethod: 'ONLINE', // Paystack payment
+        },
+      })
+    } catch (error) {
+      // PaymentRecord might not exist yet if migration hasn't run
+      // This is okay, we'll continue without it
+      console.warn('PaymentRecord creation failed (migration may not have run):', error)
+    }
+
+    // Determine new invoice status
+    let newStatus: InvoiceStatus = invoice.status
+    if (outstandingBalance <= 0) {
+      newStatus = InvoiceStatus.PAID
+    } else if (newPaidAmount > 0 && newPaidAmount < invoice.amount) {
+      newStatus = InvoiceStatus.PARTIALLY_PAID
+    }
+
+    // Update invoice with payment information
     await db.invoice.update({
       where: { invoiceRef },
-      data: { status: InvoiceStatus.PAID },
+      data: {
+        paidAmount: newPaidAmount,
+        outstandingBalance,
+        status: newStatus,
+      },
     })
 
     // create or update wallet
@@ -49,12 +92,19 @@ export const addPayment = async (values: Payment) => {
       },
     })
 
-    // delete payment token
-    await db.paymentToken.delete({
-      where: { token },
-    })
+    // delete payment token only if invoice is fully paid
+    if (newStatus === InvoiceStatus.PAID) {
+      await db.paymentToken.delete({
+        where: { token },
+      })
+    }
 
-    return { success: 'Payment added successfully' }
+    return {
+      success:
+        newStatus === InvoiceStatus.PAID
+          ? 'Payment added successfully. Invoice is now fully paid.'
+          : `Partial payment added successfully. Outstanding balance: ${outstandingBalance}`,
+    }
   } catch (error) {
     console.error(error)
 

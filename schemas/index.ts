@@ -252,3 +252,11 @@ export const RemindersFormSchema = z.object({
 })
 
 export type RemindersFormValues = z.infer<typeof RemindersFormSchema>
+
+// Export partial payment schemas
+export {
+  PartialPaymentSchema,
+  DepositPaymentSchema,
+  type PartialPaymentSchemaValues,
+  type DepositPaymentSchemaValues,
+} from './partial-payment'
